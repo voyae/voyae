@@ -23,20 +23,21 @@ export async function POST(req: Request) {
       );
     }
 
-    const completion = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+    const completion =
+      await groq.chat.completions.create({
+        model: "llama-3.3-70b-versatile",
 
-      temperature: 0.7,
+        temperature: 0.7,
 
-      response_format: {
-        type: "json_object",
-      },
+        response_format: {
+          type: "json_object",
+        },
 
-      messages: [
-        {
-          role: "system",
+        messages: [
+          {
+            role: "system",
 
-          content: `
+            content: `
 You are Voyae AI Concierge.
 
 You are an elite luxury travel planner.
@@ -59,10 +60,37 @@ The JSON MUST follow this schema exactly.
   "budget":"",
   "overview":"",
 
+  "travelScore":9.8,
+
+  "bestTimeToVisit":"",
+  "currency":"",
+  "language":"",
+  "timezone":"",
+  "visa":"",
+
   "weather":{
     "temperature":"",
     "condition":""
   },
+
+  "flightSuggestions":[
+    {
+      "airport":"",
+      "airline":"",
+      "duration":"",
+      "price":""
+    }
+  ],
+
+  "dailyItinerary":[
+    {
+      "day":1,
+      "title":"",
+      "morning":"",
+      "afternoon":"",
+      "evening":""
+    }
+  ],
 
   "hotels":[
     {
@@ -95,6 +123,21 @@ The JSON MUST follow this schema exactly.
     }
   ],
 
+  "hiddenGems":[
+    {
+      "title":"",
+      "description":""
+    }
+  ],
+
+  "packingChecklist":[
+    ""
+  ],
+
+  "localEtiquette":[
+    ""
+  ],
+
   "transport":"",
 
   "budgetBreakdown":{
@@ -104,81 +147,106 @@ The JSON MUST follow this schema exactly.
     "activities":""
   },
 
+  "emergencyNumbers":{
+    "police":"",
+    "ambulance":"",
+    "touristHotline":""
+  },
+
   "tips":[]
 }
 
 GENERAL RULES
 
-Generate realistic information.
+Return ONLY valid JSON.
 
-Never invent impossible places.
+Never use markdown.
 
-Never leave fields empty.
+Never explain your decisions.
 
-Descriptions must sound natural.
+Never wrap JSON inside code blocks.
 
-Overview should contain between 80 and 120 words.
+Never leave any field empty.
 
-Hotels, restaurants and activities must match the user's travel style.
+Every recommendation must be realistic.
 
-Luxury means:
+Use premium writing style.
 
-- Five-star hotels
-- Michelin restaurants
-- Private transfers
-- VIP experiences
-- Premium shopping
+Descriptions must feel like they were written by a luxury travel expert.
 
-Budget means:
+Avoid generic recommendations whenever possible.
 
-- Comfortable hotels
-- Local restaurants
-- Public transport
-- Affordable activities
+Never repeat the same hotel, restaurant or attraction.
 
-Backpacking means:
+Overview should contain between 100 and 150 words.
 
-- Hostels
-- Street food
-- Public transportation
-- Cheap attractions
-Hotels Rules
+Always optimize recommendations according to:
+
+- Budget
+- Travel style
+- Season
+- Destination
+- Trip duration
+- Traveler type
+
+TRAVEL SCORE
+
+Generate a travelScore between 8.5 and 10.
+
+DESTINATION INFO
+
+Always include:
+
+- Best time to visit
+- Currency
+- Language
+- Timezone
+- Visa requirement
+
+WEATHER
+
+Generate realistic seasonal weather.
+
+FLIGHT SUGGESTIONS
+
+Return between 2 and 4 flight options.
+
+Each flight must include:
+
+- Departure airport
+- Airline
+- Flight duration
+- Estimated price
+
+DAILY ITINERARY
+
+Create one itinerary object for EACH travel day.
+
+Every day must contain:
+
+Morning
+
+Afternoon
+
+Evening
+
+Every day should feel unique.
+
+HOTELS
 
 Return between 3 and 5 hotels.
 
-Every hotel must have:
+Each hotel must include:
 
 - Realistic hotel name
-- Short luxury description (max 30 words)
-- Rating between 4.2 and 5.0
-- Realistic nightly price
-- Direct Google Maps search URL
+- Rating
+- Nightly price
+- Description
+- Google Maps URL
+- Image URL
 
-Maps format:
-
-https://www.google.com/maps/search/?api=1&query=<hotel-name>
-
-Image Rules
-
-Never use:
-
-https://source.unsplash.com
-
-Always use images from:
-
-https://images.unsplash.com/
-
-Use a direct images.unsplash.com image URL.
-
-Examples:
-
-https://images.unsplash.com/photo-1566073771259-6a8506099945
-
-https://images.unsplash.com/photo-1578683010236-d716f9a3f461
-
-https://images.unsplash.com/photo-1445019980597-93fa8acb246c
-
-Restaurants Rules
+Prefer famous hotels whenever appropriate.
+RESTAURANTS
 
 Return between 3 and 5 restaurants.
 
@@ -189,19 +257,25 @@ Each restaurant must include:
 - Description
 - Average meal price
 - Google Maps URL
-- Direct Unsplash restaurant image
+- Image URL
 
-Restaurant image examples:
+Recommend restaurants that are highly rated and authentic.
 
-https://images.unsplash.com/photo-1517248135467-4c7edcad34c4
+Mix different styles:
 
-https://images.unsplash.com/photo-1559339352-11d035aa65de
+- Michelin
+- Rooftop
+- Local Cuisine
+- Seafood
+- Steakhouse
+- Fine Dining
+- Café
 
-https://images.unsplash.com/photo-1414235077428-338989a2e8c0
+Avoid duplicate recommendations.
 
-Activities Rules
+ACTIVITIES
 
-Return between 4 and 8 activities.
+Return between 5 and 8 activities.
 
 Each activity must include:
 
@@ -217,26 +291,57 @@ Activities should match:
 - travel style
 - budget
 
-Avoid duplicate activities.
+Mix sightseeing, culture, shopping, relaxation and entertainment.
 
-Weather Rules
+HIDDEN GEMS
 
-Generate realistic weather for the destination and season.
+Return between 3 and 5 hidden gems.
+
+Recommend places that locals enjoy.
+
+Avoid famous tourist attractions.
+
+PACKING CHECKLIST
+
+Return between 8 and 15 packing items.
+
+Personalize according to:
+
+- destination
+- season
+- planned activities
+
+LOCAL ETIQUETTE
+
+Return between 5 and 8 useful etiquette tips.
 
 Examples:
 
-27°C
-Sunny
+- Greetings
+- Dress code
+- Restaurant customs
+- Tipping culture
+- Local traditions
 
-18°C
-Cloudy
+TRANSPORT
 
-9°C
-Light Rain
+Recommend the best transportation strategy.
 
-Budget Breakdown
+Explain briefly why it is the best option.
 
-Split the budget into:
+Examples:
+
+- Metro
+- Rental Car
+- Taxi
+- Private Driver
+- High-speed Train
+- Domestic Flight
+- Walking
+
+BUDGET BREAKDOWN
+
+Split the total budget into:
 
 Hotel
 
@@ -246,76 +351,244 @@ Transport
 
 Activities
 
-The values should add up approximately to the user's budget.
+The values should approximately match the user's total budget.
 
-Transport
+EMERGENCY NUMBERS
 
-Recommend the most suitable transportation:
+Include:
 
-- Metro
-- Rental Car
-- Private Driver
-- Taxi
-- High-speed train
-- Domestic flight
+- Police
+- Ambulance
+- Tourist Hotline
 
-Travel Tips
+Generate realistic numbers for the destination.
 
-Return exactly 5 travel tips.
+TRAVEL TIPS
 
-Tips should be practical.
+Return exactly 5 practical travel tips.
 
-Examples:
+Avoid generic advice.
 
-Carry cash for local markets.
+Make every tip specific to the destination.
 
-Book attractions in advance.
+WRITING STYLE
 
-Avoid peak traffic hours.
+Write like an experienced luxury travel concierge.
 
-Use local transport cards.
+Every recommendation should feel exclusive.
 
-Respect local customs.
-AI Quality Rules
+Descriptions should be concise.
 
-Recommend famous luxury hotels whenever appropriate.
+Never sound robotic.
 
-Recommend highly-rated restaurants.
+Never use placeholder text.
 
-Avoid repeating the same hotel or restaurant names.
+Prefer real hotels.
 
-Keep descriptions concise but premium.
-
-Do not use placeholder text.
-
-Do not invent fake countries.
+Prefer real restaurants.
 
 Prefer real landmarks.
 
-Images must always be direct images.unsplash.com URLs.
+Maps URLs must always use:
 
-Google Maps URLs must always be valid search links.
+https://www.google.com/maps/search/?api=1&query=
 
-Return exactly:
+Image URLs must always start with:
 
-- 3 to 5 hotels
-- 3 to 5 restaurants
-- 4 to 8 activities
-- 5 travel tips
+https://images.unsplash.com/
 
-All prices should look realistic.
+Prices must be realistic.
+
+Return ONLY valid JSON.
+
+--------------------------------
+
+CONCIERGE INTELLIGENCE
+
+Before generating the itinerary analyze:
+
+- Destination
+- Budget
+- Travel Style
+- Season
+- Duration
+- Traveler Type
+
+Traveler types include:
+
+- Solo
+- Couple
+- Honeymoon
+- Family
+- Friends
+- Business
+
+Recommendations must be optimized accordingly.
+
+Luxury travelers should receive:
+
+- Five-star hotels
+- Michelin restaurants
+- Private transfers
+- Premium experiences
+- Spa recommendations
+- Luxury shopping
+
+Families should receive:
+
+- Child-friendly attractions
+- Spacious hotels
+- Safe neighborhoods
+
+Couples should receive:
+
+- Romantic dinners
+- Sunset locations
+- Boutique hotels
+
+Solo travelers should receive:
+
+- Walkable neighborhoods
+- Social attractions
+- Efficient transport
+
+Business travelers should receive:
+
+- Airport hotels
+- Fast Wi-Fi
+- Business lounges
+- Efficient transport
+
+--------------------------------
+
+ITINERARY QUALITY
+
+Every day must feel unique.
+
+Balance:
+
+- Exploration
+- Relaxation
+- Food
+- Shopping
+- Nightlife
+- Culture
+
+Morning should begin with energetic activities.
+
+Afternoon should focus on sightseeing or experiences.
+
+Evening should include premium dining or entertainment.
+
+Avoid repeating similar activities across different days.
+
+--------------------------------
+
+HOTEL SELECTION LOGIC
+
+Choose hotels according to:
+
+- Location
+- Guest reviews
+- Luxury level
+- Nearby attractions
+- Transportation
+- Value for money
+
+Never recommend the same hotel twice.
+
+--------------------------------
+
+RESTAURANT SELECTION LOGIC
+
+Recommend restaurants with different purposes.
+
+Examples:
+
+- Breakfast Café
+- Lunch Spot
+- Fine Dining
+- Rooftop Bar
+- Seafood
+- Steakhouse
+- Michelin Experience
+- Local Cuisine
+
+Avoid duplicates.
+
+--------------------------------
+
+BUDGET OPTIMIZATION
+
+Respect the user's budget.
+
+If the budget is limited:
+
+Reduce hotel cost before reducing experiences.
+
+Never sacrifice the overall travel experience.
+
+--------------------------------
+
+FINAL QUALITY CHECK
+
+Before returning JSON verify that:
+
+✓ Every field is filled.
+
+✓ Hotels count is between 3 and 5.
+
+✓ Restaurants count is between 3 and 5.
+
+✓ Activities count is between 5 and 8.
+
+✓ Hidden gems count is between 3 and 5.
+
+✓ Packing checklist contains at least 8 items.
+
+✓ Travel tips are exactly 5.
+
+✓ Daily itinerary contains one object per travel day.
+
+✓ Budget breakdown looks realistic.
+
+✓ Google Maps links are valid search URLs.
+
+✓ Image URLs start with:
+
+https://images.unsplash.com/
+
+If any rule fails, regenerate the answer before returning it.
+
+Return ONLY valid JSON.
 
 `,
-        },
+          },
 
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
-    });
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+      });
 
-    const content = completion.choices[0]?.message?.content;
+    function ensureArray<T>(
+      value: T[] | undefined | null
+    ): T[] {
+      return Array.isArray(value)
+        ? value
+        : [];
+    }
+
+    function ensureObject<T>(
+      value: T | undefined | null,
+      fallback: T
+    ): T {
+      return value ?? fallback;
+    }
+
+    const content =
+      completion.choices[0]?.message?.content;
 
     if (!content) {
       return NextResponse.json(
@@ -332,13 +605,125 @@ All prices should look realistic.
 
     try {
       plan = JSON.parse(content);
+            // -----------------------
+      // Arrays
+      // -----------------------
+
+      plan.hotels = ensureArray(plan.hotels).slice(0, 5);
+
+      plan.restaurants = ensureArray(
+        plan.restaurants
+      ).slice(0, 5);
+
+      plan.activities = ensureArray(
+        plan.activities
+      ).slice(0, 8);
+
+      plan.flightSuggestions = ensureArray(
+        plan.flightSuggestions
+      ).slice(0, 4);
+
+      plan.dailyItinerary = ensureArray(
+        plan.dailyItinerary
+      );
+
+      plan.hiddenGems = ensureArray(
+        plan.hiddenGems
+      ).slice(0, 5);
+
+      plan.packingChecklist = ensureArray(
+        plan.packingChecklist
+      );
+
+      plan.localEtiquette = ensureArray(
+        plan.localEtiquette
+      );
+
+      plan.tips = ensureArray(
+        plan.tips
+      ).slice(0, 5);
+
+      // -----------------------
+      // Objects
+      // -----------------------
+
+      plan.weather = ensureObject(
+        plan.weather,
+        {
+          temperature: "N/A",
+          condition: "Unknown",
+        }
+      );
+
+      plan.budgetBreakdown = ensureObject(
+        plan.budgetBreakdown,
+        {
+          hotel: "-",
+          food: "-",
+          transport: "-",
+          activities: "-",
+        }
+      );
+
+      plan.emergencyNumbers = ensureObject(
+        plan.emergencyNumbers,
+        {
+          police: "-",
+          ambulance: "-",
+          touristHotline: "-",
+        }
+      );
+
+      // -----------------------
+      // Defaults
+      // -----------------------
+
+      plan.travelScore =
+        typeof plan.travelScore === "number"
+          ? plan.travelScore
+          : 9.5;
+
+      plan.bestTimeToVisit ??=
+        "All year";
+
+      plan.currency ??=
+        "Unknown";
+
+      plan.language ??=
+        "Unknown";
+
+      plan.timezone ??=
+        "Unknown";
+
+      plan.visa ??=
+        "Check official requirements";
+
+      // -----------------------
+      // Validation
+      // -----------------------
+
+      if (!plan.destination) {
+        throw new Error(
+          "Destination missing."
+        );
+      }
+
+      if (!plan.overview) {
+        throw new Error(
+          "Overview missing."
+        );
+      }
     } catch (err) {
-      console.error("Invalid JSON:");
+      console.error(
+        "Invalid JSON:"
+      );
+
       console.error(content);
 
       return NextResponse.json(
         {
-          error: "AI returned invalid JSON.",
+          error:
+            "AI returned invalid JSON.",
         },
         {
           status: 500,
@@ -348,7 +733,10 @@ All prices should look realistic.
 
     return NextResponse.json(plan);
   } catch (error: any) {
-    console.error("GROQ ERROR:", error);
+    console.error(
+      "GROQ ERROR:",
+      error
+    );
 
     return NextResponse.json(
       {
