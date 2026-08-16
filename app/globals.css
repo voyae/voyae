@@ -62,3 +62,47 @@ a {
 ::-webkit-scrollbar-thumb:hover {
   background: #999;
 }
+
+/* ========================= */
+/* VOYAE CALENDAR */
+/* ========================= */
+
+.voyae-calendar .rdp-months{
+  display:flex;
+  gap:32px;
+  justify-content:center;
+}
+
+.voyae-calendar .rdp-month{
+  width:250px;
+}
+
+.voyae-calendar .rdp-month_caption{
+  font-size:20px;
+  font-weight:700;
+  margin-bottom:14px;
+}
+
+.voyae-calendar .rdp-weekday{
+  font-size:11px;
+  color:#9ca3af;
+  font-weight:600;
+}
+
+.voyae-calendar .rdp-day{
+  width:36px;
+  height:36px;
+  font-size:14px;
+  font-weight:600;
+  border-radius:9999px;
+  transition:.2s;
+}
+
+.voyae-calendar .rdp-day:hover{
+  background:#ecfdf5;
+  color:#047857;
+}
+
+.voyae-calendar table{
+  width:100%;
+}

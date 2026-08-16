@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import SearchBar from "./SearchBar";
+import SearchBar from "@/components/search/SearchBar";
 
 export default function Hero() {
   return (
@@ -23,7 +23,7 @@ export default function Hero() {
       <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
 
       {/* Glow */}
-      <div className="absolute left-1/2 top-1/2 h-[700px] w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-500/10 blur-[180px]" />
+      <div className="absolute left-1/2 top-1/2 h-[700px] w-[700px] -translate-x-1/2 -translate-y-[15%] rounded-full bg-emerald-500/10 blur-[180px]" />
 
       {/* CONTENT */}
       <div className="relative z-20 mx-auto flex min-h-screen w-[92%] max-w-[1550px] items-center justify-between pt-36 pb-72">

@@ -34,7 +34,7 @@ export default function Destinations() {
   return (
     <section
       id="destinations"
-      className="bg-[#f8f6f2] pt-60 pb-32"
+      className="bg-[#f8f6f2] pt-80 pb-32"
     >
       <div className="mx-auto w-[92%] max-w-[1550px]">
 
