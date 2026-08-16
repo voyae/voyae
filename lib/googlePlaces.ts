@@ -13,6 +13,12 @@ export async function searchPlace(query: string) {
     },
     body: JSON.stringify({
       textQuery: query,
+    
+      languageCode: "en",
+    
+      regionCode: "TR",
+    
+      maxResultCount: 1,
     }),
   });
 
@@ -22,5 +28,18 @@ export async function searchPlace(query: string) {
 
   const data = await res.json();
 
-  return data.places?.[0] ?? null;
+  const place = data.places?.[0];
+
+  if (!place) return null;
+  
+  const photoReference = place.photos?.[0]?.name;
+
+const photoUrl = photoReference
+  ? `https://places.googleapis.com/v1/${photoReference}/media?maxWidthPx=1200&key=${API_KEY}`
+  : "";
+  
+  return {
+    ...place,
+    photoUrl,
+  };
 }

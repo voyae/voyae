@@ -203,16 +203,27 @@ export default function TravelPlan({
       className="overflow-hidden rounded-3xl border border-neutral-200 bg-white"
     >
 
-      <div className="relative h-60 w-full">
+<div className="relative h-60 w-full bg-neutral-100">
 
-        <Image
-          src={hotel.image}
-          alt={hotel.name}
-          fill
-          className="object-cover"
-        />
+{hotel.image ? (
 
-      </div>
+  <Image
+    src={hotel.image}
+    alt={hotel.name}
+    fill
+    unoptimized
+    className="object-cover"
+  />
+
+) : (
+
+  <div className="flex h-full items-center justify-center text-neutral-400">
+    No Image
+  </div>
+
+)}
+
+</div>
 
       <div className="p-6">
 
@@ -293,16 +304,27 @@ export default function TravelPlan({
       className="overflow-hidden rounded-3xl border border-neutral-200 bg-white"
     >
 
-      <div className="relative h-60 w-full">
+<div className="relative h-60 w-full bg-neutral-100">
 
-        <Image
-          src={restaurant.image}
-          alt={restaurant.name}
-          fill
-          className="object-cover"
-        />
+{restaurant.image ? (
 
-      </div>
+  <Image
+    src={restaurant.image}
+    alt={restaurant.name}
+    fill
+    unoptimized
+    className="object-cover"
+  />
+
+) : (
+
+  <div className="flex h-full items-center justify-center text-neutral-400">
+    No Image
+  </div>
+
+)}
+
+</div>
 
       <div className="p-6">
 
