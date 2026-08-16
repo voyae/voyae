@@ -1,3 +1,4 @@
+import { searchPlace } from "@/lib/googlePlaces";
 import { NextResponse } from "next/server";
 import Groq from "groq-sdk";
 
@@ -605,6 +606,31 @@ Return ONLY valid JSON.
 
     try {
       plan = JSON.parse(content);
+      for (const hotel of plan.hotels ?? []) {
+        try {
+          const place = await searchPlace(hotel.name);
+      
+          if (place) {
+            hotel.rating = place.rating ?? hotel.rating;
+      
+            hotel.maps =
+              place.googleMapsUri ?? hotel.maps;
+      
+            hotel.address =
+              place.formattedAddress ?? "";
+      
+            if (place.photos?.length) {
+              hotel.photoReference =
+                place.photos[0].name;
+            }
+          }
+        } catch (err) {
+          console.error(
+            "Google Places:",
+            err
+          );
+        }
+      }
             // -----------------------
       // Arrays
       // -----------------------
