@@ -1,4 +1,4 @@
-import { searchHotelsByCoordinates } from "./liteapi";
+import { searchHotelsByCity } from "./liteapi";
 
 export interface DiscoveredHotel {
   id: string;
@@ -10,26 +10,24 @@ export interface DiscoveredHotel {
 }
 
 export async function discoverHotels(
-  latitude: number,
-  longitude: number,
-  radius = 10000
+  countryCode: string,
+  cityName: string
 ): Promise<DiscoveredHotel[]> {
-  const response: any = await searchHotelsByCoordinates(
-    latitude,
-    longitude,
-    radius
+  const response: any = await searchHotelsByCity(
+    countryCode,
+    cityName
   );
 
-  const hotels = response.data ?? [];
+  const hotels = response.data ?? response.hotels ?? [];
 
   return hotels.map((hotel: any) => ({
     id: hotel.id,
 
-    name: hotel.name,
+    name: hotel.name ?? "",
 
-    city: hotel.city,
+    city: hotel.city ?? "",
 
-    country: hotel.country,
+    country: hotel.country ?? "",
 
     latitude:
       hotel.location?.latitude ??
@@ -44,14 +42,12 @@ export async function discoverHotels(
 }
 
 export async function discoverHotelIds(
-  latitude: number,
-  longitude: number,
-  radius = 10000
+  countryCode: string,
+  cityName: string
 ): Promise<string[]> {
   const hotels = await discoverHotels(
-    latitude,
-    longitude,
-    radius
+    countryCode,
+    cityName
   );
 
   return hotels.map((hotel) => hotel.id);

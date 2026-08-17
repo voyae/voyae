@@ -59,7 +59,11 @@ export interface HotelCard {
         {};
   
       return {
-        id: hotel.id,
+        id:
+  hotel.id ??
+  hotel.hotelId ??
+  hotel.hotelID ??
+  crypto.randomUUID(),
   
         name:
           hotel.name ??

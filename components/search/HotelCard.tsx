@@ -15,32 +15,27 @@ import { HotelCard as Hotel } from "@/lib/hotelMapper";
 
 interface Props {
   hotel: Hotel;
-
   checkIn: string;
-
   checkOut: string;
-
-  adults: number;
-
+  adults?: number;
   children: string;
-
-  rooms: number;
+  rooms?: number;
 }
 
 export default function HotelCard({
   hotel,
   checkIn,
   checkOut,
-  adults,
+  adults = 1,
   children,
-  rooms,
+  rooms = 1,
 }: Props) {
   const params = new URLSearchParams({
-    checkIn,
-    checkOut,
-    adults: adults.toString(),
-    children,
-    rooms: rooms.toString(),
+    checkIn: checkIn ?? "",
+    checkOut: checkOut ?? "",
+    adults: String(adults ?? 1),
+    children: children ?? "",
+    rooms: String(rooms ?? 1),
   });
 
   return (

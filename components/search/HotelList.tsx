@@ -1,23 +1,18 @@
 "use client";
 
 import HotelCard from "./HotelCard";
-
 import { HotelCard as Hotel } from "@/lib/hotelMapper";
 
 interface Props {
   hotels: Hotel[];
-
   loading: boolean;
 
-  checkIn: string;
+  checkIn?: string;
+  checkOut?: string;
 
-  checkOut: string;
-
-  adults: number;
-
-  children: string;
-
-  rooms: number;
+  adults?: number;
+  children?: string;
+  rooms?: number;
 }
 
 export default function HotelList({
@@ -35,12 +30,7 @@ export default function HotelList({
         {Array.from({ length: 8 }).map((_, index) => (
           <div
             key={index}
-            className="
-            h-64
-            animate-pulse
-            rounded-3xl
-            bg-neutral-200
-            "
+            className="h-64 animate-pulse rounded-3xl bg-neutral-200"
           />
         ))}
       </div>
@@ -49,19 +39,7 @@ export default function HotelList({
 
   if (!hotels.length) {
     return (
-      <div
-        className="
-        flex
-        h-72
-        items-center
-        justify-center
-        rounded-3xl
-        border
-        border-dashed
-        text-lg
-        text-neutral-500
-        "
-      >
+      <div className="flex h-72 items-center justify-center rounded-3xl border border-dashed text-lg text-neutral-500">
         No hotels found.
       </div>
     );
@@ -69,9 +47,9 @@ export default function HotelList({
 
   return (
     <div className="space-y-6">
-      {hotels.map((hotel) => (
+      {hotels.map((hotel, index) => (
         <HotelCard
-          key={hotel.id}
+          key={`${hotel.id}-${index}`}
           hotel={hotel}
           checkIn={checkIn}
           checkOut={checkOut}

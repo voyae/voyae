@@ -14,7 +14,6 @@ async function request(
       headers: {
         "Content-Type": "application/json",
         "X-API-Key": API_KEY,
-
         ...(options?.headers ?? {}),
       },
 
@@ -37,9 +36,9 @@ async function request(
   return data;
 }
 
-/* -------------------------------- */
-/* Hotels Discovery */
-/* -------------------------------- */
+/* =======================================================
+   HOTEL DISCOVERY
+======================================================= */
 
 export async function searchHotelsByCity(
   countryCode: string,
@@ -52,9 +51,9 @@ export async function searchHotelsByCity(
   );
 }
 
-/* -------------------------------- */
-/* Hotel Details */
-/* -------------------------------- */
+/* =======================================================
+   HOTEL DETAILS
+======================================================= */
 
 export async function getHotelDetails(
   hotelId: string
@@ -64,22 +63,25 @@ export async function getHotelDetails(
   );
 }
 
-/* -------------------------------- */
-/* Search Rates */
-/* -------------------------------- */
+/* =======================================================
+   HOTEL RATES
+======================================================= */
 
-interface RateRequest {
+export interface RateRequest {
   hotelIds: string[];
 
   checkin: string;
 
   checkout: string;
 
-  occupancies: any[];
-
-  currency: string;
+  occupancies: {
+    adults: number;
+    children?: number[];
+  }[];
 
   guestNationality: string;
+
+  currency: string;
 
   roomMapping?: boolean;
 
@@ -92,124 +94,93 @@ export async function getHotelRates(
   return request("/hotels/rates", {
     method: "POST",
 
-    body: JSON.stringify(body),
-  });
-}
-
-/* -------------------------------- */
-/* Prebook */
-/* -------------------------------- */
-
-export async function prebook(
-  offerId: string
-) {
-  return request("/hotels/prebook", {
-
     body: JSON.stringify({
-      offerId,
+      ...body,
+
+      roomMapping:
+        body.roomMapping ?? true,
+
+      maxRatesPerHotel:
+        body.maxRatesPerHotel ?? 5,
     }),
   });
 }
 
-/* -------------------------------- */
-/* Book */
-/* -------------------------------- */
+/* =======================================================
+   PREBOOK
+======================================================= */
 
-export async function bookHotel(
-  body: any
+export interface PrebookRequest {
+  offerId: string;
+}
+
+export async function prebookHotel(
+  body: PrebookRequest
 ) {
-  return request("/hotels/book", {
+  return request("/rates/prebook", {
     method: "POST",
 
-    body: JSON.stringify(body),
+    body: JSON.stringify({
+      offerId: body.offerId,
+
+      usePaymentSdk: true,
+    }),
   });
 }
-export interface PrebookRequest {
-    offerId: string;
-  }
-  
-  export async function prebookHotel(
-    body: PrebookRequest
-  ) {
-    const response = await fetch(
-      `${LITEAPI_BASE_URL}/rates/prebook`,
-      {
-        method: "POST",
-  
-        headers: {
-          "Content-Type": "application/json",
-  
-          "X-API-Key": LITEAPI_API_KEY,
+
+/* =======================================================
+   BOOK
+======================================================= */
+
+export interface BookHotelRequest {
+  prebookId: string;
+
+  firstName: string;
+
+  lastName: string;
+
+  email: string;
+
+  transactionId: string;
+}
+
+export async function bookHotel(
+  body: BookHotelRequest
+) {
+  return request("/book", {
+    method: "POST",
+
+    body: JSON.stringify({
+      holder: {
+        firstName: body.firstName,
+
+        lastName: body.lastName,
+
+        email: body.email,
+      },
+
+      payment: {
+        method: "TRANSACTION_ID",
+
+        transactionId:
+          body.transactionId,
+      },
+
+      prebookId: body.prebookId,
+
+      guests: [
+        {
+          occupancyNumber: 1,
+
+          remarks: "",
+
+          firstName: body.firstName,
+
+          lastName: body.lastName,
+
+          email: body.email,
         },
-  
-        body: JSON.stringify(body),
-      }
-    );
-  
-    if (!response.ok) {
-      throw new Error(
-        await response.text()
-      );
-    }
-  
-    return response.json();
-  }
-  export interface BookHotelRequest {
-    prebookId: string;
-  
-    firstName: string;
-  
-    lastName: string;
-  
-    email: string;
-  
-    transactionId: string;
-  }
-  
-  export async function bookHotel(
-    body: BookHotelRequest
-  ) {
-    const response = await fetch(
-      `${LITEAPI_BASE_URL}/book`,
-      {
-        method: "POST",
-  
-        headers: {
-          "Content-Type": "application/json",
-  
-          "X-API-Key": LITEAPI_API_KEY,
-        },
-  
-        body: JSON.stringify({
-          holder: {
-            firstName: body.firstName,
-            lastName: body.lastName,
-            email: body.email,
-          },
-  
-          payment: {
-            method: "TRANSACTION_ID",
-            transactionId: body.transactionId,
-          },
-  
-          prebookId: body.prebookId,
-  
-          guests: [
-            {
-              occupancyNumber: 1,
-              remarks: "",
-              firstName: body.firstName,
-              lastName: body.lastName,
-              email: body.email,
-            },
-          ],
-        }),
-      }
-    );
-  
-    if (!response.ok) {
-      throw new Error(await response.text());
-    }
-  
-    return response.json();
-  }
+      ],
+    }),
+  });
+}

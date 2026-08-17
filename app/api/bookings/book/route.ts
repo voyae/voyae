@@ -6,29 +6,20 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-    const { guest, prebook, transactionId } = body;
-
-    if (!guest) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Guest information is required.",
-        },
-        {
-          status: 400,
-        }
-      );
-    }
-
-    const prebookId =
-      prebook?.raw?.data?.prebookId ??
-      prebook?.raw?.prebookId;
+    const {
+      prebookId,
+      firstName,
+      lastName,
+      email,
+      transactionId,
+    } = body;
 
     if (!prebookId) {
       return NextResponse.json(
         {
           success: false,
-          message: "prebookId not found.",
+          message:
+            "prebookId is required.",
         },
         {
           status: 400,
@@ -36,29 +27,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const booking = await bookHotel({
-      prebookId,
-
-      firstName: guest.firstName,
-
-      lastName: guest.lastName,
-
-      email: guest.email,
-
-      transactionId:
-        transactionId ??
-        "TEST_TRANSACTION",
-    });
+    const booking =
+      await bookHotel({
+        prebookId,
+        firstName,
+        lastName,
+        email,
+        transactionId,
+      });
 
     return NextResponse.json({
       success: true,
-
-      reference:
-        booking.data?.bookingReference ??
-        booking.bookingReference ??
-        booking.data?.reference ??
-        "",
-
       booking,
     });
   } catch (error: any) {

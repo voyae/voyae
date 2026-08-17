@@ -1,32 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { prebookHotel } from "@/lib/liteapi";
+import { discoverHotelIds } from "@/lib/hotelDiscovery";
 
 export async function POST(req: NextRequest) {
   try {
-    const { offerId } =
-      await req.json();
+    const { countryCode, city } = await req.json();
 
-    if (!offerId) {
+    if (!countryCode || !city) {
       return NextResponse.json(
         {
           success: false,
-          message: "offerId is required.",
+          message: "countryCode and city are required.",
         },
-        {
-          status: 400,
-        }
+        { status: 400 }
       );
     }
 
-    const prebook =
-      await prebookHotel({
-        offerId,
-      });
+    const hotelIds = await discoverHotelIds(
+      countryCode,
+      city
+    );
 
     return NextResponse.json({
       success: true,
-      prebook,
+      total: hotelIds.length,
+      hotelIds,
     });
   } catch (error: any) {
     console.error(error);
@@ -36,7 +34,7 @@ export async function POST(req: NextRequest) {
         success: false,
         message:
           error.message ??
-          "Prebook failed.",
+          "Internal Server Error",
       },
       {
         status: 500,

@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 import HotelList from "@/components/search/HotelList";
-import SearchFilters from "@/components/search/SearchFilters";
+import SearchFilters, {
+  SearchFiltersState,
+} from "@/components/search/SearchFilters";
 
 import { HotelCard } from "@/lib/hotelMapper";
 
@@ -20,14 +22,19 @@ export default function SearchPage() {
   const checkOut =
     params.get("checkOut") ?? "";
 
-  const adults =
-    Number(params.get("adults") ?? "2");
+  const adults = Number(
+    params.get("adults") ?? "2"
+  );
 
   const children =
     params.get("children") ?? "";
 
-  const rooms =
-    Number(params.get("rooms") ?? "1");
+  const rooms = Number(
+    params.get("rooms") ?? "1"
+  );
+
+  const countryCode =
+    params.get("countryCode") ?? "TR";
 
   const [loading, setLoading] =
     useState(true);
@@ -35,24 +42,20 @@ export default function SearchPage() {
   const [hotels, setHotels] =
     useState<HotelCard[]>([]);
 
-  const [priceRange, setPriceRange] =
-    useState(1000);
-
-  const [stars, setStars] =
-    useState<number[]>([]);
-
-  const [freeCancellation, setFreeCancellation] =
-    useState(false);
+  const [filters, setFilters] =
+    useState<SearchFiltersState>({
+      minPrice: 0,
+      maxPrice: 5000,
+      stars: [],
+      breakfast: false,
+      freeCancellation: false,
+      refundable: false,
+    });
 
   useEffect(() => {
     async function loadHotels() {
       try {
         setLoading(true);
-
-        // Şimdilik sabit.
-        // Bir sonraki pakette Google Place Details
-        // endpointinden gelecek.
-        const countryCode = "TR";
 
         const discover = await fetch(
           "/api/hotels/discover",
@@ -84,12 +87,10 @@ export default function SearchPage() {
           "/api/hotels/search",
           {
             method: "POST",
-
             headers: {
               "Content-Type":
                 "application/json",
             },
-
             body: JSON.stringify({
               hotelIds,
 
@@ -99,11 +100,13 @@ export default function SearchPage() {
 
               currency: "USD",
 
-              guestNationality: "TR",
+              guestNationality:
+                countryCode,
 
               occupancies: [
                 {
                   adults,
+
                   children: children
                     ? children
                         .split(",")
@@ -119,11 +122,9 @@ export default function SearchPage() {
         const data =
           await response.json();
 
-        setHotels(
-          data.hotels ?? []
-        );
-      } catch (err) {
-        console.error(err);
+        setHotels(data.hotels ?? []);
+      } catch (error) {
+        console.error(error);
 
         setHotels([]);
       } finally {
@@ -131,33 +132,57 @@ export default function SearchPage() {
       }
     }
 
-    loadHotels();
+    if (
+      destination &&
+      checkIn &&
+      checkOut
+    ) {
+      loadHotels();
+    }
   }, [
     destination,
     checkIn,
     checkOut,
     adults,
     children,
+    countryCode,
   ]);
 
   const filteredHotels =
     hotels.filter((hotel) => {
       if (
-        hotel.price > priceRange
+        hotel.price < filters.minPrice
       )
         return false;
 
       if (
-        stars.length &&
-        !stars.includes(
+        hotel.price > filters.maxPrice
+      )
+        return false;
+
+      if (
+        filters.stars.length &&
+        !filters.stars.includes(
           hotel.stars
         )
       )
         return false;
 
       if (
-        freeCancellation &&
+        filters.breakfast &&
+        !hotel.breakfastIncluded
+      )
+        return false;
+
+      if (
+        filters.freeCancellation &&
         !hotel.freeCancellation
+      )
+        return false;
+
+      if (
+        filters.refundable &&
+        !hotel.refundable
       )
         return false;
 
@@ -170,26 +195,13 @@ export default function SearchPage() {
       <div className="grid grid-cols-[280px_1fr] gap-8">
 
         <SearchFilters
-          priceRange={priceRange}
-          setPriceRange={setPriceRange}
-          stars={stars}
-          setStars={setStars}
-          freeCancellation={
-            freeCancellation
-          }
-          setFreeCancellation={
-            setFreeCancellation
-          }
+          filters={filters}
+          onChange={setFilters}
         />
 
         <HotelList
           hotels={filteredHotels}
           loading={loading}
-          checkIn={checkIn}
-          checkOut={checkOut}
-          adults={adults}
-          children={children}
-          rooms={rooms}
         />
 
       </div>
