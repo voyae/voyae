@@ -69,14 +69,18 @@ export default function DestinationField() {
         const places: Destination[] =
           data.suggestions?.map((item: any) => ({
             title:
-              item.placePrediction?.structuredFormat?.mainText
-                ?.text ??
+              item.placePrediction?.structuredFormat?.mainText?.text ??
               item.placePrediction?.text?.text ??
               "",
 
             subtitle:
-              item.placePrediction?.structuredFormat
-                ?.secondaryText?.text ?? "",
+              item.placePrediction?.structuredFormat?.secondaryText?.text ??
+              "",
+
+            placeId:
+              item.placePrediction?.placeId ??
+              item.placePrediction?.place ??
+              "",
 
             types:
               item.placePrediction?.types ?? [],
@@ -88,37 +92,65 @@ export default function DestinationField() {
       } finally {
         setLoading(false);
       }
-    }, 250);
+    }, 300);
 
     return () => clearTimeout(timeout);
   }, [query]);
 
   /* ---------------- Select ---------------- */
 
-  function handleSelect(value: string) {
+  async function handleSelect(value: string) {
     const place = results.find(
       (item) => item.title === value
     );
 
     if (!place) return;
 
-    const destination: SelectedDestination = {
-      name: place.title,
-      fullName: place.subtitle,
-    };
+    try {
+      setLoading(true);
 
-    setSelected(destination);
+      const res = await fetch(
+        `/api/places/details?placeId=${place.placeId}`
+      );
 
-    setSearch((prev) => ({
-      ...prev,
-      destination,
-    }));
+      const details = await res.json();
 
-    setQuery(place.title);
+      if (!details.success) return;
 
-    setOpen(false);
+      const destination: SelectedDestination = {
+        name: details.name,
+        fullName: details.address,
 
-    setResults([]);
+        placeId: details.placeId,
+
+        city: details.city,
+
+        country: details.country,
+
+        countryCode: details.countryCode,
+
+        latitude: details.latitude,
+
+        longitude: details.longitude,
+      };
+
+      setSelected(destination);
+
+      setSearch((prev) => ({
+        ...prev,
+        destination,
+      }));
+
+      setQuery(details.name);
+
+      setOpen(false);
+
+      setResults([]);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (

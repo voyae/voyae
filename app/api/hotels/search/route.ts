@@ -1,21 +1,105 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: Request) {
-  const body = await req.json();
+import { discoverHotelIds } from "@/lib/hotelDiscovery";
+import { getHotelRates } from "@/lib/liteapi";
+import { mapHotels } from "@/lib/hotelMapper";
 
-  const response = await fetch(
-    "https://api-sandbox.nuitee.com/v1.0/search",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-API-Key": process.env.NUITEE_API_KEY!,
-      },
-      body: JSON.stringify(body),
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json();
+
+    const {
+      latitude,
+      longitude,
+
+      checkin,
+      checkout,
+
+      adults = 2,
+      children = [],
+
+      currency = "USD",
+      guestNationality = "TR",
+    } = body;
+
+    if (
+      latitude === undefined ||
+      longitude === undefined
+    ) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "latitude and longitude are required.",
+        },
+        {
+          status: 400,
+        }
+      );
     }
-  );
 
-  const data = await response.json();
+    const hotelIds = await discoverHotelIds(
+      Number(latitude),
+      Number(longitude),
+      15000
+    );
 
-  return NextResponse.json(data);
+    if (!hotelIds.length) {
+      return NextResponse.json({
+        success: true,
+        total: 0,
+        hotels: [],
+      });
+    }
+
+    const response: any = await getHotelRates({
+      hotelIds: hotelIds.slice(0, 200),
+
+      occupancies: [
+        {
+          adults,
+          children,
+        },
+      ],
+
+      guestNationality,
+
+      currency,
+
+      checkin,
+
+      checkout,
+
+      roomMapping: true,
+
+      maxRatesPerHotel: 3,
+    });
+
+    const hotels = mapHotels(
+      response.data ??
+        response.hotels ??
+        response
+    );
+
+    return NextResponse.json({
+      success: true,
+
+      total: hotels.length,
+
+      hotels,
+    });
+  } catch (error: any) {
+    console.error(error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        message:
+          error?.message ??
+          "Internal Server Error",
+      },
+      {
+        status: 500,
+      }
+    );
+  }
 }
