@@ -2,10 +2,21 @@ import { searchHotelsByCity } from "./liteapi";
 
 export interface DiscoveredHotel {
   id: string;
+
   name: string;
+
+  address: string;
+
   city: string;
+
   country: string;
+
+  stars: number;
+
+  image: string;
+
   latitude: number;
+
   longitude: number;
 }
 
@@ -13,21 +24,56 @@ export async function discoverHotels(
   countryCode: string,
   cityName: string
 ): Promise<DiscoveredHotel[]> {
-  const response: any = await searchHotelsByCity(
-    countryCode,
-    cityName
-  );
+  const response: any =
+    await searchHotelsByCity(
+      countryCode,
+      cityName
+    );
 
-  const hotels = response.data ?? response.hotels ?? [];
+  const hotels =
+    response.data ??
+    response.hotels ??
+    [];
 
   return hotels.map((hotel: any) => ({
-    id: hotel.id,
+    id: String(
+      hotel.id ??
+      hotel.hotelId
+    ),
 
-    name: hotel.name ?? "",
+    name:
+      hotel.name ??
+      hotel.hotelName ??
+      "",
 
-    city: hotel.city ?? "",
+    address:
+      hotel.address ??
+      hotel.location?.address ??
+      "",
 
-    country: hotel.country ?? "",
+    city:
+      hotel.city ??
+      hotel.location?.city ??
+      "",
+
+    country:
+      hotel.country ??
+      hotel.location?.country ??
+      "",
+
+    stars: Number(
+      hotel.starRating ??
+      hotel.stars ??
+      hotel.category ??
+      0
+    ),
+
+    image:
+      hotel.main_photo ??
+      hotel.hotelImages?.[0]?.url ??
+      hotel.images?.[0]?.url ??
+      hotel.images?.[0] ??
+      "/hotel-placeholder.jpg",
 
     latitude:
       hotel.location?.latitude ??
@@ -39,16 +85,4 @@ export async function discoverHotels(
       hotel.longitude ??
       0,
   }));
-}
-
-export async function discoverHotelIds(
-  countryCode: string,
-  cityName: string
-): Promise<string[]> {
-  const hotels = await discoverHotels(
-    countryCode,
-    cityName
-  );
-
-  return hotels.map((hotel) => hotel.id);
 }

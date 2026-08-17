@@ -10,13 +10,11 @@ async function request(
     `${API_URL}${endpoint}`,
     {
       ...options,
-
       headers: {
         "Content-Type": "application/json",
         "X-API-Key": API_KEY,
         ...(options?.headers ?? {}),
       },
-
       cache: "no-store",
     }
   );
@@ -24,12 +22,13 @@ async function request(
   const data = await response.json();
 
   if (!response.ok) {
-    console.error(data);
+    console.error("LiteAPI Error:");
+    console.error(JSON.stringify(data, null, 2));
 
     throw new Error(
       data.message ??
-        data.error ??
-        "LiteAPI request failed."
+      data.error ??
+      "LiteAPI request failed."
     );
   }
 
@@ -44,11 +43,17 @@ export async function searchHotelsByCity(
   countryCode: string,
   cityName: string
 ) {
-  return request(
+  const data = await request(
     `/data/hotels?countryCode=${countryCode}&cityName=${encodeURIComponent(
       cityName
     )}`
   );
+
+  console.log("========== DISCOVER ==========");
+  console.log(JSON.stringify(data, null, 2));
+  console.log("==============================");
+
+  return data;
 }
 
 /* =======================================================
@@ -58,9 +63,11 @@ export async function searchHotelsByCity(
 export async function getHotelDetails(
   hotelId: string
 ) {
-  return request(
+  const data = await request(
     `/data/hotel?hotelId=${hotelId}`
   );
+
+  return data;
 }
 
 /* =======================================================
@@ -91,19 +98,25 @@ export interface RateRequest {
 export async function getHotelRates(
   body: RateRequest
 ) {
-  return request("/hotels/rates", {
-    method: "POST",
+  const data = await request(
+    "/hotels/rates",
+    {
+      method: "POST",
+      body: JSON.stringify({
+        ...body,
+        roomMapping:
+          body.roomMapping ?? true,
+        maxRatesPerHotel:
+          body.maxRatesPerHotel ?? 5,
+      }),
+    }
+  );
 
-    body: JSON.stringify({
-      ...body,
+  console.log("========== RATES ==========");
+  console.log(JSON.stringify(data, null, 2));
+  console.log("===========================");
 
-      roomMapping:
-        body.roomMapping ?? true,
-
-      maxRatesPerHotel:
-        body.maxRatesPerHotel ?? 5,
-    }),
-  });
+  return data;
 }
 
 /* =======================================================
@@ -119,10 +132,8 @@ export async function prebookHotel(
 ) {
   return request("/rates/prebook", {
     method: "POST",
-
     body: JSON.stringify({
       offerId: body.offerId,
-
       usePaymentSdk: true,
     }),
   });
@@ -149,35 +160,23 @@ export async function bookHotel(
 ) {
   return request("/book", {
     method: "POST",
-
     body: JSON.stringify({
       holder: {
         firstName: body.firstName,
-
         lastName: body.lastName,
-
         email: body.email,
       },
-
       payment: {
         method: "TRANSACTION_ID",
-
-        transactionId:
-          body.transactionId,
+        transactionId: body.transactionId,
       },
-
       prebookId: body.prebookId,
-
       guests: [
         {
           occupancyNumber: 1,
-
           remarks: "",
-
           firstName: body.firstName,
-
           lastName: body.lastName,
-
           email: body.email,
         },
       ],

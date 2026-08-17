@@ -5,6 +5,10 @@ export interface HotelCard {
   
     image: string;
   
+    roomImage: string;
+  
+    roomName: string;
+  
     address: string;
   
     city: string;
@@ -18,6 +22,8 @@ export interface HotelCard {
     reviewCount: number;
   
     price: number;
+  
+    oldPrice: number;
   
     currency: string;
   
@@ -34,94 +40,42 @@ export interface HotelCard {
   
   export function mapHotels(hotels: any[]): HotelCard[] {
     return hotels.map((hotel: any) => {
-      const rate =
-        hotel.rates?.[0] ??
-        hotel.roomTypes?.[0]?.rates?.[0] ??
-        hotel.rooms?.[0]?.rates?.[0] ??
+      const room =
+        hotel.roomTypes?.[0] ??
+        hotel.rooms?.[0] ??
         {};
   
-      const image =
+      const rate =
+        room.rates?.[0] ??
+        hotel.rates?.[0] ??
+        {};
+  
+      const roomImage =
+        room.images?.[0]?.url ??
+        room.images?.[0] ??
         hotel.hotelImages?.[0]?.url ??
         hotel.images?.[0]?.url ??
-        hotel.images?.[0] ??
         hotel.main_photo ??
         hotel.image ??
         "/hotel-placeholder.jpg";
   
-      const address =
-        hotel.address ??
-        hotel.location?.address ??
-        "";
-  
-      const city =
-        hotel.city ??
-        hotel.location?.city ??
-        "";
-  
-      const country =
-        hotel.country ??
-        hotel.location?.country ??
-        "";
+      const hotelImage =
+        hotel.hotelImages?.[0]?.url ??
+        hotel.images?.[0]?.url ??
+        hotel.images?.[0] ??
+        roomImage;
   
       const rawPrice =
-  rate.retailRate ??
-  rate.sellingRate ??
-  rate.price ??
-  rate.net ??
-  rate.amount ??
-  hotel.minRate ??
-  hotel.minPrice;
-
-const price =
-  rawPrice == null
-    ? 0
-    : Number(rawPrice);
+        rate.retailRate ??
+        rate.sellingRate ??
+        rate.price ??
+        rate.net ??
+        rate.amount ??
+        hotel.minRate ??
+        hotel.minPrice ??
+        0;
   
-      const currency =
-        rate.currency ??
-        hotel.currency ??
-        "USD";
-  
-      const stars =
-        Number(
-          hotel.starRating ??
-          hotel.stars ??
-          hotel.category ??
-          0
-        );
-  
-      const rating =
-        Number(
-          hotel.rating ??
-          hotel.reviewScore ??
-          hotel.review_rating ??
-          0
-        );
-  
-      const reviewCount =
-        Number(
-          hotel.reviewCount ??
-          hotel.reviews ??
-          hotel.review_count ??
-          0
-        );
-  
-      const breakfastIncluded =
-        String(
-          rate.boardType ??
-          rate.mealPlan ??
-          ""
-        )
-          .toLowerCase()
-          .includes("breakfast");
-  
-      const refundable =
-        rate.cancellationPolicies?.refundableTag === "RFN" ||
-        rate.refundable === true;
-  
-      const freeCancellation =
-        refundable ||
-        Boolean(rate.freeCancellation);
+      const price = Number(rawPrice) || 0;
   
       return {
         id: String(hotel.id),
@@ -131,23 +85,63 @@ const price =
           hotel.hotelName ??
           "Unknown Hotel",
   
-        image,
+        image: hotelImage,
   
-        address,
+        roomImage,
   
-        city,
+        roomName:
+          room.name ??
+          room.roomName ??
+          room.description ??
+          "Standard Room",
   
-        country,
+        address:
+          hotel.address ??
+          hotel.location?.address ??
+          "",
   
-        stars,
+        city:
+          hotel.city ??
+          hotel.location?.city ??
+          "",
   
-        rating,
+        country:
+          hotel.country ??
+          hotel.location?.country ??
+          "",
   
-        reviewCount,
+        stars: Number(
+          hotel.starRating ??
+          hotel.stars ??
+          hotel.category ??
+          0
+        ),
+  
+        rating: Number(
+          hotel.rating ??
+          hotel.reviewScore ??
+          hotel.review_rating ??
+          0
+        ),
+  
+        reviewCount: Number(
+          hotel.reviewCount ??
+          hotel.review_count ??
+          hotel.reviews ??
+          0
+        ),
   
         price,
   
-        currency,
+        oldPrice:
+          price > 0
+            ? Math.round(price * 1.18)
+            : 0,
+  
+        currency:
+          rate.currency ??
+          hotel.currency ??
+          "USD",
   
         latitude:
           hotel.location?.latitude ??
@@ -159,11 +153,24 @@ const price =
           hotel.longitude ??
           0,
   
-        breakfastIncluded,
+        breakfastIncluded:
+          String(
+            rate.boardType ??
+            rate.mealPlan ??
+            ""
+          )
+            .toLowerCase()
+            .includes("breakfast"),
   
-        freeCancellation,
+        refundable:
+          rate.cancellationPolicies?.refundableTag ===
+            "RFN" ||
+          rate.refundable === true,
   
-        refundable,
+        freeCancellation:
+          rate.cancellationPolicies?.refundableTag ===
+            "RFN" ||
+          rate.freeCancellation === true,
       };
     });
   }

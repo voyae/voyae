@@ -1,33 +1,49 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { discoverHotelIds } from "@/lib/hotelDiscovery";
+import {
+  discoverHotels,
+} from "@/lib/hotelDiscovery";
 
 export async function POST(req: NextRequest) {
   try {
-    const { countryCode, city } = await req.json();
+    const body = await req.json();
+
+    const {
+      countryCode,
+      city,
+    } = body;
 
     if (!countryCode || !city) {
       return NextResponse.json(
         {
           success: false,
-          message: "countryCode and city are required.",
+          message:
+            "countryCode and city are required.",
         },
-        { status: 400 }
+        {
+          status: 400,
+        }
       );
     }
 
-    const hotelIds = await discoverHotelIds(
-      countryCode,
-      city
-    );
+    const hotels =
+      await discoverHotels(
+        countryCode,
+        city
+      );
 
     return NextResponse.json({
       success: true,
-      total: hotelIds.length,
-      hotelIds,
+
+      total: hotels.length,
+
+      hotels,
     });
   } catch (error: any) {
-    console.error(error);
+    console.error(
+      "Hotel Discover Error",
+      error
+    );
 
     return NextResponse.json(
       {
