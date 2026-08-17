@@ -15,127 +15,148 @@ import { HotelCard as Hotel } from "@/lib/hotelMapper";
 
 interface Props {
   hotel: Hotel;
-  checkIn: string;
-  checkOut: string;
+
+  checkIn?: string;
+
+  checkOut?: string;
+
   adults?: number;
-  children: string;
+
+  children?: string;
+
   rooms?: number;
 }
 
 export default function HotelCard({
   hotel,
-  checkIn,
-  checkOut,
-  adults = 1,
-  children,
-  rooms = 1,
 }: Props) {
-  const params = new URLSearchParams({
-    checkIn: checkIn ?? "",
-    checkOut: checkOut ?? "",
-    adults: String(adults ?? 1),
-    children: children ?? "",
-    rooms: String(rooms ?? 1),
-  });
-
   return (
     <article
       className="
       overflow-hidden
-      rounded-3xl
+
+      rounded-2xl
+
       border
       border-neutral-200
+
       bg-white
+
       shadow-sm
-      transition-all
-      duration-300
-      hover:-translate-y-1
-      hover:shadow-xl
+
+      transition
+
+      hover:shadow-lg
       "
     >
-      <div className="grid md:grid-cols-[360px_1fr]">
+      <div className="grid md:grid-cols-[300px_1fr]">
 
         {/* IMAGE */}
 
-        <div className="relative h-[280px]">
+        <div className="relative h-[230px]">
 
           <Image
             src={hotel.image}
             alt={hotel.name}
             fill
             className="object-cover"
+            unoptimized
           />
 
           <button
             className="
             absolute
-            right-5
-            top-5
+            right-4
+            top-4
+
             flex
-            h-11
-            w-11
+            h-10
+            w-10
+
             items-center
             justify-center
+
             rounded-full
+
             bg-white/90
+
             backdrop-blur
-            transition
-            hover:scale-110
             "
           >
-            <Heart size={20} />
+            <Heart size={18} />
           </button>
 
         </div>
 
         {/* CONTENT */}
 
-        <div className="flex flex-col justify-between p-8">
+        <div className="flex flex-col justify-between p-6">
 
           <div>
+
+            {/* Stars */}
 
             <div className="flex gap-1">
 
               {Array.from({
                 length: hotel.stars,
-              }).map((_, i) => (
+              }).map((_, index) => (
                 <Star
-                  key={i}
-                  size={16}
+                  key={index}
+                  size={15}
                   className="fill-yellow-400 text-yellow-400"
                 />
               ))}
 
             </div>
 
-            <h2 className="mt-3 text-3xl font-bold">
+            {/* Hotel Name */}
+
+            <h2 className="mt-2 text-2xl font-bold">
               {hotel.name}
             </h2>
 
-            <div className="mt-3 flex items-center gap-2 text-neutral-500">
+            {/* Address */}
 
-              <MapPin size={16} />
+            <div className="mt-2 flex items-center gap-2 text-sm text-neutral-500">
+
+              <MapPin size={15} />
 
               <span>
                 {hotel.address}
+
                 {hotel.city && (
                   <>
-                    , {hotel.city}
+                    {" "}
+                    • {hotel.city}
+                  </>
+                )}
+
+                {hotel.country && (
+                  <>
+                    {" "}
+                    • {hotel.country}
                   </>
                 )}
               </span>
 
             </div>
 
-            <div className="mt-6 flex items-center gap-5">
+            {/* Rating */}
+
+            <div className="mt-5 flex items-center gap-4">
 
               <div
                 className="
-                rounded-xl
+                rounded-lg
+
                 bg-emerald-700
+
                 px-3
                 py-2
+
                 font-bold
+
                 text-white
                 "
               >
@@ -156,7 +177,9 @@ export default function HotelCard({
 
             </div>
 
-            <div className="mt-8 flex flex-wrap gap-3">
+            {/* Badges */}
+
+            <div className="mt-5 flex flex-wrap gap-2">
 
               {hotel.breakfastIncluded && (
                 <div
@@ -164,16 +187,22 @@ export default function HotelCard({
                   flex
                   items-center
                   gap-2
-                  rounded-xl
+
+                  rounded-lg
+
                   bg-green-50
-                  px-4
+
+                  px-3
                   py-2
+
                   text-sm
+
                   text-green-700
                   "
                 >
-                  <Coffee size={16} />
-                  Breakfast Included
+                  <Coffee size={15} />
+
+                  Breakfast
                 </div>
               )}
 
@@ -183,15 +212,21 @@ export default function HotelCard({
                   flex
                   items-center
                   gap-2
-                  rounded-xl
+
+                  rounded-lg
+
                   bg-blue-50
-                  px-4
+
+                  px-3
                   py-2
+
                   text-sm
+
                   text-blue-700
                   "
                 >
-                  <ShieldCheck size={16} />
+                  <ShieldCheck size={15} />
+
                   Free Cancellation
                 </div>
               )}
@@ -199,11 +234,15 @@ export default function HotelCard({
               {hotel.refundable && (
                 <div
                   className="
-                  rounded-xl
+                  rounded-lg
+
                   bg-emerald-50
-                  px-4
+
+                  px-3
                   py-2
+
                   text-sm
+
                   text-emerald-700
                   "
                 >
@@ -215,14 +254,21 @@ export default function HotelCard({
 
           </div>
 
+          {/* Footer */}
+
           <div
             className="
-            mt-10
+            mt-6
+
             flex
+
             items-end
+
             justify-between
+
             border-t
-            pt-6
+
+            pt-5
             "
           >
 
@@ -232,10 +278,19 @@ export default function HotelCard({
                 Starting from
               </p>
 
-              <div className="mt-2 flex items-end gap-2">
+              <div className="mt-1 flex items-end gap-2">
 
-                <span className="text-4xl font-bold">
-                  {hotel.currency} {hotel.price.toFixed(0)}
+                <span className="text-3xl font-bold">
+
+                {hotel.price != null ? (
+  <>
+    {hotel.currency}{" "}
+    {Number(hotel.price).toFixed(0)}
+  </>
+) : (
+  "Price unavailable"
+)}
+
                 </span>
 
                 <span className="pb-1 text-neutral-500">
@@ -247,15 +302,21 @@ export default function HotelCard({
             </div>
 
             <Link
-              href={`/hotel/${hotel.id}?${params.toString()}`}
+              href={`/hotel/${hotel.id}`}
               className="
-              rounded-2xl
+              rounded-xl
+
               bg-emerald-700
-              px-8
-              py-4
+
+              px-6
+              py-3
+
               font-semibold
+
               text-white
+
               transition
+
               hover:bg-emerald-800
               "
             >
@@ -267,7 +328,6 @@ export default function HotelCard({
         </div>
 
       </div>
-
     </article>
   );
 }

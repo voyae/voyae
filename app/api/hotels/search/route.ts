@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { getHotelRates } from "@/lib/liteapi";
+import {
+  getHotelDetails,
+  getHotelRates,
+} from "@/lib/liteapi";
+
 import { mapHotels } from "@/lib/hotelMapper";
 
 export async function POST(req: NextRequest) {
@@ -16,7 +20,10 @@ export async function POST(req: NextRequest) {
       currency,
     } = body;
 
-    if (!hotelIds?.length) {
+    if (
+      !Array.isArray(hotelIds) ||
+      hotelIds.length === 0
+    ) {
       return NextResponse.json(
         {
           success: false,
@@ -28,22 +35,100 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const response = await getHotelRates({
-      hotelIds,
-      checkin,
-      checkout,
-      occupancies,
-      guestNationality,
-      currency,
-      roomMapping: true,
-      maxRatesPerHotel: 5,
-    });
+    /* -------------------------------
+       HOTEL RATES
+    -------------------------------- */
 
-    const hotels = mapHotels(
-      response.data ??
-        response.hotels ??
-        []
-    );
+    const ratesResponse =
+      await getHotelRates({
+        hotelIds,
+        checkin,
+        checkout,
+        occupancies,
+        guestNationality,
+        currency,
+        roomMapping: true,
+        maxRatesPerHotel: 5,
+      });
+
+    const rateHotels =
+      ratesResponse.data ??
+      ratesResponse.hotels ??
+      [];
+
+    /* -------------------------------
+       HOTEL DETAILS
+    -------------------------------- */
+
+    const detailHotels =
+      await Promise.all(
+        hotelIds.map(
+          async (hotelId: string) => {
+            try {
+              const response =
+                await getHotelDetails(
+                  hotelId
+                );
+
+              return (
+                response.data ??
+                response.hotel ??
+                response
+              );
+            } catch (err) {
+              console.error(
+                "Hotel detail failed:",
+                hotelId
+              );
+
+              return null;
+            }
+          }
+        )
+      );
+
+    /* -------------------------------
+       MERGE
+    -------------------------------- */
+
+    const merged = detailHotels
+      .filter(Boolean)
+      .map((detail: any) => {
+        const hotelId =
+          detail.id ??
+          detail.hotelId;
+
+        const rate =
+          rateHotels.find(
+            (item: any) =>
+              item.id === hotelId ||
+              item.hotelId ===
+                hotelId
+          ) ?? {};
+
+        return {
+          ...detail,
+
+          rates:
+            rate.rates ??
+            [],
+
+          roomTypes:
+            rate.roomTypes ??
+            [],
+
+          rooms:
+            rate.rooms ??
+            [],
+        };
+      });
+
+    /* -------------------------------
+       MAP
+    -------------------------------- */
+
+    const hotels =
+      mapHotels(merged);
 
     return NextResponse.json({
       success: true,
@@ -51,14 +136,17 @@ export async function POST(req: NextRequest) {
       hotels,
     });
   } catch (error: any) {
-    console.error(error);
+    console.error(
+      "Hotel Search Error",
+      error
+    );
 
     return NextResponse.json(
       {
         success: false,
         message:
           error.message ??
-          "Internal Server Error",
+          "Internal server error",
       },
       {
         status: 500,

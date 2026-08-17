@@ -30,85 +30,124 @@ export interface HotelCard {
     freeCancellation: boolean;
   
     refundable: boolean;
-  
-    offerId?: string;
-  
-    roomId?: string;
-  
-    boardName?: string;
-  
-    rateType?: string;
-  
-    cancellationPolicies?: any[];
-  
-    raw?: any;
   }
   
-  export function mapHotels(
-    hotels: any[]
-  ): HotelCard[] {
+  export function mapHotels(hotels: any[]): HotelCard[] {
     return hotels.map((hotel: any) => {
-      const room =
-        hotel.roomTypes?.[0] ??
-        hotel.rooms?.[0] ??
+      const rate =
+        hotel.rates?.[0] ??
+        hotel.roomTypes?.[0]?.rates?.[0] ??
+        hotel.rooms?.[0]?.rates?.[0] ??
         {};
   
-      const rate =
-        room.rates?.[0] ??
-        hotel.rates?.[0] ??
-        {};
+      const image =
+        hotel.hotelImages?.[0]?.url ??
+        hotel.images?.[0]?.url ??
+        hotel.images?.[0] ??
+        hotel.main_photo ??
+        hotel.image ??
+        "/hotel-placeholder.jpg";
+  
+      const address =
+        hotel.address ??
+        hotel.location?.address ??
+        "";
+  
+      const city =
+        hotel.city ??
+        hotel.location?.city ??
+        "";
+  
+      const country =
+        hotel.country ??
+        hotel.location?.country ??
+        "";
+  
+      const rawPrice =
+  rate.retailRate ??
+  rate.sellingRate ??
+  rate.price ??
+  rate.net ??
+  rate.amount ??
+  hotel.minRate ??
+  hotel.minPrice;
+
+const price =
+  rawPrice == null
+    ? 0
+    : Number(rawPrice);
+  
+      const currency =
+        rate.currency ??
+        hotel.currency ??
+        "USD";
+  
+      const stars =
+        Number(
+          hotel.starRating ??
+          hotel.stars ??
+          hotel.category ??
+          0
+        );
+  
+      const rating =
+        Number(
+          hotel.rating ??
+          hotel.reviewScore ??
+          hotel.review_rating ??
+          0
+        );
+  
+      const reviewCount =
+        Number(
+          hotel.reviewCount ??
+          hotel.reviews ??
+          hotel.review_count ??
+          0
+        );
+  
+      const breakfastIncluded =
+        String(
+          rate.boardType ??
+          rate.mealPlan ??
+          ""
+        )
+          .toLowerCase()
+          .includes("breakfast");
+  
+      const refundable =
+        rate.cancellationPolicies?.refundableTag === "RFN" ||
+        rate.refundable === true;
+  
+      const freeCancellation =
+        refundable ||
+        Boolean(rate.freeCancellation);
   
       return {
-        id:
-  hotel.id ??
-  hotel.hotelId ??
-  hotel.hotelID ??
-  crypto.randomUUID(),
+        id: String(hotel.id),
   
         name:
           hotel.name ??
+          hotel.hotelName ??
           "Unknown Hotel",
   
-        image:
-          hotel.hotelImages?.[0]?.url ??
-          hotel.main_photo ??
-          hotel.image ??
-          "/hotel-placeholder.jpg",
+        image,
   
-        address:
-          hotel.address ?? "",
+        address,
   
-        city:
-          hotel.city ?? "",
+        city,
   
-        country:
-          hotel.country ?? "",
+        country,
   
-        stars:
-          hotel.starRating ??
-          hotel.stars ??
-          0,
+        stars,
   
-        rating:
-          hotel.rating ?? 0,
+        rating,
   
-        reviewCount:
-          hotel.reviewCount ?? 0,
+        reviewCount,
   
-        price:
-          Number(
-            rate.retailRate?.total?.[0]
-              ?.amount ??
-              rate.price ??
-              rate.sellingRate ??
-              0
-          ),
+        price,
   
-        currency:
-          rate.retailRate?.total?.[0]
-            ?.currency ??
-          rate.currency ??
-          "USD",
+        currency,
   
         latitude:
           hotel.location?.latitude ??
@@ -120,45 +159,11 @@ export interface HotelCard {
           hotel.longitude ??
           0,
   
-        breakfastIncluded:
-          (
-            rate.boardName ??
-            ""
-          )
-            .toLowerCase()
-            .includes("breakfast"),
+        breakfastIncluded,
   
-        freeCancellation:
-          rate.cancellationPolicies
-            ?.refundableTag === "RFN",
+        freeCancellation,
   
-        refundable:
-          rate.cancellationPolicies
-            ?.refundableTag === "RFN",
-  
-        offerId:
-          rate.offerId ??
-          rate.id,
-  
-        roomId:
-          room.roomId ??
-          room.id,
-  
-        boardName:
-          rate.boardName ??
-          rate.boardType ??
-          "",
-  
-        rateType:
-          rate.rateType ??
-          "",
-  
-        cancellationPolicies:
-          rate.cancellationPolicies
-            ?.cancelPolicyInfos ??
-          [],
-  
-        raw: hotel,
+        refundable,
       };
     });
   }
