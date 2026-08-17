@@ -8,19 +8,19 @@ import SearchFilters, {
   SearchFiltersState,
 } from "@/components/search/SearchFilters";
 
-import { HotelCard as Hotel } from "@/lib/hotelMapper";
+import { HotelCard } from "@/lib/hotelMapper";
 
 export default function SearchPage() {
   const params = useSearchParams();
 
   const [loading, setLoading] = useState(true);
 
-  const [hotels, setHotels] = useState<Hotel[]>([]);
+  const [hotels, setHotels] = useState<HotelCard[]>([]);
 
   const [filters, setFilters] =
     useState<SearchFiltersState>({
       minPrice: 0,
-      maxPrice: 5000,
+      maxPrice: 10000,
       stars: [],
       breakfast: false,
       freeCancellation: false,
@@ -28,7 +28,7 @@ export default function SearchPage() {
     });
 
   useEffect(() => {
-    async function loadHotels() {
+    async function searchHotels() {
       try {
         setLoading(true);
 
@@ -43,13 +43,10 @@ export default function SearchPage() {
             },
 
             body: JSON.stringify({
-              latitude: Number(
-                params.get("lat")
-              ),
+              city: params.get("destination"),
 
-              longitude: Number(
-                params.get("lng")
-              ),
+              countryCode:
+                params.get("countryCode"),
 
               checkin:
                 params.get("checkIn"),
@@ -58,23 +55,8 @@ export default function SearchPage() {
                 params.get("checkOut"),
 
               adults: Number(
-                params.get("adults") ??
-                  2
+                params.get("adults") ?? 2
               ),
-
-              children:
-                params
-                  .get("children")
-                  ?.split(",")
-
-                  .filter(Boolean)
-
-                  .map(Number) ?? [],
-
-              currency: "USD",
-
-              guestNationality:
-                "TR",
             }),
           }
         );
@@ -82,9 +64,15 @@ export default function SearchPage() {
         const data =
           await response.json();
 
-        setHotels(data.hotels ?? []);
-      } catch (err) {
-        console.error(err);
+        if (data.success) {
+          setHotels(data.hotels);
+        } else {
+          console.error(data.message);
+
+          setHotels([]);
+        }
+      } catch (error) {
+        console.error(error);
 
         setHotels([]);
       } finally {
@@ -92,29 +80,37 @@ export default function SearchPage() {
       }
     }
 
-    loadHotels();
+    searchHotels();
   }, [params]);
 
   const filteredHotels =
     useMemo(() => {
       return hotels.filter(
-        (hotel) => {
+        (hotel: any) => {
+          const price =
+            hotel.price ?? 0;
+
+          const stars =
+            hotel.stars ??
+            hotel.starRating ??
+            0;
+
           if (
-            hotel.price <
+            price <
             filters.minPrice
           )
             return false;
 
           if (
-            hotel.price >
+            price >
             filters.maxPrice
           )
             return false;
 
           if (
-            filters.stars.length &&
+            filters.stars.length > 0 &&
             !filters.stars.includes(
-              hotel.stars
+              stars
             )
           )
             return false;
@@ -146,14 +142,13 @@ export default function SearchPage() {
     <main className="mx-auto max-w-7xl px-6 py-10">
       <div className="mb-8">
         <h1 className="text-4xl font-bold">
-          {filteredHotels.length} Hotels
-          Found
+          {loading
+            ? "Searching hotels..."
+            : `${filteredHotels.length} Hotels Found`}
         </h1>
 
         <p className="mt-2 text-neutral-500">
-          {params.get(
-            "destination"
-          ) || "Destination"}
+          {params.get("destination")}
         </p>
       </div>
 

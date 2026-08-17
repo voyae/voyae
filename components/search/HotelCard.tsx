@@ -2,13 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
+
 import {
   Star,
   MapPin,
-  Heart,
   Coffee,
-  BadgeCheck,
-  ChevronRight,
+  ShieldCheck,
+  Heart,
 } from "lucide-react";
 
 import { HotelCard as Hotel } from "@/lib/hotelMapper";
@@ -17,14 +17,36 @@ interface Props {
   hotel: Hotel;
 }
 
-export default function HotelCard({
-  hotel,
-}: Props) {
+export default function HotelCard({ hotel }: Props) {
   return (
-    <article className="overflow-hidden rounded-3xl border border-neutral-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl">
-      <div className="grid md:grid-cols-[320px_1fr_220px]">
-        {/* Image */}
-        <div className="relative h-[260px] md:h-full">
+    <article
+      className="
+      overflow-hidden
+
+      rounded-3xl
+
+      border
+      border-neutral-200
+
+      bg-white
+
+      shadow-sm
+
+      transition-all
+
+      duration-300
+
+      hover:-translate-y-1
+
+      hover:shadow-xl
+      "
+    >
+      <div className="grid md:grid-cols-[360px_1fr]">
+
+        {/* IMAGE */}
+
+        <div className="relative h-[280px]">
+
           <Image
             src={hotel.image}
             alt={hotel.name}
@@ -35,19 +57,24 @@ export default function HotelCard({
           <button
             className="
             absolute
-            right-4
-            top-4
+
+            right-5
+            top-5
 
             flex
+
             h-11
             w-11
+
             items-center
             justify-center
 
             rounded-full
+
             bg-white/90
 
             backdrop-blur
+
             transition
 
             hover:scale-110
@@ -55,120 +82,233 @@ export default function HotelCard({
           >
             <Heart size={20} />
           </button>
+
         </div>
 
-        {/* Center */}
-        <div className="flex flex-col p-6">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <h2 className="text-2xl font-bold text-neutral-900">
-                {hotel.name}
-              </h2>
+        {/* CONTENT */}
 
-              <div className="mt-2 flex items-center gap-1">
-                {Array.from({
-                  length: hotel.stars,
-                }).map((_, index) => (
-                  <Star
-                    key={index}
-                    size={16}
-                    className="fill-yellow-400 text-yellow-400"
-                  />
-                ))}
+        <div className="flex flex-col justify-between p-8">
+
+          <div>
+
+            <div className="flex gap-1">
+
+              {Array.from({
+                length: hotel.stars,
+              }).map((_, i) => (
+                <Star
+                  key={i}
+                  size={16}
+                  className="fill-yellow-400 text-yellow-400"
+                />
+              ))}
+
+            </div>
+
+            <h2 className="mt-3 text-3xl font-bold">
+              {hotel.name}
+            </h2>
+
+            <div className="mt-3 flex items-center gap-2 text-neutral-500">
+
+              <MapPin size={16} />
+
+              <span>
+
+                {hotel.address}
+
+                {hotel.city && (
+                  <>
+                    , {hotel.city}
+                  </>
+                )}
+
+              </span>
+
+            </div>
+
+            <div className="mt-6 flex items-center gap-5">
+
+              <div
+                className="
+                rounded-xl
+
+                bg-emerald-700
+
+                px-3
+
+                py-2
+
+                text-white
+
+                font-bold
+                "
+              >
+                {hotel.rating.toFixed(1)}
               </div>
+
+              <div>
+
+                <p className="font-semibold">
+                  Guest Rating
+                </p>
+
+                <p className="text-sm text-neutral-500">
+                  {hotel.reviewCount.toLocaleString()} reviews
+                </p>
+
+              </div>
+
             </div>
 
-            <div className="rounded-xl bg-emerald-600 px-3 py-2 text-white">
-              <p className="text-lg font-bold">
-                {hotel.reviewScore.toFixed(1)}
-              </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+
+              {hotel.breakfastIncluded && (
+                <div
+                  className="
+                  flex
+                  items-center
+                  gap-2
+
+                  rounded-xl
+
+                  bg-green-50
+
+                  px-4
+
+                  py-2
+
+                  text-sm
+
+                  text-green-700
+                  "
+                >
+                  <Coffee size={16} />
+
+                  Breakfast Included
+                </div>
+              )}
+
+              {hotel.freeCancellation && (
+                <div
+                  className="
+                  flex
+                  items-center
+                  gap-2
+
+                  rounded-xl
+
+                  bg-blue-50
+
+                  px-4
+
+                  py-2
+
+                  text-sm
+
+                  text-blue-700
+                  "
+                >
+                  <ShieldCheck size={16} />
+
+                  Free Cancellation
+                </div>
+              )}
+
+              {hotel.refundable && (
+                <div
+                  className="
+                  rounded-xl
+
+                  bg-emerald-50
+
+                  px-4
+
+                  py-2
+
+                  text-sm
+
+                  text-emerald-700
+                  "
+                >
+                  Refundable
+                </div>
+              )}
+
             </div>
+
           </div>
 
-          <div className="mt-4 flex items-center gap-2 text-neutral-500">
-            <MapPin size={18} />
-
-            <span>
-              {hotel.address}, {hotel.city}
-            </span>
-          </div>
-
-          <div className="mt-6 flex flex-wrap gap-3">
-            {hotel.breakfastIncluded && (
-              <span className="flex items-center gap-2 rounded-full bg-amber-100 px-4 py-2 text-sm font-semibold text-amber-700">
-                <Coffee size={16} />
-                Breakfast Included
-              </span>
-            )}
-
-            {hotel.freeCancellation && (
-              <span className="flex items-center gap-2 rounded-full bg-emerald-100 px-4 py-2 text-sm font-semibold text-emerald-700">
-                <BadgeCheck size={16} />
-                Free Cancellation
-              </span>
-            )}
-
-            {hotel.refundable && (
-              <span className="rounded-full bg-blue-100 px-4 py-2 text-sm font-semibold text-blue-700">
-                Refundable
-              </span>
-            )}
-          </div>
-
-          <div className="mt-auto pt-6">
-            <p className="text-sm text-neutral-500">
-              {hotel.reviewCount.toLocaleString()} verified reviews
-            </p>
-          </div>
-        </div>
-
-        {/* Price */}
-        <div className="flex flex-col justify-between border-l border-neutral-200 bg-neutral-50 p-6">
-          <div className="text-right">
-            <p className="text-sm text-neutral-500">
-              Starting from
-            </p>
-
-            <p className="mt-2 text-4xl font-black text-neutral-900">
-              {hotel.currency} {hotel.price}
-            </p>
-
-            <p className="mt-1 text-sm text-neutral-500">
-              per stay
-            </p>
-          </div>
-
-          <Link
-            href={`/hotel/${hotel.id}`}
+          <div
             className="
-            mt-8
+            mt-10
 
             flex
-            items-center
-            justify-center
-            gap-2
 
-            rounded-2xl
+            items-end
 
-            bg-emerald-700
+            justify-between
 
-            py-4
+            border-t
 
-            text-lg
-            font-semibold
-            text-white
-
-            transition
-
-            hover:bg-emerald-800
+            pt-6
             "
           >
-            See availability
+            <div>
 
-            <ChevronRight size={20} />
-          </Link>
+              <p className="text-sm text-neutral-500">
+                Starting from
+              </p>
+
+              <div className="mt-2 flex items-end gap-2">
+
+                <span className="text-4xl font-bold">
+
+                  {hotel.currency}
+
+                  {" "}
+
+                  {hotel.price.toFixed(0)}
+
+                </span>
+
+                <span className="pb-1 text-neutral-500">
+                  / night
+                </span>
+
+              </div>
+
+            </div>
+
+            <Link
+              href={`/hotel/${hotel.id}`}
+              className="
+              rounded-2xl
+
+              bg-emerald-700
+
+              px-8
+
+              py-4
+
+              font-semibold
+
+              text-white
+
+              transition
+
+              hover:bg-emerald-800
+              "
+            >
+              View Hotel
+            </Link>
+
+          </div>
+
         </div>
+
       </div>
+
     </article>
   );
 }

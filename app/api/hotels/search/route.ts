@@ -6,30 +6,21 @@ import { mapHotels } from "@/lib/hotelMapper";
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-
     const {
-      latitude,
-      longitude,
-
+      city,
+      countryCode,
       checkin,
       checkout,
-
-      adults = 2,
-      children = [],
-
+      adults,
       currency = "USD",
       guestNationality = "TR",
-    } = body;
+    } = await req.json();
 
-    if (
-      latitude === undefined ||
-      longitude === undefined
-    ) {
+    if (!city || !countryCode) {
       return NextResponse.json(
         {
           success: false,
-          message: "latitude and longitude are required.",
+          message: "city and countryCode are required.",
         },
         {
           status: 400,
@@ -37,13 +28,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    /* --------------------------------------------------
+       STEP 1
+       Discover Hotel IDs
+    ---------------------------------------------------*/
+
     const hotelIds = await discoverHotelIds(
-      Number(latitude),
-      Number(longitude),
-      15000
+      countryCode,
+      city
     );
 
-    if (!hotelIds.length) {
+    if (hotelIds.length === 0) {
       return NextResponse.json({
         success: true,
         total: 0,
@@ -51,13 +46,17 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const response: any = await getHotelRates({
-      hotelIds: hotelIds.slice(0, 200),
+    /* --------------------------------------------------
+       STEP 2
+       Search Rates
+    ---------------------------------------------------*/
+
+    const rates = await getHotelRates({
+      hotelIds,
 
       occupancies: [
         {
-          adults,
-          children,
+          adults: adults ?? 2,
         },
       ],
 
@@ -71,13 +70,18 @@ export async function POST(req: NextRequest) {
 
       roomMapping: true,
 
-      maxRatesPerHotel: 3,
+      maxRatesPerHotel: 5,
     });
 
+    /* --------------------------------------------------
+       STEP 3
+       Normalize
+    ---------------------------------------------------*/
+
     const hotels = mapHotels(
-      response.data ??
-        response.hotels ??
-        response
+      rates.data ??
+      rates.hotels ??
+      []
     );
 
     return NextResponse.json({
@@ -87,12 +91,14 @@ export async function POST(req: NextRequest) {
 
       hotels,
     });
+
   } catch (error: any) {
     console.error(error);
 
     return NextResponse.json(
       {
         success: false,
+
         message:
           error?.message ??
           "Internal Server Error",

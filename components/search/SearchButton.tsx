@@ -5,12 +5,15 @@ import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { format } from "date-fns";
 
-import { useSearch } from "@/hooks/useSearch";
-
 interface Props {
   destination: {
     name: string;
     fullName: string;
+
+    latitude: number;
+    longitude: number;
+
+    countryCode: string;
   } | null;
 
   checkIn?: Date;
@@ -33,11 +36,9 @@ export default function SearchButton({
 }: Props) {
   const router = useRouter();
 
-  const { search } = useSearch();
-
   const [loading, setLoading] = useState(false);
 
-  async function handleSearch() {
+  function handleSearch() {
     if (!destination) {
       alert("Please select a destination.");
       return;
@@ -55,6 +56,21 @@ export default function SearchButton({
     params.set("destination", destination.name);
 
     params.set("fullName", destination.fullName);
+
+    params.set(
+      "lat",
+      destination.latitude.toString()
+    );
+
+    params.set(
+      "lng",
+      destination.longitude.toString()
+    );
+
+    params.set(
+      "countryCode",
+      destination.countryCode
+    );
 
     params.set(
       "checkIn",
@@ -91,47 +107,40 @@ export default function SearchButton({
 
   return (
     <div className="flex items-center p-2">
-
       <button
         type="button"
         onClick={handleSearch}
         disabled={loading}
         className="
-        flex
-        h-[72px]
-        w-full
-        items-center
-        justify-center
-        gap-3
-
-        rounded-2xl
-
-        bg-emerald-700
-
-        text-lg
-        font-semibold
-        text-white
-
-        transition-all
-        duration-300
-
-        hover:scale-[1.02]
-        hover:bg-emerald-800
-
-        disabled:cursor-not-allowed
-        disabled:opacity-70
+          flex
+          h-[72px]
+          w-full
+          items-center
+          justify-center
+          gap-3
+          rounded-2xl
+          bg-emerald-700
+          text-lg
+          font-semibold
+          text-white
+          transition-all
+          duration-300
+          hover:scale-[1.02]
+          hover:bg-emerald-800
+          disabled:cursor-not-allowed
+          disabled:opacity-70
         "
       >
         {loading ? (
           <div
             className="
-            h-5
-            w-5
-            animate-spin
-            rounded-full
-            border-2
-            border-white/40
-            border-t-white
+              h-5
+              w-5
+              animate-spin
+              rounded-full
+              border-2
+              border-white/40
+              border-t-white
             "
           />
         ) : (
@@ -141,7 +150,6 @@ export default function SearchButton({
           </>
         )}
       </button>
-
     </div>
   );
 }

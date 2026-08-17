@@ -3,6 +3,8 @@ export interface HotelCard {
   
     name: string;
   
+    image: string;
+  
     address: string;
   
     city: string;
@@ -11,114 +13,97 @@ export interface HotelCard {
   
     stars: number;
   
-    reviewScore: number;
+    rating: number;
   
     reviewCount: number;
-  
-    image: string;
-  
-    images: string[];
-  
-    latitude: number;
-  
-    longitude: number;
   
     price: number;
   
     currency: string;
   
-    freeCancellation: boolean;
+    latitude: number;
+  
+    longitude: number;
   
     breakfastIncluded: boolean;
   
+    freeCancellation: boolean;
+  
     refundable: boolean;
-  
-    roomType: string;
-  
-    provider: string;
   }
   
-  export function mapHotel(rate: any): HotelCard {
-    const hotel = rate.hotel ?? {};
-    const room = rate.rooms?.[0] ?? {};
-    const offer = room.rates?.[0] ?? {};
+  export function mapHotels(hotels: any[]): HotelCard[] {
+    return hotels.map((hotel: any) => {
+      const rate =
+        hotel.rates?.[0] ??
+        hotel.rooms?.[0]?.rates?.[0] ??
+        hotel.roomTypes?.[0]?.rates?.[0] ??
+        {};
   
-    return {
-      id: hotel.hotelId ?? hotel.id ?? "",
+      return {
+        id: hotel.id,
   
-      name: hotel.name ?? "",
+        name: hotel.name ?? "Unknown Hotel",
   
-      address: hotel.address ?? "",
+        image:
+          hotel.hotelImages?.[0]?.url ??
+          hotel.main_photo ??
+          hotel.image ??
+          "/hotel-placeholder.jpg",
   
-      city: hotel.city ?? "",
+        address: hotel.address ?? "",
   
-      country: hotel.country ?? "",
+        city: hotel.city ?? "",
   
-      stars: Number(hotel.starRating ?? hotel.stars ?? 0),
+        country: hotel.country ?? "",
   
-      reviewScore: Number(
-        hotel.reviewScore ??
+        stars:
+          hotel.starRating ??
+          hotel.stars ??
+          0,
+  
+        rating:
           hotel.rating ??
-          0
-      ),
+          0,
   
-      reviewCount: Number(
-        hotel.reviewCount ?? 0
-      ),
+        reviewCount:
+          hotel.reviewCount ??
+          0,
   
-      image:
-        hotel.mainImage ??
-        hotel.thumbnail ??
-        hotel.images?.[0] ??
-        "/images/hotel-placeholder.jpg",
+        price:
+          Number(
+            rate.retailRate ??
+            rate.sellingRate ??
+            rate.price ??
+            rate.net ??
+            0
+          ),
   
-      images: hotel.images ?? [],
+        currency:
+          rate.currency ??
+          "USD",
   
-      latitude: Number(
-        hotel.latitude ?? 0
-      ),
+        latitude:
+          hotel.location?.latitude ??
+          hotel.latitude ??
+          0,
   
-      longitude: Number(
-        hotel.longitude ?? 0
-      ),
+        longitude:
+          hotel.location?.longitude ??
+          hotel.longitude ??
+          0,
   
-      price: Number(
-        offer.retailRate?.total ??
-          offer.total ??
-          offer.price ??
-          0
-      ),
+        breakfastIncluded:
+          rate.boardType?.toLowerCase()?.includes("breakfast") ??
+          false,
   
-      currency:
-        offer.retailRate?.currency ??
-        offer.currency ??
-        "USD",
+        freeCancellation:
+          rate.cancellationPolicies
+            ?.refundableTag === "RFN",
   
-      freeCancellation:
-        offer.freeCancellation ??
-        false,
-  
-      breakfastIncluded:
-        offer.boardName
-          ?.toLowerCase()
-          .includes("breakfast") ??
-        false,
-  
-      refundable:
-        offer.refundable ??
-        false,
-  
-      roomType:
-        room.name ??
-        offer.roomName ??
-        "Standard Room",
-  
-      provider: "LiteAPI",
-    };
-  }
-  
-  export function mapHotels(data: any): HotelCard[] {
-    if (!Array.isArray(data)) return [];
-  
-    return data.map(mapHotel);
+        refundable:
+          rate.cancellationPolicies
+            ?.refundableTag === "RFN",
+      };
+    });
   }

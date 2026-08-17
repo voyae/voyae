@@ -1,25 +1,26 @@
-const BASE_URL = "https://api.liteapi.travel/v3.0";
+const API_URL = "https://api.liteapi.travel/v3.0";
 
 const API_KEY = process.env.NUITEE_API_KEY!;
 
-if (!API_KEY) {
-  throw new Error("NUITEE_API_KEY is missing in .env.local");
-}
-
-async function request<T>(
+async function request(
   endpoint: string,
-  options: RequestInit = {}
-): Promise<T> {
-  const response = await fetch(`${BASE_URL}${endpoint}`, {
-    ...options,
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      "X-API-Key": API_KEY,
-      ...(options.headers || {}),
-    },
-    cache: "no-store",
-  });
+  options?: RequestInit
+) {
+  const response = await fetch(
+    `${API_URL}${endpoint}`,
+    {
+      ...options,
+
+      headers: {
+        "Content-Type": "application/json",
+        "X-API-Key": API_KEY,
+
+        ...(options?.headers ?? {}),
+      },
+
+      cache: "no-store",
+    }
+  );
 
   const data = await response.json();
 
@@ -27,45 +28,18 @@ async function request<T>(
     console.error(data);
 
     throw new Error(
-      data?.error?.message ||
-        data?.message ||
-        "LiteAPI request failed"
+      data.message ??
+        data.error ??
+        "LiteAPI request failed."
     );
   }
 
-  return data as T;
+  return data;
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                   TYPES                                    */
-/* -------------------------------------------------------------------------- */
-
-export interface Occupancy {
-  adults: number;
-  children?: number[];
-}
-
-export interface HotelRatesRequest {
-  hotelIds: string[];
-
-  occupancies: Occupancy[];
-
-  guestNationality: string;
-
-  currency: string;
-
-  checkin: string;
-
-  checkout: string;
-
-  roomMapping?: boolean;
-
-  maxRatesPerHotel?: number;
-}
-
-/* -------------------------------------------------------------------------- */
-/*                              HOTEL DIRECTORY                               */
-/* -------------------------------------------------------------------------- */
+/* -------------------------------- */
+/* Hotels Discovery */
+/* -------------------------------- */
 
 export async function searchHotelsByCity(
   countryCode: string,
@@ -78,15 +52,9 @@ export async function searchHotelsByCity(
   );
 }
 
-export async function searchHotelsByCoordinates(
-  latitude: number,
-  longitude: number,
-  distance = 10000
-) {
-  return request(
-    `/data/hotels?latitude=${latitude}&longitude=${longitude}&distance=${distance}`
-  );
-}
+/* -------------------------------- */
+/* Hotel Details */
+/* -------------------------------- */
 
 export async function getHotelDetails(
   hotelId: string
@@ -96,32 +64,64 @@ export async function getHotelDetails(
   );
 }
 
-export async function getHotelReviews(
-  hotelId: string
-) {
-  return request(
-    `/data/reviews?hotelId=${hotelId}`
-  );
+/* -------------------------------- */
+/* Search Rates */
+/* -------------------------------- */
+
+interface RateRequest {
+  hotelIds: string[];
+
+  checkin: string;
+
+  checkout: string;
+
+  occupancies: any[];
+
+  currency: string;
+
+  guestNationality: string;
+
+  roomMapping?: boolean;
+
+  maxRatesPerHotel?: number;
 }
 
-/* -------------------------------------------------------------------------- */
-/*                              LIVE HOTEL RATES                              */
-/* -------------------------------------------------------------------------- */
-
 export async function getHotelRates(
-  body: HotelRatesRequest
+  body: RateRequest
 ) {
   return request("/hotels/rates", {
     method: "POST",
+
     body: JSON.stringify(body),
   });
 }
 
-export async function getMinimumRates(
-  body: HotelRatesRequest
+/* -------------------------------- */
+/* Prebook */
+/* -------------------------------- */
+
+export async function prebook(
+  offerId: string
 ) {
-  return request("/hotels/min-rates", {
+  return request("/hotels/prebook", {
     method: "POST",
+
+    body: JSON.stringify({
+      offerId,
+    }),
+  });
+}
+
+/* -------------------------------- */
+/* Book */
+/* -------------------------------- */
+
+export async function bookHotel(
+  body: any
+) {
+  return request("/hotels/book", {
+    method: "POST",
+
     body: JSON.stringify(body),
   });
 }

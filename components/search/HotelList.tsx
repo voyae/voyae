@@ -1,34 +1,37 @@
 "use client";
 
 import HotelCard from "./HotelCard";
+
 import { HotelCard as Hotel } from "@/lib/hotelMapper";
 
 interface Props {
   hotels: Hotel[];
 
-  loading?: boolean;
+  loading: boolean;
 }
 
 export default function HotelList({
   hotels,
-  loading = false,
+  loading,
 }: Props) {
   if (loading) {
     return (
       <div className="space-y-6">
-        {Array.from({ length: 8 }).map((_, index) => (
-          <div
-            key={index}
-            className="
-            h-[260px]
-            animate-pulse
-            rounded-3xl
-            border
-            border-neutral-200
-            bg-neutral-100
-            "
-          />
-        ))}
+        {Array.from({ length: 8 }).map(
+          (_, index) => (
+            <div
+              key={index}
+              className="
+              h-64
+              animate-pulse
+
+              rounded-3xl
+
+              bg-neutral-200
+              "
+            />
+          )
+        )}
       </div>
     );
   }
@@ -38,29 +41,22 @@ export default function HotelList({
       <div
         className="
         flex
-        min-h-[400px]
-        flex-col
+
+        h-72
+
         items-center
         justify-center
 
         rounded-3xl
+
         border
         border-dashed
-        border-neutral-300
 
-        bg-white
-
-        text-center
+        text-lg
+        text-neutral-500
         "
       >
-        <h2 className="text-3xl font-bold">
-          No hotels found
-        </h2>
-
-        <p className="mt-3 max-w-md text-neutral-500">
-          Try changing your destination,
-          travel dates or number of guests.
-        </p>
+        No hotels found.
       </div>
     );
   }
