@@ -125,3 +125,33 @@ export async function bookHotel(
     body: JSON.stringify(body),
   });
 }
+export interface PrebookRequest {
+    offerId: string;
+  }
+  
+  export async function prebookHotel(
+    body: PrebookRequest
+  ) {
+    const response = await fetch(
+      `${LITEAPI_BASE_URL}/rates/prebook`,
+      {
+        method: "POST",
+  
+        headers: {
+          "Content-Type": "application/json",
+  
+          "X-API-Key": LITEAPI_API_KEY,
+        },
+  
+        body: JSON.stringify(body),
+      }
+    );
+  
+    if (!response.ok) {
+      throw new Error(
+        await response.text()
+      );
+    }
+  
+    return response.json();
+  }

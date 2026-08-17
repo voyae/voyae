@@ -15,29 +15,46 @@ import { HotelCard as Hotel } from "@/lib/hotelMapper";
 
 interface Props {
   hotel: Hotel;
+
+  checkIn: string;
+
+  checkOut: string;
+
+  adults: number;
+
+  children: string;
+
+  rooms: number;
 }
 
-export default function HotelCard({ hotel }: Props) {
+export default function HotelCard({
+  hotel,
+  checkIn,
+  checkOut,
+  adults,
+  children,
+  rooms,
+}: Props) {
+  const params = new URLSearchParams({
+    checkIn,
+    checkOut,
+    adults: adults.toString(),
+    children,
+    rooms: rooms.toString(),
+  });
+
   return (
     <article
       className="
       overflow-hidden
-
       rounded-3xl
-
       border
       border-neutral-200
-
       bg-white
-
       shadow-sm
-
       transition-all
-
       duration-300
-
       hover:-translate-y-1
-
       hover:shadow-xl
       "
     >
@@ -57,26 +74,17 @@ export default function HotelCard({ hotel }: Props) {
           <button
             className="
             absolute
-
             right-5
             top-5
-
             flex
-
             h-11
             w-11
-
             items-center
             justify-center
-
             rounded-full
-
             bg-white/90
-
             backdrop-blur
-
             transition
-
             hover:scale-110
             "
           >
@@ -114,15 +122,12 @@ export default function HotelCard({ hotel }: Props) {
               <MapPin size={16} />
 
               <span>
-
                 {hotel.address}
-
                 {hotel.city && (
                   <>
                     , {hotel.city}
                   </>
                 )}
-
               </span>
 
             </div>
@@ -132,16 +137,11 @@ export default function HotelCard({ hotel }: Props) {
               <div
                 className="
                 rounded-xl
-
                 bg-emerald-700
-
                 px-3
-
                 py-2
-
-                text-white
-
                 font-bold
+                text-white
                 "
               >
                 {hotel.rating.toFixed(1)}
@@ -169,22 +169,15 @@ export default function HotelCard({ hotel }: Props) {
                   flex
                   items-center
                   gap-2
-
                   rounded-xl
-
                   bg-green-50
-
                   px-4
-
                   py-2
-
                   text-sm
-
                   text-green-700
                   "
                 >
                   <Coffee size={16} />
-
                   Breakfast Included
                 </div>
               )}
@@ -195,22 +188,15 @@ export default function HotelCard({ hotel }: Props) {
                   flex
                   items-center
                   gap-2
-
                   rounded-xl
-
                   bg-blue-50
-
                   px-4
-
                   py-2
-
                   text-sm
-
                   text-blue-700
                   "
                 >
                   <ShieldCheck size={16} />
-
                   Free Cancellation
                 </div>
               )}
@@ -219,15 +205,10 @@ export default function HotelCard({ hotel }: Props) {
                 <div
                   className="
                   rounded-xl
-
                   bg-emerald-50
-
                   px-4
-
                   py-2
-
                   text-sm
-
                   text-emerald-700
                   "
                 >
@@ -242,18 +223,14 @@ export default function HotelCard({ hotel }: Props) {
           <div
             className="
             mt-10
-
             flex
-
             items-end
-
             justify-between
-
             border-t
-
             pt-6
             "
           >
+
             <div>
 
               <p className="text-sm text-neutral-500">
@@ -263,13 +240,7 @@ export default function HotelCard({ hotel }: Props) {
               <div className="mt-2 flex items-end gap-2">
 
                 <span className="text-4xl font-bold">
-
-                  {hotel.currency}
-
-                  {" "}
-
-                  {hotel.price.toFixed(0)}
-
+                  {hotel.currency} {hotel.price.toFixed(0)}
                 </span>
 
                 <span className="pb-1 text-neutral-500">
@@ -281,22 +252,15 @@ export default function HotelCard({ hotel }: Props) {
             </div>
 
             <Link
-              href={`/hotel/${hotel.id}`}
+              href={`/hotel/${hotel.id}?${params.toString()}`}
               className="
               rounded-2xl
-
               bg-emerald-700
-
               px-8
-
               py-4
-
               font-semibold
-
               text-white
-
               transition
-
               hover:bg-emerald-800
               "
             >

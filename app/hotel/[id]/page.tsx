@@ -1,47 +1,126 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+
+import { useParams, useSearchParams } from "next/navigation";
+
 import Image from "next/image";
 
-interface Hotel {
-  id: string;
-  name: string;
-  hotelDescription: string;
-  address: string;
-  city: string;
-  country: string;
-  starRating: number;
-  rating: number;
-  reviewCount: number;
-  hotelImages: {
-    url: string;
-  }[];
-  hotelFacilities: string[];
-}
+import RoomList from "@/components/hotel/RoomList";
 
 export default function HotelPage() {
   const { id } = useParams();
 
-  const [hotel, setHotel] = useState<Hotel | null>(null);
+  const params = useSearchParams();
 
-  const [loading, setLoading] = useState(true);
+  const checkIn =
+    params.get("checkIn") ?? "";
+
+  const checkOut =
+    params.get("checkOut") ?? "";
+
+  const adults =
+    Number(params.get("adults") ?? "2");
+
+  const children =
+    params.get("children") ?? "";
+
+  const [hotel, setHotel] =
+    useState<any>(null);
+
+  const [rooms, setRooms] =
+    useState<any[]>([]);
+
+  const [loading, setLoading] =
+    useState(true);
 
   useEffect(() => {
-    async function load() {
+    async function loadHotel() {
       try {
-        const res = await fetch(`/api/hotels/${id}`);
+        setLoading(true);
 
-        const data = await res.json();
+        /*
+         * HOTEL DETAILS
+         */
 
-        setHotel(data.hotel);
+        const detailRes =
+          await fetch(
+            `/api/hotels/details?hotelId=${id}`
+          );
+
+        const detail =
+          await detailRes.json();
+
+        setHotel(detail.hotel);
+
+        /*
+         * HOTEL RATES
+         */
+
+        const rateRes =
+          await fetch(
+            "/api/hotels/search",
+            {
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json",
+              },
+
+              body: JSON.stringify({
+                hotelIds: [id],
+
+                checkin: checkIn,
+
+                checkout: checkOut,
+
+                currency: "USD",
+
+                guestNationality: "TR",
+
+                occupancies: [
+                  {
+                    adults,
+
+                    children: children
+                      ? children
+                          .split(",")
+                          .filter(Boolean)
+                          .map(Number)
+                      : [],
+                  },
+                ],
+              }),
+            }
+          );
+
+        const rates =
+          await rateRes.json();
+
+        const rooms =
+          rates.hotels?.[0]?.raw
+            ?.roomTypes ??
+          rates.hotels?.[0]?.raw
+            ?.rooms ??
+          [];
+
+        setRooms(rooms);
+      } catch (err) {
+        console.error(err);
       } finally {
         setLoading(false);
       }
     }
 
-    load();
-  }, [id]);
+    loadHotel();
+  }, [
+    id,
+    checkIn,
+    checkOut,
+    adults,
+    children,
+  ]);
 
   if (loading) {
     return (
@@ -62,61 +141,55 @@ export default function HotelPage() {
   return (
     <main className="mx-auto max-w-7xl p-8">
 
-      <h1 className="text-4xl font-bold">
-        {hotel.name}
-      </h1>
+      <div className="space-y-8">
 
-      <p className="mt-2 text-neutral-500">
-        {hotel.address}, {hotel.city}
-      </p>
-
-      <div className="mt-8 grid grid-cols-2 gap-4">
-        {hotel.hotelImages?.slice(0,6).map((img,index)=>(
-          <div
-            key={index}
-            className="relative h-72 overflow-hidden rounded-3xl"
-          >
-            <Image
-              src={img.url}
-              alt=""
-              fill
-              className="object-cover"
-            />
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-10">
-
-        <h2 className="text-2xl font-bold">
-          About
-        </h2>
-
-        <div
-          className="prose mt-4 max-w-none"
-          dangerouslySetInnerHTML={{
-            __html: hotel.hotelDescription,
-          }}
+        <Image
+          src={
+            hotel.hotelImages?.[0]?.url ??
+            "/hotel-placeholder.jpg"
+          }
+          alt={hotel.name}
+          width={1400}
+          height={700}
+          className="h-[520px] w-full rounded-3xl object-cover"
         />
 
-      </div>
+        <div>
 
-      <div className="mt-12">
+          <h1 className="text-5xl font-bold">
+            {hotel.name}
+          </h1>
 
-        <h2 className="text-2xl font-bold">
-          Facilities
-        </h2>
+          <p className="mt-3 text-neutral-500">
+            {hotel.address},
+            {" "}
+            {hotel.city},
+            {" "}
+            {hotel.country}
+          </p>
 
-        <div className="mt-6 flex flex-wrap gap-3">
+        </div>
 
-          {hotel.hotelFacilities?.map((facility)=>(
-            <div
-              key={facility}
-              className="rounded-xl bg-neutral-100 px-4 py-2"
-            >
-              {facility}
-            </div>
-          ))}
+        {hotel.hotelDescription && (
+          <div
+            className="prose max-w-none"
+            dangerouslySetInnerHTML={{
+              __html:
+                hotel.hotelDescription,
+            }}
+          />
+        )}
+
+        <div>
+
+          <h2 className="mb-6 text-3xl font-bold">
+            Available Rooms
+          </h2>
+
+          <RoomList
+            rooms={rooms}
+            loading={loading}
+          />
 
         </div>
 

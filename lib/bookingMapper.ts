@@ -1,113 +1,70 @@
-export interface HotelRate {
-    hotelId: string;
-  
-    offerId: string;
-  
+export interface PrebookRoom {
     roomId: string;
   
     roomName: string;
   
     boardName: string;
   
-    refundable: boolean;
-  
     price: number;
   
     currency: string;
   
-    taxes: number;
-  
-    rateType: string;
+    refundable: boolean;
   
     cancellationPolicies: any[];
   
-    raw: any;
+    rateKey: string;
   }
   
-  export function mapRates(data: any): HotelRate[] {
-    if (!Array.isArray(data)) return [];
+  export function mapPrebook(data: any): PrebookRoom[] {
+    const rooms =
+      data.roomTypes ??
+      data.rooms ??
+      [];
   
-    const rooms: HotelRate[] = [];
+    return rooms.map((room: any) => {
+      const rate =
+        room.rates?.[0] ?? {};
   
-    for (const hotel of data) {
-      const hotelId =
-        hotel.hotelId ??
-        hotel.hotelCode ??
-        hotel.id ??
-        "";
+      return {
+        roomId:
+          room.roomId ??
+          room.id ??
+          "",
   
-      const roomTypes =
-        hotel.roomTypes ??
-        hotel.rooms ??
-        [];
+        roomName:
+          room.name ??
+          room.roomName ??
+          "Room",
   
-      for (const room of roomTypes) {
-        const rates =
-          room.rates ??
-          room.offers ??
-          [];
+        boardName:
+          rate.boardName ??
+          rate.boardType ??
+          "",
   
-        for (const rate of rates) {
-          rooms.push({
-            hotelId,
+        price: Number(
+          rate.retailRate ??
+          rate.sellingRate ??
+          rate.net ??
+          0
+        ),
   
-            offerId:
-              rate.offerId ??
-              rate.id ??
-              "",
+        currency:
+          rate.currency ??
+          "USD",
   
-            roomId:
-              room.roomId ??
-              room.id ??
-              "",
+        refundable:
+          rate.cancellationPolicies
+            ?.refundableTag === "RFN",
   
-            roomName:
-              room.name ??
-              room.roomName ??
-              "Room",
+        cancellationPolicies:
+          rate.cancellationPolicies
+            ?.cancelPolicyInfos ??
+          [],
   
-            boardName:
-              rate.boardName ??
-              rate.boardType ??
-              "",
-  
-            refundable:
-              rate.refundable ??
-              false,
-  
-            price:
-              Number(
-                rate.retailRate?.total?.[0]?.amount
-              ) ||
-              Number(rate.price) ||
-              0,
-  
-            taxes:
-              Number(
-                rate.retailRate?.taxes?.[0]?.amount
-              ) || 0,
-  
-            currency:
-              rate.retailRate?.total?.[0]?.currency ??
-              rate.currency ??
-              "USD",
-  
-            rateType:
-              rate.rateType ??
-              "",
-  
-            cancellationPolicies:
-              rate.cancellationPolicies
-                ?.cancelPolicyInfos ??
-              [],
-  
-            raw: rate,
-          });
-        }
-      }
-    }
-  
-    return rooms.sort(
-      (a, b) => a.price - b.price
-    );
+        rateKey:
+          rate.rateKey ??
+          "",
+      };
+    });
   }

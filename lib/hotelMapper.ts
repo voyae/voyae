@@ -30,20 +30,40 @@ export interface HotelCard {
     freeCancellation: boolean;
   
     refundable: boolean;
+  
+    offerId?: string;
+  
+    roomId?: string;
+  
+    boardName?: string;
+  
+    rateType?: string;
+  
+    cancellationPolicies?: any[];
+  
+    raw?: any;
   }
   
-  export function mapHotels(hotels: any[]): HotelCard[] {
+  export function mapHotels(
+    hotels: any[]
+  ): HotelCard[] {
     return hotels.map((hotel: any) => {
+      const room =
+        hotel.roomTypes?.[0] ??
+        hotel.rooms?.[0] ??
+        {};
+  
       const rate =
+        room.rates?.[0] ??
         hotel.rates?.[0] ??
-        hotel.rooms?.[0]?.rates?.[0] ??
-        hotel.roomTypes?.[0]?.rates?.[0] ??
         {};
   
       return {
         id: hotel.id,
   
-        name: hotel.name ?? "Unknown Hotel",
+        name:
+          hotel.name ??
+          "Unknown Hotel",
   
         image:
           hotel.hotelImages?.[0]?.url ??
@@ -51,11 +71,14 @@ export interface HotelCard {
           hotel.image ??
           "/hotel-placeholder.jpg",
   
-        address: hotel.address ?? "",
+        address:
+          hotel.address ?? "",
   
-        city: hotel.city ?? "",
+        city:
+          hotel.city ?? "",
   
-        country: hotel.country ?? "",
+        country:
+          hotel.country ?? "",
   
         stars:
           hotel.starRating ??
@@ -63,23 +86,23 @@ export interface HotelCard {
           0,
   
         rating:
-          hotel.rating ??
-          0,
+          hotel.rating ?? 0,
   
         reviewCount:
-          hotel.reviewCount ??
-          0,
+          hotel.reviewCount ?? 0,
   
         price:
           Number(
-            rate.retailRate ??
-            rate.sellingRate ??
-            rate.price ??
-            rate.net ??
-            0
+            rate.retailRate?.total?.[0]
+              ?.amount ??
+              rate.price ??
+              rate.sellingRate ??
+              0
           ),
   
         currency:
+          rate.retailRate?.total?.[0]
+            ?.currency ??
           rate.currency ??
           "USD",
   
@@ -94,8 +117,12 @@ export interface HotelCard {
           0,
   
         breakfastIncluded:
-          rate.boardType?.toLowerCase()?.includes("breakfast") ??
-          false,
+          (
+            rate.boardName ??
+            ""
+          )
+            .toLowerCase()
+            .includes("breakfast"),
   
         freeCancellation:
           rate.cancellationPolicies
@@ -104,6 +131,30 @@ export interface HotelCard {
         refundable:
           rate.cancellationPolicies
             ?.refundableTag === "RFN",
+  
+        offerId:
+          rate.offerId ??
+          rate.id,
+  
+        roomId:
+          room.roomId ??
+          room.id,
+  
+        boardName:
+          rate.boardName ??
+          rate.boardType ??
+          "",
+  
+        rateType:
+          rate.rateType ??
+          "",
+  
+        cancellationPolicies:
+          rate.cancellationPolicies
+            ?.cancelPolicyInfos ??
+          [],
+  
+        raw: hotel,
       };
     });
   }
