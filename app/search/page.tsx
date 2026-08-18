@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import SearchPageClient from "./SearchPageClient";
-import { searchHotelsByCity } from "@/lib/liteapi";
+import { searchHotelsByCity, getHotelDetails, fetchInChunks } from "@/lib/liteapi";
 
 interface SearchPageProps {
   searchParams: Promise<{
@@ -24,27 +24,27 @@ async function SearchContent({ searchParams }: { searchParams: SearchPageProps['
     const response = await searchHotelsByCity(countryCode, cityName);
     const hotelsList = response?.data || response?.hotels || response || [];
 
-    realHotels = hotelsList.map((hotel: any, index: number) => {
-      const rawImages = hotel.images || hotel.hotelImages || hotel.pictures || hotel.photos || [];
+    // 4290 (Too Many Requests) hatasını önlemek için istekleri küçük gruplara (chunk) bölüyoruz
+    realHotels = await fetchInChunks(hotelsList, 5, 100, async (hotel: any, index: number = 0) => {
+      const hotelId = hotel.id || hotel.hotelId;
       
-      const formattedImages = rawImages.map((img: any) => ({
-        url: typeof img === 'string' ? img : (img.url || img.highResUrl || img.thumbnail),
-        caption: img.caption || hotel.name,
-      }));
+      let hotelImagesList = hotel.hotelImages || hotel.images || hotel.pictures || hotel.photos || [];
+      let detailData = null;
 
-      const fallbackImages = [
-        "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80"
-      ];
+      // Eğer ilk listede görsel yoksa ve ID varsa, detay çekmeyi güvenli deneyelim
+      if ((!Array.isArray(hotelImagesList) || hotelImagesList.length === 0) && hotelId) {
+        try {
+          const detailRes = await getHotelDetails(hotelId);
+          detailData = detailRes?.data || detailRes?.hotel || detailRes;
+          hotelImagesList = detailData?.hotelImages || detailData?.images || detailData?.photos || detailData?.pictures || [];
+        } catch (err) {
+          // Sessizce geç
+        }
+      }
 
-      const finalImages = formattedImages.length > 0 && formattedImages[0].url 
-        ? formattedImages 
-        : [{ url: fallbackImages[index % fallbackImages.length], caption: hotel.name }];
+      const amenitiesList = hotel.amenities || hotel.roomAmenities || detailData?.amenities || [];
+      const boardType = hotel.boardBasis || hotel.mealPlan || hotel.boardName || detailData?.boardBasis || detailData?.mealPlan;
 
-      // LiteAPI'den gelen farklı olası fiyat alanlarını kontrol edip gerçek fiyatı alıyoruz
       const rawPrice = hotel.price || 
                        hotel.retailRate?.total?.[0]?.amount || 
                        hotel.minPrice || 
@@ -54,17 +54,20 @@ async function SearchContent({ searchParams }: { searchParams: SearchPageProps['
       const finalPrice = rawPrice ? Number(rawPrice) : (1500 + (index * 250) % 3500);
 
       return {
-        id: hotel.id || hotel.hotelId || String(index),
+        id: String(hotelId || index),
         name: hotel.name || "Otel Adı",
-        price: finalPrice,
+        hotelImages: hotelImagesList,
+        roomType: hotel.roomType || hotel.roomName || "Deluxe Room",
+        boardType: boardType || null,
+        amenities: Array.isArray(amenitiesList) ? amenitiesList.slice(0, 3) : [],
+        locationText: `${hotel.city || cityName} • ${hotel.address || hotel.location?.address || "Merkez"}`,
+        freeCancellation: hotel.freeCancellation ?? true,
         rating: hotel.rating || hotel.reviews?.rating || (8.0 + (index % 15) / 10).toFixed(1),
         reviewsCount: hotel.reviewCount || hotel.reviewsCount || (80 + index * 15),
-        locationText: `${hotel.city || cityName} • ${hotel.address || hotel.location?.address || "Merkez"}`,
-        roomType: hotel.roomType || "Deluxe Room",
-        freeCancellation: hotel.freeCancellation ?? true,
-        images: finalImages,
+        price: finalPrice,
       };
     });
+
   } catch (error) {
     console.error("LiteAPI fetch error:", error);
   }

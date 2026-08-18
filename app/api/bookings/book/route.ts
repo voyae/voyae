@@ -8,18 +8,16 @@ export async function POST(req: NextRequest) {
 
     const {
       prebookId,
-      firstName,
-      lastName,
-      email,
-      transactionId,
+      holder,
+      guests,
+      payment,
     } = body;
 
     if (!prebookId) {
       return NextResponse.json(
         {
           success: false,
-          message:
-            "prebookId is required.",
+          message: "prebookId is required.",
         },
         {
           status: 400,
@@ -27,14 +25,39 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const booking =
-      await bookHotel({
-        prebookId,
-        firstName,
-        lastName,
-        email,
-        transactionId,
-      });
+    if (!holder) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "holder is required.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    if (
+      !Array.isArray(guests) ||
+      guests.length === 0
+    ) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "guests are required.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    const booking = await bookHotel({
+      prebookId,
+      holder,
+      guests,
+      payment,
+    });
 
     return NextResponse.json({
       success: true,
@@ -48,7 +71,7 @@ export async function POST(req: NextRequest) {
         success: false,
         message:
           error.message ??
-          "Booking failed.",
+          "Internal Server Error",
       },
       {
         status: 500,

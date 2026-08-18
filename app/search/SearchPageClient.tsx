@@ -111,8 +111,23 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
             ) : (
               initialHotels.map((hotel) => {
                 const isFav = favorites.includes(hotel.id);
-                // LiteAPI mapper yapına uygun görsel çekme mantığı
-                const hotelImage = hotel.images?.[0]?.url || "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80";
+                
+                // --- KESİN VE GÜVENLİ LİTEAPI RESİM ÇEKME MANTIĞI ---
+                const rawImages = hotel.hotelImages || hotel.images || hotel.pictures || hotel.photos || [];
+                let hotelImage = "";
+
+                if (Array.isArray(rawImages) && rawImages.length > 0) {
+                  const first = rawImages[0];
+                  if (typeof first === 'string') {
+                    hotelImage = first;
+                  } else if (typeof first === 'object' && first !== null) {
+                    hotelImage = first.url || first.highResUrl || first.thumbnail || first.large || "";
+                  }
+                }
+
+                if (!hotelImage) {
+                  hotelImage = hotel.image || hotel.thumbnail || hotel.photo || "";
+                }
 
                 return (
                   <div 
@@ -120,13 +135,20 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
                     className="group bg-white/95 backdrop-blur-xl rounded-[32px] p-5 sm:p-6 border border-neutral-300/70 shadow-sm hover:shadow-2xl hover:border-emerald-500/40 transition-all duration-500 flex flex-col md:flex-row gap-6 items-stretch relative overflow-hidden"
                   >
                     
-                    {/* Gerçek Otel Görseli (LiteAPI hotelImages uyumlu) */}
+                    {/* Gerçek Otel Görseli (LiteAPI) */}
                     <div className="w-full md:w-72 h-56 md:h-auto bg-neutral-200 rounded-2xl relative overflow-hidden shrink-0">
-                      <img 
-                        src={hotelImage} 
-                        alt={hotel.name}
-                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
-                      />
+                      {hotelImage ? (
+                        <img 
+                          src={hotelImage} 
+                          alt={hotel.name}
+                          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center text-xs text-neutral-400 p-4 text-center">
+                          Görsel Bulunamadı
+                        </div>
+                      )}
+                      
                       <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                       
                       <button 
@@ -149,13 +171,18 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
                           {hotel.name}
                         </h3>
 
-                        <div className="flex items-center gap-2 text-xs font-semibold">
-                          <span className="text-emerald-700 hover:underline cursor-pointer">{hotel.locationText}</span>
+                        {/* Profesyonel İkonlu Konum */}
+                        <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-700">
+                          <Map size={13} className="shrink-0" />
+                          <span className="hover:underline cursor-pointer truncate">{hotel.locationText}</span>
                         </div>
 
-                        <p className="text-xs text-neutral-600 font-medium pt-0.5">
-                          {hotel.roomType}
-                        </p>
+                        {/* Odaklanmış Oda Tipi Rozeti */}
+                        <div className="flex items-center gap-2 pt-1">
+                          <span className="px-2.5 py-1 bg-neutral-100 rounded-lg text-xs font-bold text-neutral-800 border border-neutral-200/60">
+                            {hotel.roomType}
+                          </span>
+                        </div>
 
                         <div className="pt-2 text-xs space-y-1">
                           {hotel.freeCancellation && (
@@ -168,11 +195,11 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
                       </div>
                     </div>
 
-                    {/* Sağ Taraf: Fiyat ve Rezervasyon */}
-                    <div className="flex md:flex-col justify-between md:justify-between items-end border-t md:border-t-0 md:border-l border-neutral-200 pt-4 md:pt-0 md:pl-6 shrink-0">
+                    {/* Sağ Taraf: Fiyat ve Rezervasyon (Booking Tarzı Düzen) */}
+                    <div className="flex md:flex-col justify-between md:justify-between items-end border-t md:border-t-0 md:border-l border-neutral-200/80 pt-4 md:pt-0 md:pl-6 shrink-0">
                       
-                      <div className="hidden md:flex items-center gap-2.5">
-                        <div className="text-right">
+                      <div className="flex items-center gap-2.5">
+                        <div className="text-left md:text-right">
                           <span className="block text-xs font-bold text-neutral-900">Wonderful</span>
                           <span className="text-[10px] text-neutral-400 font-medium">{hotel.reviewsCount} reviews</span>
                         </div>
@@ -181,15 +208,16 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
                         </div>
                       </div>
 
-                      <div className="text-left md:text-right space-y-0.5">
-                        <span className="block text-[11px] text-neutral-400 font-medium">1 night, 2 adults</span>
+                      {/* Vurgulu Fiyat Kutusu */}
+                      <div className="text-left md:text-right space-y-0.5 bg-emerald-50/50 p-3 rounded-2xl border border-emerald-100/60 my-2 md:my-0 w-full md:w-auto">
+                        <span className="block text-[11px] text-emerald-800 font-semibold">1 night, 2 adults</span>
                         <div className="text-xl sm:text-2xl font-black text-neutral-900 tracking-tight">
                           {hotel.price.toLocaleString()} ₺
                         </div>
-                        <span className="block text-[10px] text-neutral-400 font-medium">+ ₺150 taxes & fees</span>
+                        <span className="block text-[10px] text-neutral-500 font-medium">+ ₺150 taxes & fees</span>
                       </div>
 
-                      <button className="bg-neutral-900 hover:bg-emerald-600 text-white text-xs font-bold px-6 py-3.5 rounded-2xl transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer active:scale-95">
+                      <button className="w-full md:w-auto bg-neutral-900 hover:bg-emerald-600 text-white text-xs font-bold px-6 py-3.5 rounded-2xl transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer active:scale-95 text-center">
                         Reserve
                       </button>
                     </div>
