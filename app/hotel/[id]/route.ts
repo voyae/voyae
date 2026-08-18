@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-
 import { getHotelDetails } from "@/lib/liteapi";
 
 export async function GET(
@@ -13,27 +12,21 @@ export async function GET(
   }
 ) {
   try {
-
-    const hotel = await getHotelDetails(
-      params.id
-    );
+    const hotel = await getHotelDetails(params.id);
 
     return NextResponse.json({
       success: true,
-      hotel: hotel.data,
+      hotel: hotel,
     });
-
-  } catch (e:any) {
-
+  } catch (e: any) {
     return NextResponse.json(
       {
-        success:false,
-        message:e.message,
+        success: false,
+        message: e.message,
       },
       {
-        status:500,
+        status: 500,
       }
     );
-
   }
 }

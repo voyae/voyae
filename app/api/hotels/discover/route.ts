@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-
-import {
-  discoverHotels,
-} from "@/lib/hotelDiscovery";
+import { discoverHotels } from "@/lib/hotelDiscovery";
+import { mapHotels } from "@/lib/hotelMapper";
 
 export async function POST(req: NextRequest) {
   try {
@@ -26,17 +24,21 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const hotels =
+    const rawResponse =
       await discoverHotels(
         countryCode,
         city
       );
 
+    const hotelsList = Array.isArray(rawResponse)
+      ? rawResponse
+      : (rawResponse as any)?.hotels ?? (rawResponse as any)?.data ?? [];
+
+    const hotels = mapHotels(hotelsList);
+
     return NextResponse.json({
       success: true,
-
       total: hotels.length,
-
       hotels,
     });
   } catch (error: any) {

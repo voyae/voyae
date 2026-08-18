@@ -4,8 +4,9 @@ import { prebookHotel } from "@/lib/liteapi";
 
 export async function POST(req: NextRequest) {
   try {
-    const { offerId } =
-      await req.json();
+    const body = await req.json();
+
+    const { offerId } = body;
 
     if (!offerId) {
       return NextResponse.json(
@@ -19,14 +20,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const prebook =
-      await prebookHotel({
-        offerId,
-      });
+    const result = await prebookHotel({
+      offerId,
+    });
 
     return NextResponse.json({
       success: true,
-      prebook,
+      prebook: result,
     });
   } catch (error: any) {
     console.error(error);
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
         success: false,
         message:
           error.message ??
-          "Prebook failed.",
+          "Internal Server Error",
       },
       {
         status: 500,
