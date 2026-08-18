@@ -17,10 +17,6 @@ const nextConfig: NextConfig = {
     // Build sırasında TypeScript tip denetim hatalarının kalmasını engeller
     ignoreBuildErrors: true,
   },
-  eslint: {
-    // Build sırasında ESLint uyarılarının süreci durdurmasını engeller
-    ignoreDuringBuilds: true,
-  },
 };
 
 export default nextConfig;
