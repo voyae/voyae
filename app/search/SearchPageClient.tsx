@@ -42,7 +42,6 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
   };
 
   return (
-    // Navbar'ın altında kalmaması için üst boşluk (pt) optimize edildi
     <div className="min-h-screen bg-[#0A1128] pt-36 sm:pt-40 pb-24 font-sans text-slate-100 selection:bg-amber-500 selection:text-slate-950 relative overflow-hidden">
       
       {/* Arka Plan Mesh Gradyanları */}
@@ -133,7 +132,6 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
         {/* Ana Grid Düzeni */}
         <div className="flex flex-col lg:flex-row gap-8 items-start">
           
-          {/* Sol Filtre Alanı (Arka planı ve metin renkleri lacivert temaya sabitlendi) */}
           <aside className="w-full lg:w-[320px] shrink-0 sticky top-32">
             <div className="bg-[#101C3E]/95 p-6 rounded-[32px] border border-slate-800 shadow-md backdrop-blur-2xl text-slate-200">
               <SearchFilters />
@@ -173,7 +171,7 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
                     >
                       <div>
                         {/* Görsel Alanı */}
-                        <div className="relative h-48 bg-[#1E293B] rounded-2xl overflow-hidden">
+                        <div className="relative h-48 bg-[#1E293B] rounded-2xl overflow-hidden cursor-pointer" onClick={() => handleViewHotel(hotel.id)}>
                           {hotelImage ? (
                             <img src={hotelImage} alt={hotel.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                           ) : (
@@ -182,7 +180,7 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
                           
                           {/* Favori Butonu */}
                           <button 
-                            onClick={() => toggleFavorite(hotel.id)}
+                            onClick={(e) => { e.stopPropagation(); toggleFavorite(hotel.id); }}
                             className="absolute top-3 right-3 p-2.5 bg-[#101C3E]/85 hover:bg-[#101C3E] backdrop-blur-md rounded-full text-slate-200 hover:text-red-400 transition-all shadow-sm cursor-pointer z-10"
                           >
                             <Heart size={16} fill={isFav ? "#ef4444" : "none"} className={isFav ? "text-red-500" : ""} />
@@ -256,14 +254,14 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
                       className="group bg-[#101C3E]/95 backdrop-blur-xl rounded-[32px] p-5 sm:p-6 border border-slate-800 shadow-sm hover:shadow-2xl hover:border-amber-500/50 transition-all duration-500 flex flex-col md:flex-row gap-6 items-stretch relative overflow-hidden"
                     >
                       {/* Görsel Alanı */}
-                      <div className="w-full md:w-72 h-56 md:h-auto bg-[#1E293B] rounded-2xl relative overflow-hidden shrink-0">
+                      <div className="w-full md:w-72 h-56 md:h-auto bg-[#1E293B] rounded-2xl relative overflow-hidden shrink-0 cursor-pointer" onClick={() => handleViewHotel(hotel.id)}>
                         {hotelImage ? (
                           <img src={hotelImage} alt={hotel.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                         ) : (
                           <div className="flex h-full items-center justify-center text-xs text-slate-400 p-4 text-center">Görsel Bulunamadı</div>
                         )}
                         <button 
-                          onClick={() => toggleFavorite(hotel.id)}
+                          onClick={(e) => { e.stopPropagation(); toggleFavorite(hotel.id); }}
                           className="absolute top-4 right-4 p-2.5 bg-[#101C3E]/85 hover:bg-[#101C3E] backdrop-blur-md rounded-full text-slate-200 hover:text-red-400 transition-all duration-300 shadow-sm cursor-pointer z-10"
                         >
                           <Heart size={18} fill={isFav ? "#ef4444" : "none"} className={isFav ? "text-red-500 scale-110" : "text-slate-200"} />

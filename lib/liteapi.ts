@@ -56,11 +56,30 @@ export async function searchHotelsByCity(countryCode: string, cityName: string) 
 }
 
 /**
- * Otel detaylarını getiren fonksiyon (EKSİK OLAN KISIM)
+ * Otel detaylarını getiren fonksiyon
  */
 export async function getHotelDetails(hotelId: string) {
   const endpoint = `/data/hotel?hotelId=${encodeURIComponent(hotelId)}`;
   return await fetchFromLiteAPI(endpoint, { method: 'GET' });
+}
+
+/**
+ * Otel fiyat ve müsaitlik bilgilerini getiren fonksiyon (EKLENEN KISIM)
+ */
+export async function getHotelRates(payload: {
+  hotelIds: string[];
+  checkin: string;
+  checkout: string;
+  occupancies: any[];
+  guestNationality?: string;
+  currency?: string;
+  roomMapping?: boolean;
+  maxRatesPerHotel?: number;
+}) {
+  return await fetchFromLiteAPI('/hotels/rates', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
 }
 
 export async function fetchInChunks<T, R>(

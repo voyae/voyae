@@ -24,17 +24,24 @@ export function mapHotels(hotels: any[]): HotelCard[] {
     if (!Array.isArray(hotels)) return [];
 
     return hotels.map((hotel: any) => {
-        const room =
-            hotel.roomTypes?.[0] ??
-            hotel.rooms?.[0] ??
-            hotel.room ??
-            {};
+        // Tüm olası oda listesi kaynaklarını kontrol ediyoruz
+        const roomsList = 
+            hotel.roomTypes ?? 
+            hotel.rooms ?? 
+            hotel.rates ?? 
+            hotel.raw?.roomTypes ?? 
+            hotel.raw?.rooms ?? 
+            hotel.raw?.rates ?? 
+            [];
+
+        const room = Array.isArray(roomsList) && roomsList.length > 0 ? roomsList[0] : (hotel.room ?? {});
 
         const rate =
             room.rates?.[0] ??
+            room.rate ??
             hotel.rates?.[0] ??
             hotel.rate ??
-            {};
+            room;
 
         const rawPrice =
             rate.retailRate?.total?.[0]?.amount ??
@@ -50,7 +57,7 @@ export function mapHotels(hotels: any[]): HotelCard[] {
 
         const price = Number(rawPrice) || 0;
 
-        // --- DERİNLEMESİNE GERÇEK RESİM AYIKLAYICI (Tüm LiteAPI varyasyonları) ---
+        // --- RESİM AYIKLAYICI ---
         const targetImageSource = 
             hotel.hotelImages ??
             hotel.images ??
@@ -59,8 +66,6 @@ export function mapHotels(hotels: any[]): HotelCard[] {
             hotel.gallery ??
             hotel.data?.hotelImages ??
             hotel.data?.images ??
-            hotel.data?.photos ??
-            hotel.hotel?.hotelImages ??
             hotel.hotel?.images ??
             [];
 
@@ -95,6 +100,7 @@ export function mapHotels(hotels: any[]): HotelCard[] {
             roomImage,
             roomName:
                 room.name ??
+                room.roomTypeName ??
                 room.roomName ??
                 room.description ??
                 "Standard Room",
@@ -113,7 +119,7 @@ export function mapHotels(hotels: any[]): HotelCard[] {
                 "USD",
             latitude: hotel.location?.latitude ?? hotel.latitude ?? 0,
             longitude: hotel.location?.longitude ?? hotel.longitude ?? 0,
-            breakfastIncluded: String(rate.boardType ?? rate.mealPlan ?? "")
+            breakfastIncluded: String(rate.boardType ?? rate.mealPlan ?? rate.boardName ?? "")
                 .toLowerCase()
                 .includes("breakfast"),
             refundable:

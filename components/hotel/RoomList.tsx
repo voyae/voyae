@@ -5,9 +5,24 @@ import RoomCard from "./RoomCard";
 interface Props {
   rooms: any[];
   loading?: boolean;
+  hotelId?: string;
+  hotelName?: string;
+  checkIn?: string;
+  checkOut?: string;
+  adults?: number;
+  childrenCount?: string;
 }
 
-export default function RoomList({ rooms, loading = false }: Props) {
+export default function RoomList({ 
+  rooms, 
+  loading = false,
+  hotelId,
+  hotelName,
+  checkIn,
+  checkOut,
+  adults,
+  childrenCount
+}: Props) {
   if (loading) {
     return (
       <div className="space-y-5">
@@ -21,7 +36,7 @@ export default function RoomList({ rooms, loading = false }: Props) {
     );
   }
 
-  if (!rooms.length) {
+  if (!rooms || rooms.length === 0) {
     return (
       <div className="flex h-64 items-center justify-center rounded-2xl border border-dashed border-slate-700 bg-[#101C3E] text-lg text-slate-400">
         No rooms available.
@@ -41,6 +56,12 @@ export default function RoomList({ rooms, loading = false }: Props) {
             index
           }
           room={room}
+          hotelId={hotelId}
+          hotelName={hotelName}
+          checkIn={checkIn}
+          checkOut={checkOut}
+          adults={adults}
+          childrenCount={childrenCount}
         />
       ))}
     </section>

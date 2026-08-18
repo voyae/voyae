@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-
 import {
   getHotelDetails,
   getHotelRates,
 } from "@/lib/liteapi";
-
 import { mapHotels } from "@/lib/hotelMapper";
 
 export async function POST(req: NextRequest) {
@@ -36,7 +34,7 @@ export async function POST(req: NextRequest) {
     }
 
     /* -------------------------------
-       HOTEL RATES
+        HOTEL RATES
     -------------------------------- */
 
     const ratesResponse =
@@ -51,13 +49,16 @@ export async function POST(req: NextRequest) {
         maxRatesPerHotel: 5,
       });
 
+    // LITEAPI'DEN GELEN HAM YANITI TERMINALDE GÖRMEK İÇİN:
+    console.log("--- LITEAPI RATES RESPONSE ---", JSON.stringify(ratesResponse, null, 2));
+
     const rateHotels =
       ratesResponse.data ??
       ratesResponse.hotels ??
-      [];
+      (Array.isArray(ratesResponse) ? ratesResponse : []);
 
     /* -------------------------------
-       HOTEL DETAILS
+        HOTEL DETAILS
     -------------------------------- */
 
     const detailHotels =
@@ -88,52 +89,62 @@ export async function POST(req: NextRequest) {
       );
 
     /* -------------------------------
-       MERGE
+        MERGE
     -------------------------------- */
 
     const merged = detailHotels
       .filter(Boolean)
       .map((detail: any) => {
         const hotelId =
-          detail.id ??
-          detail.hotelId;
+          String(detail.id ?? detail.hotelId ?? "");
 
         const rate =
           rateHotels.find(
             (item: any) =>
-              item.id === hotelId ||
-              item.hotelId ===
-                hotelId
+              String(item.id ?? item.hotelId ?? "") === hotelId
           ) ?? {};
 
         return {
           ...detail,
-
+          raw: rate,
           rates:
             rate.rates ??
+            rate.roomTypes ??
+            rate.rooms ??
             [],
-
           roomTypes:
             rate.roomTypes ??
+            rate.rooms ??
+            rate.rates ??
             [],
-
           rooms:
             rate.rooms ??
+            rate.roomTypes ??
+            rate.rates ??
             [],
         };
       });
 
     /* -------------------------------
-       MAP
+        MAP
     -------------------------------- */
 
-    const hotels =
-      mapHotels(merged);
+    const mappedHotels = mapHotels(merged);
+
+    const finalHotels = mappedHotels.map((mappedHotel: any, index: number) => {
+      const original = merged[index];
+      return {
+        ...mappedHotel,
+        rooms: mappedHotel.rooms?.length > 0 ? mappedHotel.rooms : (original?.rooms ?? original?.roomTypes ?? original?.rates ?? []),
+        roomTypes: mappedHotel.roomTypes?.length > 0 ? mappedHotel.roomTypes : (original?.roomTypes ?? original?.rooms ?? original?.rates ?? []),
+        raw: original?.raw ?? original,
+      };
+    });
 
     return NextResponse.json({
       success: true,
-      total: hotels.length,
-      hotels,
+      total: finalHotels.length,
+      hotels: finalHotels,
     });
   } catch (error: any) {
     console.error(
