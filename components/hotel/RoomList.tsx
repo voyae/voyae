@@ -4,7 +4,6 @@ import RoomCard from "./RoomCard";
 
 interface Props {
   rooms: any[];
-
   loading?: boolean;
 }
 
@@ -14,16 +13,11 @@ export default function RoomList({
 }: Props) {
   if (loading) {
     return (
-      <div className="space-y-6">
-        {Array.from({ length: 4 }).map((_, index) => (
+      <div className="space-y-5">
+        {Array.from({ length: 5 }).map((_, index) => (
           <div
             key={index}
-            className="
-            h-56
-            animate-pulse
-            rounded-3xl
-            bg-neutral-200
-            "
+            className="h-[220px] animate-pulse rounded-2xl border border-neutral-200 bg-neutral-100"
           />
         ))}
       </div>
@@ -32,31 +26,18 @@ export default function RoomList({
 
   if (!rooms.length) {
     return (
-      <div
-        className="
-        flex
-        h-60
-        items-center
-        justify-center
-        rounded-3xl
-        border
-        border-dashed
-        border-neutral-300
-        bg-white
-        text-lg
-        text-neutral-500
-        "
-      >
+      <div className="flex h-64 items-center justify-center rounded-2xl border border-dashed border-neutral-300 bg-white text-lg text-neutral-500">
         No rooms available.
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <section className="space-y-5">
       {rooms.map((room: any, index: number) => (
         <RoomCard
           key={
+            room.roomTypeId ??
             room.roomId ??
             room.id ??
             room.name ??
@@ -65,6 +46,6 @@ export default function RoomList({
           room={room}
         />
       ))}
-    </div>
+    </section>
   );
 }

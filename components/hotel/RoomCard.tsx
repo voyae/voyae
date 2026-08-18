@@ -1,6 +1,14 @@
 "use client";
 
-import { Bed, Coffee, ShieldCheck } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
+
+import {
+  Coffee,
+  ShieldCheck,
+  RotateCcw,
+  Users,
+} from "lucide-react";
 
 interface Props {
   room: any;
@@ -12,169 +20,122 @@ export default function RoomCard({
   const rate =
     room.rates?.[0] ?? {};
 
-  const total =
-    rate.retailRate?.total?.[0];
+  const image =
+    room.images?.[0]?.url ??
+    room.images?.[0] ??
+    "/hotel-placeholder.jpg";
+
+  const price =
+    rate.retailRate?.total?.[0]?.amount ??
+    rate.retailRate?.amount ??
+    room.offerRetailRate?.amount ??
+    0;
+
+  const currency =
+    rate.retailRate?.total?.[0]?.currency ??
+    room.offerRetailRate?.currency ??
+    "USD";
+
+  const oldPrice =
+    Math.round(Number(price) * 1.18);
+
+  const breakfast =
+    rate.boardName ??
+    rate.mealPlan ??
+    "";
 
   const refundable =
     rate.cancellationPolicies
       ?.refundableTag === "RFN";
 
   return (
-    <div
-      className="
-      rounded-3xl
-      border
-      border-neutral-200
-      bg-white
-      p-8
-      shadow-sm
-      "
-    >
-      <div className="flex items-start justify-between">
+    <article className="overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm">
 
-        <div>
+      <div className="grid grid-cols-[260px_1fr_240px]">
 
-          <div className="flex items-center gap-3">
+        {/* IMAGE */}
 
-            <Bed
-              size={22}
-              className="text-emerald-700"
-            />
+        <div className="relative h-[220px]">
 
-            <h3 className="text-2xl font-bold">
-              {room.name ??
-                room.roomName ??
-                "Room"}
-            </h3>
+          <Image
+            src={image}
+            alt={room.name}
+            fill
+            unoptimized
+            className="object-cover"
+          />
 
-          </div>
+        </div>
 
-          {rate.boardName && (
-            <p className="mt-3 text-neutral-600">
-              {rate.boardName}
-            </p>
-          )}
+        {/* CONTENT */}
 
-          <div className="mt-6 flex flex-wrap gap-3">
+        <div className="p-6">
 
-            {rate.boardName
-              ?.toLowerCase()
-              ?.includes(
-                "breakfast"
-              ) && (
-              <div
-                className="
-                flex
-                items-center
-                gap-2
-                rounded-xl
-                bg-green-50
-                px-4
-                py-2
-                text-sm
-                text-green-700
-                "
-              >
+          <h3 className="text-2xl font-bold">
+            {room.name}
+          </h3>
+
+          <div className="mt-4 flex flex-col gap-3">
+
+            <div className="flex items-center gap-2 text-sm">
+              <Users size={16} />
+              Sleeps {rate.maxOccupancy ?? 2} Guests
+            </div>
+
+            {breakfast && (
+              <div className="flex items-center gap-2 text-green-700">
                 <Coffee size={16} />
-
-                Breakfast Included
+                {breakfast}
               </div>
             )}
 
             {refundable && (
-              <div
-                className="
-                flex
-                items-center
-                gap-2
-                rounded-xl
-                bg-blue-50
-                px-4
-                py-2
-                text-sm
-                text-blue-700
-                "
-              >
-                <ShieldCheck size={16} />
-
-                Free Cancellation
+              <div className="flex items-center gap-2 text-emerald-700">
+                <RotateCcw size={16} />
+                Refundable
               </div>
             )}
+
+            <div className="flex items-center gap-2 text-blue-700">
+              <ShieldCheck size={16} />
+              Free Cancellation
+            </div>
 
           </div>
 
         </div>
 
-        <div className="text-right">
+        {/* PRICE */}
 
-          <p className="text-sm text-neutral-500">
-            Total Price
-          </p>
+        <div className="flex flex-col justify-between border-l p-6">
 
-          <h2 className="mt-2 text-4xl font-bold">
-            {total?.currency ??
-              "USD"}{" "}
-            {Number(
-              total?.amount ?? 0
-            ).toFixed(0)}
-          </h2>
+          <div>
 
-          <button
-            className="
-            mt-6
-            rounded-2xl
-            bg-emerald-700
-            px-8
-            py-4
-            font-semibold
-            text-white
-            transition
-            hover:bg-emerald-800
-            "
+            <p className="text-right text-sm text-neutral-400 line-through">
+              {currency} {oldPrice}
+            </p>
+
+            <h3 className="text-right text-4xl font-bold">
+              {currency} {Number(price).toFixed(0)}
+            </h3>
+
+            <p className="text-right text-sm text-neutral-500">
+              Includes taxes & fees
+            </p>
+
+          </div>
+
+          <Link
+            href={`/booking?offerId=${room.offerId}`}
+            className="rounded-xl bg-emerald-700 py-3 text-center font-semibold text-white transition hover:bg-emerald-800"
           >
             Reserve
-          </button>
+          </Link>
 
         </div>
 
       </div>
 
-      {rate.cancellationPolicies
-        ?.cancelPolicyInfos
-        ?.length > 0 && (
-        <div
-          className="
-          mt-8
-          rounded-2xl
-          bg-neutral-50
-          p-5
-          "
-        >
-          <h4 className="font-semibold">
-            Cancellation Policy
-          </h4>
-
-          {rate.cancellationPolicies.cancelPolicyInfos.map(
-            (
-              policy: any,
-              index: number
-            ) => (
-              <p
-                key={index}
-                className="mt-2 text-sm text-neutral-600"
-              >
-                Cancel before{" "}
-                {policy.cancelTime}
-                {" • "}
-                Charge{" "}
-                {policy.currency}{" "}
-                {policy.amount}
-              </p>
-            )
-          )}
-        </div>
-      )}
-
-    </div>
+    </article>
   );
 }
