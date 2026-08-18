@@ -64,7 +64,7 @@ export async function getHotelDetails(hotelId: string) {
 }
 
 /**
- * Otel fiyat ve müsaitlik bilgilerini getiren fonksiyon (EKLENEN KISIM)
+ * Otel fiyat ve müsaitlik bilgilerini getiren fonksiyon
  */
 export async function getHotelRates(payload: {
   hotelIds: string[];
@@ -77,6 +77,40 @@ export async function getHotelRates(payload: {
   maxRatesPerHotel?: number;
 }) {
   return await fetchFromLiteAPI('/hotels/rates', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+/**
+ * Rezervasyon öncesi kontrol (prebook) fonksiyonu
+ */
+export async function prebookHotel(payload: {
+  rateId: string;
+  // LiteAPI prebook payload parametrelerine göre burayı genişletebilirsiniz
+  [key: string]: any;
+}) {
+  return await fetchFromLiteAPI('/rates/prebook', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+/**
+ * Rezervasyon oluşturma (book) fonksiyonu
+ */
+export async function bookHotel(payload: {
+  prebookId?: string;
+  holder: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+  };
+  // Diğer rezervasyon parametreleri
+  [key: string]: any;
+}) {
+  return await fetchFromLiteAPI('/bookings', {
     method: 'POST',
     body: JSON.stringify(payload),
   });
