@@ -7,7 +7,7 @@ export default function Hero() {
   return (
     <section
       id="discover"
-      className="relative overflow-visible"
+      className="relative overflow-visible bg-[#0A1128]"
     >
       {/* Background */}
       <div
@@ -19,11 +19,11 @@ export default function Hero() {
       />
 
       {/* Overlay */}
-      <div className="absolute inset-0 bg-black/45" />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
+      <div className="absolute inset-0 bg-[#0A1128]/50" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0A1128]/30 via-transparent to-[#0A1128]" />
 
       {/* Glow */}
-      <div className="absolute left-1/2 top-1/2 h-[700px] w-[700px] -translate-x-1/2 -translate-y-[15%] rounded-full bg-emerald-500/10 blur-[180px]" />
+      <div className="absolute left-1/2 top-1/2 h-[700px] w-[700px] -translate-x-1/2 -translate-y-[15%] rounded-full bg-amber-500/15 blur-[180px] pointer-events-none" />
 
       {/* CONTENT */}
       <div className="relative z-20 mx-auto flex min-h-screen w-[92%] max-w-[1550px] items-center justify-between pt-36 pb-72">
@@ -32,10 +32,10 @@ export default function Hero() {
         <motion.div
           initial={{ opacity: 0, y: 60 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: .9 }}
+          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
           className="max-w-[760px]"
         >
-          <span className="inline-flex rounded-full border border-white/20 bg-white/10 px-6 py-3 text-[13px] tracking-[0.35em] text-white backdrop-blur-xl">
+          <span className="inline-flex rounded-full border border-amber-500/30 bg-[#101C3E]/90 px-6 py-3 text-[13px] tracking-[0.35em] text-amber-400 backdrop-blur-xl shadow-md">
             LUXURY TRAVEL • AI CONCIERGE
           </span>
 
@@ -45,17 +45,17 @@ export default function Hero() {
             Reimagined.
           </h1>
 
-          <p className="mt-9 max-w-[620px] text-[20px] leading-[1.9] text-white/82">
+          <p className="mt-9 max-w-[620px] text-[20px] leading-[1.9] text-slate-200">
             Discover extraordinary destinations, private experiences and
             intelligent travel planning crafted for modern explorers.
           </p>
 
           <div className="mt-12 flex flex-wrap gap-5">
-            <button className="rounded-full bg-white px-9 py-4 text-base font-semibold text-black transition hover:scale-105">
+            <button className="rounded-full bg-amber-500 hover:bg-amber-400 px-9 py-4 text-base font-bold text-slate-950 transition-all hover:scale-105 shadow-lg cursor-pointer">
               Explore Destinations
             </button>
 
-            <button className="rounded-full border border-white/20 bg-white/10 px-9 py-4 text-base text-white backdrop-blur-xl transition hover:bg-white/20">
+            <button className="rounded-full border border-slate-700 bg-[#101C3E]/90 px-9 py-4 text-base text-white backdrop-blur-xl transition-all hover:bg-[#1E293B] hover:border-amber-500/50 cursor-pointer shadow-md">
               Watch Story
             </button>
           </div>
@@ -65,10 +65,10 @@ export default function Hero() {
         <motion.div
           initial={{ opacity: 0, x: 80 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: .35, duration: .8 }}
-          className="hidden w-[360px] rounded-[34px] border border-white/20 bg-white/10 p-9 backdrop-blur-2xl xl:block"
+          transition={{ delay: 0.25, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="hidden w-[360px] rounded-[34px] border border-slate-700 bg-[#101C3E]/95 p-9 backdrop-blur-2xl xl:block shadow-2xl"
         >
-          <p className="text-xs uppercase tracking-[0.35em] text-white/60">
+          <p className="text-xs uppercase tracking-[0.35em] text-amber-400 font-bold">
             Featured Escape
           </p>
 
@@ -76,23 +76,23 @@ export default function Hero() {
             Maldives
           </h3>
 
-          <p className="mt-5 text-[17px] leading-8 text-white/75">
+          <p className="mt-5 text-[17px] leading-8 text-slate-300">
             Crystal-clear lagoons, private villas, yacht cruises and Michelin
             dining surrounded by paradise.
           </p>
 
           <div className="mt-10 flex items-end justify-between">
             <div>
-              <p className="text-[11px] uppercase tracking-[0.35em] text-white/50">
+              <p className="text-[11px] uppercase tracking-[0.35em] text-slate-400 font-medium">
                 Starting From
               </p>
 
-              <h4 className="mt-2 text-[40px] font-bold text-white">
+              <h4 className="mt-2 text-[40px] font-extrabold text-white">
                 $4,900
               </h4>
             </div>
 
-            <button className="rounded-full bg-white px-7 py-3 font-semibold text-black transition hover:scale-105">
+            <button className="rounded-full bg-amber-500 hover:bg-amber-400 px-7 py-3 font-bold text-slate-950 transition-all hover:scale-105 shadow-md cursor-pointer">
               View →
             </button>
           </div>

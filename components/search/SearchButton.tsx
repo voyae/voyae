@@ -9,15 +9,12 @@ interface Props {
   destination: {
     name: string;
     fullName: string;
-
     latitude: number;
     longitude: number;
-
     countryCode: string;
   } | null;
 
   checkIn?: Date;
-
   checkOut?: Date;
 
   guests: {
@@ -35,7 +32,6 @@ export default function SearchButton({
   guests,
 }: Props) {
   const router = useRouter();
-
   const [loading, setLoading] = useState(false);
 
   function handleSearch() {
@@ -52,83 +48,48 @@ export default function SearchButton({
     setLoading(true);
 
     const params = new URLSearchParams();
-
     params.set("destination", destination.name);
-
     params.set("fullName", destination.fullName);
-
-    params.set(
-      "lat",
-      destination.latitude.toString()
-    );
-
-    params.set(
-      "lng",
-      destination.longitude.toString()
-    );
-
-    params.set(
-      "countryCode",
-      destination.countryCode
-    );
-
-    params.set(
-      "checkIn",
-      format(checkIn, "yyyy-MM-dd")
-    );
-
-    params.set(
-      "checkOut",
-      format(checkOut, "yyyy-MM-dd")
-    );
-
-    params.set(
-      "adults",
-      guests.adults.toString()
-    );
-
-    params.set(
-      "children",
-      guests.children.join(",")
-    );
-
-    params.set(
-      "rooms",
-      guests.rooms.toString()
-    );
-
-    params.set(
-      "pets",
-      guests.pets ? "1" : "0"
-    );
+    params.set("lat", destination.latitude.toString());
+    params.set("lng", destination.longitude.toString());
+    params.set("countryCode", destination.countryCode);
+    params.set("checkIn", format(checkIn, "yyyy-MM-dd"));
+    params.set("checkOut", format(checkOut, "yyyy-MM-dd"));
+    params.set("adults", guests.adults.toString());
+    params.set("children", guests.children.join(","));
+    params.set("rooms", guests.rooms.toString());
+    params.set("pets", guests.pets ? "1" : "0");
 
     router.push(`/search?${params.toString()}`);
   }
 
   return (
-    <div className="flex items-center p-2">
+    <div className="flex items-center p-1">
       <button
         type="button"
         onClick={handleSearch}
         disabled={loading}
         className="
           flex
-          h-[72px]
+          h-[58px]
+          px-8
           w-full
+          lg:w-auto
           items-center
           justify-center
-          gap-3
+          gap-2.5
           rounded-2xl
-          bg-emerald-700
-          text-lg
+          bg-emerald-600
+          text-base
           font-semibold
           text-white
           transition-all
           duration-300
           hover:scale-[1.02]
-          hover:bg-emerald-800
+          hover:bg-emerald-700
           disabled:cursor-not-allowed
           disabled:opacity-70
+          shadow-md
         "
       >
         {loading ? (
@@ -145,8 +106,8 @@ export default function SearchButton({
           />
         ) : (
           <>
-            <Search size={22} />
-            Search
+            <Search size={20} />
+            <span>Search</span>
           </>
         )}
       </button>

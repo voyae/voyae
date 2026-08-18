@@ -1,141 +1,161 @@
-"use client";
+import React from 'react';
+import NextImage from 'next/image';
+import { Heart, Check, Info } from 'lucide-react';
 
-import Image from "next/image";
-import Link from "next/link";
-
-import {
-  Star,
-  MapPin,
-  Coffee,
-  ShieldCheck,
-  RotateCcw,
-} from "lucide-react";
-
-import { HotelCard as Hotel } from "@/lib/hotelMapper";
-
-interface Props {
-  hotel: Hotel;
+interface HotelCardProps {
+  id?: string;
+  name: string;
+  hotelImages?: string[] | string;
+  image?: string;
+  roomType?: string;
+  boardType?: string;
+  amenities?: string[];
+  locationText: string;
+  freeCancellation?: boolean;
+  rating?: number | string;
+  reviewsCount?: number;
+  price: number;
 }
 
-export default function HotelCard({ hotel }: Props) {
+export default function HotelCard({
+  name,
+  hotelImages,
+  image,
+  roomType,
+  boardType,
+  amenities,
+  locationText,
+  freeCancellation,
+  rating,
+  reviewsCount,
+  price,
+}: HotelCardProps) {
+  const imageSrc = Array.isArray(hotelImages) 
+    ? hotelImages[0] 
+    : (hotelImages || image);
+
+  const numRating = Number(rating) || 8.5;
+  const ratingText = numRating >= 9.0 ? "Harika" : numRating >= 8.0 ? "Müthiş" : "Çok İyi";
+  
+  // Booking tarzı üstü çizili orijinal fiyat simülasyonu
+  const oldPrice = Math.round(price * 1.18);
+
   return (
-    <article className="overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm transition hover:shadow-lg">
-      <div className="grid grid-cols-[320px_1fr_240px]">
-        
-        {/* HOTEL IMAGE */}
-        <div className="relative h-[260px] bg-neutral-100">
-          {hotel.image ? (
-            <Image
-              src={hotel.image}
-              alt={hotel.name}
-              fill
-              unoptimized
-              className="object-cover"
-            />
-          ) : (
-            <div className="flex h-full items-center justify-center text-sm text-neutral-400">
-              No Image Available
-            </div>
-          )}
-        </div>
+    <div className="bg-white border border-neutral-200/80 rounded-2xl p-4 md:p-5 flex flex-col md:flex-row gap-5 hover:shadow-xl transition-all duration-300 relative group">
+      
+      {/* HOTEL IMAGE & BADGES */}
+      <div className="relative h-[240px] w-full md:w-72 bg-neutral-100 rounded-xl overflow-hidden shrink-0">
+        {imageSrc ? (
+          <NextImage
+            src={imageSrc}
+            alt={name || "Hotel"}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+        ) : (
+          <div className="flex h-full items-center justify-center text-neutral-400">
+            <span>Görsel Yok</span>
+          </div>
+        )}
 
-        {/* CENTER */}
-        <div className="p-6">
-          <div className="flex items-center gap-1">
-            {Array.from({
-              length: hotel.stars,
-            }).map((_, i) => (
-              <Star
-                key={i}
-                size={14}
-                className="fill-yellow-400 text-yellow-400"
-              />
-            ))}
+        {/* Sol üst rozet (Örn: Her şey dahil / Board) */}
+        {boardType && (
+          <div className="absolute top-3 left-3 bg-emerald-700 text-white text-xs font-semibold px-2.5 py-1 rounded shadow-md">
+            {boardType}
+          </div>
+        )}
+
+        {/* Sol üstteki kalp ikonu ile sağdaki puanı görsel olarak dengelemek/hizalamak için */}
+        <button className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow-md text-neutral-700 transition-colors">
+          <Heart className="w-5 h-5" />
+        </button>
+      </div>
+      
+      {/* MIDDLE CONTENT (Booking Detailed Info) */}
+      <div className="flex-1 flex flex-col justify-between">
+        <div>
+          {/* Otel Adı ve Yıldızlar */}
+          <div className="flex items-start justify-between gap-2">
+            <h3 className="text-xl font-bold text-blue-600 hover:underline cursor-pointer flex items-center gap-2">
+              {name}
+              <span className="text-amber-400 text-sm tracking-tighter">★★★★</span>
+              <Info className="w-4 h-4 text-neutral-400 inline" />
+            </h3>
           </div>
 
-          <h2 className="mt-2 text-2xl font-bold">
-            {hotel.name}
-          </h2>
-
-          <div className="mt-2 flex items-center gap-2 text-sm text-neutral-500">
-            <MapPin size={15} />
-            <span>
-              {hotel.address}
-              {hotel.city && ` • ${hotel.city}`}
-              {hotel.country && ` • ${hotel.country}`}
-            </span>
+          {/* Konum ve Mesafe Detayları */}
+          <div className="text-xs text-neutral-600 mt-1 flex flex-wrap items-center gap-1.5">
+            <span className="text-blue-600 hover:underline cursor-pointer font-medium">{locationText.split('•')[0]}</span>
+            <span>•</span>
+            <span className="text-blue-600 hover:underline cursor-pointer">Haritada göster</span>
+            <span>•</span>
+            <span className="text-neutral-500">Merkez: 0,7 km</span>
+            <span>•</span>
+            <span className="text-neutral-500">Plaj yakında</span>
           </div>
 
-          {/* ROOM */}
-          <div className="mt-6">
-            <p className="font-semibold text-emerald-700">
-              {hotel.roomName}
-            </p>
-
-            <div className="mt-3 flex flex-col gap-2 text-sm">
-              {hotel.breakfastIncluded && (
-                <div className="flex items-center gap-2 text-green-700">
-                  <Coffee size={15} />
-                  Breakfast Included
-                </div>
-              )}
-
-              {hotel.freeCancellation && (
-                <div className="flex items-center gap-2 text-blue-700">
-                  <ShieldCheck size={15} />
-                  Free Cancellation
-                </div>
-              )}
-
-              {hotel.refundable && (
-                <div className="flex items-center gap-2 text-emerald-700">
-                  <RotateCcw size={15} />
-                  Refundable
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* RIGHT */}
-        <div className="flex flex-col justify-between border-l p-6">
-          <div>
-            <div className="flex justify-end">
-              <div className="rounded-lg bg-emerald-700 px-3 py-2 font-bold text-white">
-                {hotel.rating > 0 ? hotel.rating.toFixed(1) : "N/A"}
-              </div>
-            </div>
-
-            <p className="mt-2 text-right text-sm text-neutral-500">
-              {hotel.reviewCount > 0 ? `${hotel.reviewCount.toLocaleString()} reviews` : "No reviews yet"}
-            </p>
+          {/* Plaj mesafesi rozeti */}
+          <div className="text-xs text-neutral-500 mt-1.5 flex items-center gap-1 font-medium">
+            <span>🏖️ Plaja 650 m</span>
           </div>
 
-          <div>
-            {hotel.oldPrice > hotel.price && (
-              <p className="text-right text-sm text-neutral-400 line-through">
-                {hotel.currency} {hotel.oldPrice}
+          <div className="inline-block bg-emerald-50 text-emerald-800 text-[11px] font-semibold px-2 py-0.5 rounded mt-2">
+            Tatil Fırsatı
+          </div>
+
+          {/* Oda Özellikleri ve İptal Koşulları */}
+          <div className="mt-3 pt-3 border-t border-neutral-100">
+            <h4 className="text-sm font-bold text-neutral-900">{roomType || "Ekonomik Çift Kişilik Oda"}</h4>
+            <p className="text-xs text-neutral-600 mt-0.5">Klima • 1 çift kişilik yatak</p>
+            
+            {freeCancellation && (
+              <p className="text-xs text-emerald-700 font-medium mt-1.5 flex items-center gap-1">
+                <Check className="w-3.5 h-3.5 stroke-[2.5]" /> Ücretsiz iptal
               </p>
             )}
 
-            <p className="text-right text-4xl font-bold">
-              {hotel.currency} {hotel.price}
+            <p className="text-xs text-red-600 font-semibold mt-1">
+              Bizde bu fiyattan 5 tane kaldı
             </p>
+          </div>
+        </div>
+      </div>
 
-            <p className="text-right text-sm text-neutral-500">
-              Includes taxes & fees
-            </p>
-
-            <Link
-              href={`/hotel/${hotel.id}`}
-              className="mt-5 block rounded-xl bg-emerald-700 py-3 text-center font-semibold text-white transition hover:bg-emerald-800"
-            >
-              See availability
-            </Link>
+      {/* RIGHT SIDE (Rating, Pricing & CTA) */}
+      <div className="w-full md:w-56 flex flex-row md:flex-col justify-between md:items-end border-t md:border-t-0 md:border-l border-neutral-100 pt-4 md:pt-0 md:pl-5 shrink-0">
+        
+        {/* Puan ve Değerlendirme Sayısı */}
+        <div className="flex md:flex-row items-center gap-2">
+          <div className="text-left md:text-right">
+            <div className="text-sm font-bold text-neutral-900">{ratingText}</div>
+            <div className="text-xs text-neutral-500">{reviewsCount || 901} değerlendirme</div>
+          </div>
+          <div className="bg-blue-900 text-white font-bold text-sm px-2.5 py-1.5 rounded-tl-lg rounded-tr-lg rounded-bl-lg shadow-sm">
+            {numRating.toFixed(1)}
           </div>
         </div>
 
+        {/* Fiyatlandırma Detayları */}
+        <div className="text-left md:text-right mt-2">
+          <div className="text-xs text-neutral-500">1 gece, 2 yetişkin</div>
+          <div className="text-xs text-neutral-400 line-through">TL {oldPrice.toLocaleString('tr-TR')}</div>
+          <div className="text-2xl font-extrabold text-neutral-900">
+            TL {price.toLocaleString('tr-TR')}
+          </div>
+          <div className="text-[11px] text-neutral-500 flex items-center gap-1 md:justify-end">
+            <span>Vergi ve ücretler dahil</span>
+            <Info className="w-3 h-3 text-neutral-400" />
+          </div>
+        </div>
+
+        {/* Rezervasyon / Durum Butonu */}
+        <button className="w-full mt-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm py-2.5 px-4 rounded-xl transition-colors flex items-center justify-center gap-1 shadow-sm">
+          <span>Yer durumuna bak</span>
+          <span>&gt;</span>
+        </button>
+
       </div>
-    </article>
+
+    </div>
   );
 }

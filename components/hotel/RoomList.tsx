@@ -7,17 +7,14 @@ interface Props {
   loading?: boolean;
 }
 
-export default function RoomList({
-  rooms,
-  loading = false,
-}: Props) {
+export default function RoomList({ rooms, loading = false }: Props) {
   if (loading) {
     return (
       <div className="space-y-5">
-        {Array.from({ length: 5 }).map((_, index) => (
+        {Array.from({ length: 3 }).map((_, index) => (
           <div
             key={index}
-            className="h-[220px] animate-pulse rounded-2xl border border-neutral-200 bg-neutral-100"
+            className="h-[220px] animate-pulse rounded-2xl border border-slate-800 bg-[#101C3E]"
           />
         ))}
       </div>
@@ -26,7 +23,7 @@ export default function RoomList({
 
   if (!rooms.length) {
     return (
-      <div className="flex h-64 items-center justify-center rounded-2xl border border-dashed border-neutral-300 bg-white text-lg text-neutral-500">
+      <div className="flex h-64 items-center justify-center rounded-2xl border border-dashed border-slate-700 bg-[#101C3E] text-lg text-slate-400">
         No rooms available.
       </div>
     );

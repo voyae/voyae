@@ -49,7 +49,8 @@ export default function GuestsField() {
             Guests
           </p>
 
-          <p className="mt-1 text-lg font-semibold text-neutral-900">
+          {/* Kalın ve koyu görünüm giderilerek diğer alanlarla uyumlu zarif font dengesine kavuşturuldu */}
+          <p className="mt-0.5 text-sm font-medium text-neutral-700">
             {guestCount} Guest{guestCount !== 1 ? "s" : ""} · {rooms} Room
             {rooms !== 1 ? "s" : ""}
           </p>
