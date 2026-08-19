@@ -91,23 +91,29 @@ export default function GuestsPopup({ onClose }: Props) {
         top-full
         z-50
         mt-3
-        w-[360px]
-        rounded-[28px]
+        w-[380px]
+        rounded-[24px]
         border
-        border-neutral-200/80
-        bg-white
+        border-amber-500/30
+        bg-[#101C3E]
         p-5
-        shadow-[0_20px_50px_rgba(0,0,0,0.12)]
+        shadow-[0_20px_50px_rgba(0,0,0,.4)]
+        backdrop-blur-xl
+        animate-in
+        fade-in
+        zoom-in-95
+        duration-200
+        text-slate-100
       "
     >
-      <div className="mb-4 flex items-center justify-between border-b border-neutral-100 pb-3">
-        <h3 className="text-lg font-semibold text-neutral-800">
+      <div className="mb-4 flex items-center justify-between border-b border-amber-500/20 pb-3">
+        <h3 className="text-lg font-semibold text-slate-100">
           Guests & Rooms
         </h3>
 
         <button 
           onClick={onClose}
-          className="rounded-full p-1.5 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700 transition-colors"
+          className="rounded-full p-1.5 text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors cursor-pointer"
         >
           <X size={18} />
         </button>
@@ -132,18 +138,18 @@ export default function GuestsPopup({ onClose }: Props) {
       />
 
       {guests.children.length > 0 && (
-        <div className="my-3 space-y-2 rounded-2xl bg-neutral-50 p-3.5 border border-neutral-100">
-          <p className="text-xs font-semibold text-neutral-600">
+        <div className="my-3 space-y-2 rounded-2xl bg-slate-900/40 p-3.5 border border-amber-500/20">
+          <p className="text-xs font-semibold text-slate-200">
             Children's ages
           </p>
 
-          <div className="max-h-32 overflow-y-auto space-y-2 pr-1">
+          <div className="max-h-32 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
             {guests.children.map((age, index) => (
               <div
                 key={index}
                 className="flex items-center justify-between text-sm"
               >
-                <span className="text-neutral-600">
+                <span className="text-slate-300">
                   Child {index + 1}
                 </span>
 
@@ -158,14 +164,16 @@ export default function GuestsPopup({ onClose }: Props) {
                   className="
                     rounded-xl
                     border
-                    border-neutral-200
-                    bg-white
+                    border-amber-500/30
+                    bg-slate-900
+                    text-slate-200
                     px-2.5
                     py-1.5
                     text-sm
                     focus:outline-none
                     focus:ring-2
-                    focus:ring-emerald-500/20
+                    focus:ring-amber-500/30
+                    cursor-pointer
                   "
                 >
                   {Array.from(
@@ -174,6 +182,7 @@ export default function GuestsPopup({ onClose }: Props) {
                       <option
                         key={i}
                         value={i}
+                        className="bg-slate-900 text-slate-200"
                       >
                         {i} years
                       </option>
@@ -187,7 +196,7 @@ export default function GuestsPopup({ onClose }: Props) {
       )}
 
       {/* Rooms */}
-      <div className="border-t border-neutral-100 pt-1">
+      <div className="border-t border-amber-500/20 pt-1">
         <Row
           title="Rooms"
           subtitle="Number of rooms"
@@ -198,13 +207,13 @@ export default function GuestsPopup({ onClose }: Props) {
       </div>
 
       {/* Pets */}
-      <label className="mt-3 flex cursor-pointer items-center justify-between rounded-2xl border border-neutral-200/80 p-3.5 hover:bg-neutral-50/50 transition-colors">
+      <label className="mt-3 flex cursor-pointer items-center justify-between rounded-2xl border border-amber-500/20 bg-slate-900/40 p-3.5 hover:bg-slate-900/70 transition-colors">
         <div>
-          <p className="text-sm font-semibold text-neutral-800">
+          <p className="text-sm font-semibold text-slate-100">
             Travelling with pets
           </p>
 
-          <p className="text-xs text-neutral-500">
+          <p className="text-xs text-slate-400">
             Show pet friendly stays
           </p>
         </div>
@@ -221,7 +230,7 @@ export default function GuestsPopup({ onClose }: Props) {
               },
             })
           }
-          className="h-4 w-4 rounded border-neutral-300 text-emerald-600 focus:ring-emerald-500"
+          className="h-4 w-4 rounded border-amber-500/40 bg-slate-800 text-amber-500 focus:ring-0 cursor-pointer accent-amber-500"
         />
       </label>
 
@@ -231,14 +240,15 @@ export default function GuestsPopup({ onClose }: Props) {
           mt-5
           h-11
           w-full
-          rounded-xl
-          bg-emerald-600
-          text-sm
+          rounded-full
+          bg-amber-500
+          text-xs
           font-semibold
-          text-white
+          text-slate-950
           transition
-          hover:bg-emerald-700
-          shadow-sm
+          hover:bg-amber-400
+          shadow-md
+          cursor-pointer
         "
       >
         Done
@@ -265,11 +275,11 @@ function Row({
   return (
     <div className="flex items-center justify-between py-2.5">
       <div>
-        <p className="text-sm font-semibold text-neutral-800">
+        <p className="text-sm font-semibold text-slate-100">
           {title}
         </p>
 
-        <p className="text-xs text-neutral-500">
+        <p className="text-xs text-slate-400">
           {subtitle}
         </p>
       </div>
@@ -285,16 +295,17 @@ function Row({
             justify-center
             rounded-full
             border
-            border-neutral-200
-            text-neutral-600
-            hover:border-neutral-400
+            border-amber-500/30
+            text-slate-200
+            hover:bg-amber-500/20
             transition-colors
+            cursor-pointer
           "
         >
           <Minus size={14} />
         </button>
 
-        <span className="w-5 text-center text-sm font-semibold text-neutral-800">
+        <span className="w-5 text-center text-sm font-semibold text-slate-100">
           {value}
         </span>
 
@@ -308,10 +319,11 @@ function Row({
             justify-center
             rounded-full
             border
-            border-neutral-200
-            text-neutral-600
-            hover:border-neutral-400
+            border-amber-500/30
+            text-slate-200
+            hover:bg-amber-500/20
             transition-colors
+            cursor-pointer
           "
         >
           <Plus size={14} />

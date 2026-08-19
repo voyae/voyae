@@ -44,11 +44,11 @@ export default function Hero() {
   return (
     <section
       id="discover"
-      className="relative flex flex-col justify-center min-h-[90vh] bg-[#0A1128] py-12"
+      className="relative flex flex-col justify-between min-h-[92vh] bg-[#0A1128] pt-24 pb-16 overflow-visible"
     >
       {/* Background - Lüks Sahil ve Tatil Manzarası */}
       <div
-        className="absolute inset-0 bg-cover bg-center"
+        className="absolute inset-0 bg-cover bg-center bottom-12"
         style={{
           backgroundImage:
             "url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2400&q=100')",
@@ -56,14 +56,14 @@ export default function Hero() {
       />
 
       {/* Overlay */}
-      <div className="absolute inset-0 bg-[#070D1F]/50" />
-      <div className="absolute inset-0 bg-gradient-to-b from-[#070D1F]/40 via-transparent to-[#0A1128]" />
+      <div className="absolute inset-0 bottom-12 bg-[#070D1F]/50" />
+      <div className="absolute inset-0 bottom-12 bg-gradient-to-b from-[#070D1F]/40 via-transparent to-[#0A1128]" />
 
       {/* Glow */}
       <div className="absolute left-1/2 top-1/2 h-[350px] w-[350px] sm:h-[600px] sm:w-[600px] -translate-x-1/2 -translate-y-[20%] rounded-full bg-amber-500/15 blur-[120px] sm:blur-[160px] pointer-events-none" />
 
       {/* CONTENT */}
-      <div className="relative z-20 mx-auto flex w-[92%] max-w-[1550px] flex-col xl:flex-row items-center justify-between pt-16 pb-8">
+      <div className="relative z-20 mx-auto flex w-[92%] max-w-[1550px] flex-col xl:flex-row items-center justify-between my-auto">
 
         {/* LEFT */}
         <motion.div
@@ -166,8 +166,8 @@ export default function Hero() {
         </motion.div>
       </div>
 
-      {/* SEARCH BAR (Sayfanın alt kısmına doğru indirildi) */}
-      <div className="relative z-40 mx-auto w-[92%] max-w-[1550px] mt-16 sm:mt-24 mb-8">
+      {/* SEARCH BAR - Fotoğrafın tam bittiği sınıra oturtuldu */}
+      <div className="relative z-50 mx-auto w-[92%] max-w-[1550px] -mb-60">
         <SearchBar />
       </div>
     </section>

@@ -32,7 +32,7 @@ export async function fetchFromLiteAPI(endpoint: string, options: RequestInit = 
     }
 
     if (response.status === 429 || response.status === 4290) {
-      throw new Error('LiteAPI İstek Limiti Aşıldı (4290): Çok fazla istek atıldı, lütfen biraz bekleyin.');
+      throw new Error('Çok fazla istek atıldı, lütfen biraz bekleyin.');
     }
 
     if (!response.ok) {

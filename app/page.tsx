@@ -26,12 +26,47 @@ export default function Home() {
       <LoadingScreen loading={loading} />
 
       {!loading && (
-        <div className="flex flex-col gap-12 sm:gap-16 md:gap-24 w-full">
+        <div className="flex flex-col w-full">
+          {/* Hero & Destinations Arası */}
           <Hero />
+          
+          <div className="relative w-full py-10 sm:py-16 flex items-center justify-center pointer-events-none">
+            <div className="absolute inset-x-12 h-[1px] bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
+            <div className="relative h-1.5 w-1.5 rounded-full bg-amber-400/60 shadow-[0_0_12px_rgba(245,158,11,0.6)]" />
+          </div>
+
           <Destinations />
+
+          {/* Destinations & Experiences Arası */}
+          <div className="relative w-full py-10 sm:py-16 flex items-center justify-center pointer-events-none">
+            <div className="absolute inset-x-12 h-[1px] bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
+            <div className="relative h-1.5 w-1.5 rounded-full bg-amber-400/60 shadow-[0_0_12px_rgba(245,158,11,0.6)]" />
+          </div>
+
           <Experiences />
+
+          {/* Experiences & AIConcierge Arası */}
+          <div className="relative w-full py-10 sm:py-16 flex items-center justify-center pointer-events-none">
+            <div className="absolute inset-x-12 h-[1px] bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
+            <div className="relative h-1.5 w-1.5 rounded-full bg-amber-400/60 shadow-[0_0_12px_rgba(245,158,11,0.6)]" />
+          </div>
+
           <AIConcierge />
+
+          {/* AIConcierge & Testimonials Arası */}
+          <div className="relative w-full py-10 sm:py-16 flex items-center justify-center pointer-events-none">
+            <div className="absolute inset-x-12 h-[1px] bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
+            <div className="relative h-1.5 w-1.5 rounded-full bg-amber-400/60 shadow-[0_0_12px_rgba(245,158,11,0.6)]" />
+          </div>
+
           <Testimonials />
+
+          {/* Testimonials & Footer Arası */}
+          <div className="relative w-full py-10 sm:py-16 flex items-center justify-center pointer-events-none">
+            <div className="absolute inset-x-12 h-[1px] bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
+            <div className="relative h-1.5 w-1.5 rounded-full bg-amber-400/60 shadow-[0_0_12px_rgba(245,158,11,0.6)]" />
+          </div>
+
           <Footer />
         </div>
       )}

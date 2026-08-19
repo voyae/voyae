@@ -1,22 +1,19 @@
 import { searchPlace } from "@/lib/googlePlaces";
-import { SYSTEM_PROMPT } from "@/lib/systemPrompt";
+import { getSystemPrompt } from "@/lib/systemPrompt";
 import { NextResponse } from "next/server";
-import { GoogleGenAI } from "@google/genai";
-
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY!,
-});
 
 export async function POST(req: Request) {
   try {
-    if (!process.env.GEMINI_API_KEY) {
+    const apiKey = process.env.GROQ_API_KEY;
+    if (!apiKey) {
       return NextResponse.json(
-        { error: "Missing GEMINI_API_KEY" },
+        { error: "Missing GROQ_API_KEY environment variable." },
         { status: 500 }
       );
     }
 
-    const { prompt } = await req.json();
+    const body = await req.json().catch(() => ({}));
+    const prompt = body?.prompt;
 
     if (!prompt) {
       return NextResponse.json(
@@ -25,41 +22,56 @@ export async function POST(req: Request) {
       );
     }
 
-    const completion =
-      await ai.models.generateContent({
-        model: "gemini-2.5-flash",
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "openai/gpt-oss-20b",
+        messages: [
+          {
+            role: "system",
+            content: "You are an elite travel planner. You MUST provide at least 3 to 4 real, existing hotels, restaurants and landmarks matching the user's budget. IMPORTANT: Provide realistic, market-accurate nightly rates for hotels (e.g. price field like '85' or '120') and meal prices for restaurants instead of generic placeholders. Return ONLY valid JSON matching the exact requested schema. Never use markdown."
+          },
+          {
+            role: "user",
+            content: getSystemPrompt(prompt),
+          }
+        ],
+        temperature: 0.4, // Fiyatların sallama olmasını engellemek için biraz daha kararlı çıktı
+        response_format: { type: "json_object" },
+        reasoning_format: "hidden"
+      }),
+    });
 
-        contents: SYSTEM_PROMPT.replace(
-          "${prompt}",
-          prompt
-        ),
+    const data = await response.json();
 
-        config: {
-          temperature: 0.7,
-          responseMimeType: "application/json",
-        },
-      });
-
-    const content = completion.text;
-
-    if (!content) {
-      return NextResponse.json(
-        { error: "Empty AI response." },
-        { status: 500 }
-      );
+    if (!response.ok) {
+      const errorMessage = data?.error?.message || "Groq API communication failed.";
+      console.error("GROQ API ERROR:", data);
+      return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
-    function ensureArray<T>(
-      value: T[] | undefined | null
-    ): T[] {
-      return Array.isArray(value)
-        ? value
-        : [];
+
+    const rawContent = data.choices?.[0]?.message?.content;
+
+    if (!rawContent) {
+      return NextResponse.json({ error: "Empty AI response received." }, { status: 500 });
     }
 
-    function ensureObject<T>(
-      value: T | undefined | null,
-      fallback: T
-    ): T {
+    let content = rawContent.trim();
+    if (content.startsWith("```json")) {
+      content = content.replace(/^```json/, "").replace(/```$/, "").trim();
+    } else if (content.startsWith("```")) {
+      content = content.replace(/^```/, "").replace(/```$/, "").trim();
+    }
+
+    function ensureArray<T>(value: T[] | undefined | null): T[] {
+      return Array.isArray(value) ? value : [];
+    }
+
+    function ensureObject<T>(value: T | undefined | null, fallback: T): T {
       return value ?? fallback;
     }
 
@@ -68,193 +80,76 @@ export async function POST(req: Request) {
     try {
       plan = JSON.parse(content);
 
+      // Otelleri Google Places ile zenginleştir ve rezervasyon linki ekle
       for (const hotel of plan.hotels ?? []) {
         try {
-          const place = await searchPlace(
-            `${hotel.name} ${plan.destination}`
-          );
-
-          if (!place) continue;
-
-          hotel.rating =
-            place.rating ?? hotel.rating;
-
-          hotel.maps =
-            place.googleMapsUri ??
-            hotel.maps;
-
-          hotel.address =
-            place.formattedAddress ?? "";
-
-          hotel.image =
-            place.photoUrl ?? "";
-
+          const place = await searchPlace(`${hotel.name} ${plan.destination}`);
+          if (place) {
+            hotel.name = place.name ?? hotel.name;
+            hotel.rating = place.rating ?? hotel.rating;
+            hotel.maps = place.googleMapsUri ?? hotel.maps;
+            hotel.address = place.formattedAddress ?? "";
+            hotel.image = place.photoUrl ?? "";
+          }
+          // Doğrudan rezervasyon / inceleme yönlendirmesi
+          hotel.bookingUrl = `https://www.google.com/travel/hotels/s?q=${encodeURIComponent(hotel.name + " " + plan.destination)}`;
+          // Boş gelen fiyatlar için güvenlik önlemi
+          if (!hotel.price) hotel.price = "75"; 
         } catch (err) {
-          console.error(
-            "Google Places:",
-            err
-          );
+          console.error("Google Places Hotel Error:", err);
         }
       }
 
+      // Restoranları Google Places ile zenginleştir
       for (const restaurant of plan.restaurants ?? []) {
         try {
-          const place = await searchPlace(
-            `${restaurant.name} ${plan.destination}`
-          );
-
-          if (!place) continue;
-
-          restaurant.rating =
-            place.rating ??
-            restaurant.rating;
-
-          restaurant.maps =
-            place.googleMapsUri ??
-            restaurant.maps;
-
-          restaurant.address =
-            place.formattedAddress ?? "";
-
-          restaurant.image =
-            place.photoUrl ?? "";
-
+          const place = await searchPlace(`${restaurant.name} ${plan.destination}`);
+          if (place) {
+            restaurant.name = place.name ?? restaurant.name;
+            restaurant.rating = place.rating ?? restaurant.rating;
+            restaurant.maps = place.googleMapsUri ?? restaurant.maps;
+            restaurant.address = place.formattedAddress ?? "";
+            restaurant.image = place.photoUrl ?? "";
+          }
+          if (!restaurant.price) restaurant.price = "20";
         } catch (err) {
-          console.error(
-            "Google Places:",
-            err
-          );
+          console.error("Google Places Restaurant Error:", err);
         }
       }
-      plan.hotels = ensureArray(
-        plan.hotels
-      ).slice(0, 5);
 
-      plan.restaurants = ensureArray(
-        plan.restaurants
-      ).slice(0, 5);
+      plan.hotels = ensureArray(plan.hotels).slice(0, 4);
+      plan.restaurants = ensureArray(plan.restaurants).slice(0, 4);
+      plan.activities = ensureArray(plan.activities).slice(0, 6);
+      plan.flightSuggestions = ensureArray(plan.flightSuggestions).slice(0, 3);
+      plan.dailyItinerary = ensureArray(plan.dailyItinerary);
+      plan.hiddenGems = ensureArray(plan.hiddenGems).slice(0, 4);
 
-      plan.activities = ensureArray(
-        plan.activities
-      ).slice(0, 8);
+      plan.weather = ensureObject(plan.weather, { temperature: "N/A", condition: "Unknown" });
+      plan.budgetBreakdown = ensureObject(plan.budgetBreakdown, { hotel: "-", food: "-", transport: "-", activities: "-" });
+      plan.emergencyNumbers = ensureObject(plan.emergencyNumbers, { police: "-", ambulance: "-", touristHotline: "-" });
 
-      plan.flightSuggestions = ensureArray(
-        plan.flightSuggestions
-      ).slice(0, 4);
+      plan.travelScore = typeof plan.travelScore === "number" ? plan.travelScore : 9.2;
+      plan.currency ??= "€";
 
-      plan.dailyItinerary = ensureArray(
-        plan.dailyItinerary
-      );
-
-      plan.hiddenGems = ensureArray(
-        plan.hiddenGems
-      ).slice(0, 5);
-
-      plan.packingChecklist = ensureArray(
-        plan.packingChecklist
-      );
-
-      plan.localEtiquette = ensureArray(
-        plan.localEtiquette
-      );
-
-      plan.tips = ensureArray(
-        plan.tips
-      ).slice(0, 5);
-
-      plan.weather = ensureObject(
-        plan.weather,
-        {
-          temperature: "N/A",
-          condition: "Unknown",
-        }
-      );
-
-      plan.budgetBreakdown = ensureObject(
-        plan.budgetBreakdown,
-        {
-          hotel: "-",
-          food: "-",
-          transport: "-",
-          activities: "-",
-        }
-      );
-
-      plan.emergencyNumbers = ensureObject(
-        plan.emergencyNumbers,
-        {
-          police: "-",
-          ambulance: "-",
-          touristHotline: "-",
-        }
-      );
-
-      plan.travelScore =
-        typeof plan.travelScore === "number"
-          ? plan.travelScore
-          : 9.5;
-
-      plan.bestTimeToVisit ??=
-        "All year";
-
-      plan.currency ??=
-        "Unknown";
-
-      plan.language ??=
-        "Unknown";
-
-      plan.timezone ??=
-        "Unknown";
-
-      plan.visa ??=
-        "Check official requirements";
-
-      if (!plan.destination) {
-        throw new Error(
-          "Destination missing."
-        );
+      if (!plan.destination || !plan.overview) {
+        throw new Error("Essential itinerary details are missing.");
       }
 
-      if (!plan.overview) {
-        throw new Error(
-          "Overview missing."
-        );
-      }
-    } catch (err) {
-      console.error(
-        "Invalid JSON:"
-      );
-
-      console.error(content);
-
+    } catch (parseErr) {
+      console.error("JSON Parse Error. Raw content was:", content);
       return NextResponse.json(
-        {
-          error:
-            "AI returned invalid JSON.",
-        },
-        {
-          status: 500,
-        }
+        { error: "AI generated an invalid data format. Please try again." },
+        { status: 500 }
       );
     }
 
     return NextResponse.json(plan);
 
   } catch (error: any) {
-    console.error(
-      "GEMINI ERROR:",
-      error
-    );
-
+    console.error("SERVER ROUTE ERROR:", error);
     return NextResponse.json(
-      {
-        error:
-          error?.message ??
-          "Unknown server error.",
-      },
-      {
-        status: 500,
-      }
+      { error: error?.message || "Internal server error." },
+      { status: 500 }
     );
   }
 }
