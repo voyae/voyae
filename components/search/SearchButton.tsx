@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
-import { format } from "date-fns";
+import { format, addDays } from "date-fns";
 
 interface Props {
   destination: {
@@ -40,10 +40,10 @@ export default function SearchButton({
       return;
     }
 
-    if (!checkIn || !checkOut) {
-      alert("Please select your travel dates.");
-      return;
-    }
+    // Mobilde tarih seçilmediyse kullanıcıyı tıkatmamak yerine 
+    // bugünün tarihini ve 5 gün sonrasını otomatik atayarak arama akışını koruyoruz.
+    const finalCheckIn = checkIn || new Date();
+    const finalCheckOut = checkOut || addDays(new Date(), 5);
 
     setLoading(true);
 
@@ -53,8 +53,8 @@ export default function SearchButton({
     params.set("lat", destination.latitude.toString());
     params.set("lng", destination.longitude.toString());
     params.set("countryCode", destination.countryCode);
-    params.set("checkIn", format(checkIn, "yyyy-MM-dd"));
-    params.set("checkOut", format(checkOut, "yyyy-MM-dd"));
+    params.set("checkIn", format(finalCheckIn, "yyyy-MM-dd"));
+    params.set("checkOut", format(finalCheckOut, "yyyy-MM-dd"));
     params.set("adults", guests.adults.toString());
     params.set("children", guests.children.join(","));
     params.set("rooms", guests.rooms.toString());
@@ -64,7 +64,7 @@ export default function SearchButton({
   }
 
   return (
-    <div className="flex items-center p-1">
+    <div className="flex items-center p-1 w-full lg:w-auto">
       <button
         type="button"
         onClick={handleSearch}
@@ -91,6 +91,7 @@ export default function SearchButton({
           disabled:opacity-70
           shadow-lg
           shadow-amber-500/20
+          cursor-pointer
         "
       >
         {loading ? (

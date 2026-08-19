@@ -1,14 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import {
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
-import {
-  DayPicker,
-  DateRange,
-} from "react-day-picker";
+import { useEffect, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { DayPicker, DateRange } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 
 interface Props {
@@ -23,6 +17,17 @@ export default function CalendarPopup({
   onClose,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Ekran boyutunu dinamik algılayıp mobil mi masaüstü mü karar veriyoruz
+  useEffect(() => {
+    function handleResize() {
+      setIsMobile(window.innerWidth < 640);
+    }
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -33,17 +38,8 @@ export default function CalendarPopup({
         onClose();
       }
     }
-
-    document.addEventListener(
-      "mousedown",
-      handleClick
-    );
-
-    return () =>
-      document.removeEventListener(
-        "mousedown",
-        handleClick
-      );
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
   }, [onClose]);
 
   return (
@@ -56,16 +52,14 @@ export default function CalendarPopup({
       z-50
       mt-3
       -translate-x-1/2
-
-      w-[610px]
-
+      w-[94vw]
+      max-w-[640px]
+      sm:w-[610px]
       rounded-[24px]
       border
       border-amber-500/30
       bg-[#101C3E]
-
-      p-5
-
+      p-4 sm:p-5
       shadow-[0_20px_50px_rgba(0,0,0,.4)]
       backdrop-blur-xl
       animate-in
@@ -76,7 +70,8 @@ export default function CalendarPopup({
     >
       <DayPicker
         mode="range"
-        numberOfMonths={2}
+        // Mobilde 1 ay, masaüstünde 2 ay gösterilir (Profesyonel Standart)
+        numberOfMonths={isMobile ? 1 : 2}
         pagedNavigation
         fixedWeeks
         showOutsideDays={false}
@@ -89,16 +84,17 @@ export default function CalendarPopup({
         onSelect={(value) => {
           setRange(value);
 
+          // İki tarih seçildiğinde otomatik kapatma (isteğe bağlı)
           if (value?.from && value?.to) {
             setTimeout(() => {
               onClose();
-            }, 180);
+            }, 250);
           }
         }}
-        className="voyae-calendar text-slate-100 relative"
+        className="voyae-calendar text-slate-100 relative w-full"
         classNames={{
-          months: "flex justify-between gap-10",
-          month: "w-[260px]",
+          months: "flex justify-center sm:justify-between gap-4",
+          month: "w-full sm:w-[260px] mx-auto",
           caption:
             "flex items-center justify-between mb-3 px-2 text-slate-100 relative",
           caption_label:
@@ -113,7 +109,7 @@ export default function CalendarPopup({
           weekday:
             "text-center text-[10px] uppercase tracking-wider text-amber-400/80 font-medium",
           week: "grid grid-cols-7",
-          day: "h-8 w-8 mx-auto rounded-full text-xs font-medium hover:bg-amber-500/20 text-slate-200 transition-colors flex items-center justify-center",
+          day: "h-9 w-9 sm:h-8 sm:w-8 mx-auto rounded-full text-xs font-medium hover:bg-amber-500/20 text-slate-200 transition-colors flex items-center justify-center",
           selected:
             "bg-amber-500 text-slate-950 font-semibold hover:bg-amber-500",
           range_start:
@@ -143,7 +139,16 @@ export default function CalendarPopup({
                 Dates selected
               </p>
               <p className="text-[11px] text-slate-400">
-                You can change your stay anytime.
+                {range.from.toLocaleDateString()} - {range.to.toLocaleDateString()}
+              </p>
+            </>
+          ) : range?.from ? (
+            <>
+              <p className="text-xs font-semibold text-amber-400">
+                Select check-out date
+              </p>
+              <p className="text-[11px] text-slate-400">
+                From: {range.from.toLocaleDateString()}
               </p>
             </>
           ) : (
@@ -152,7 +157,7 @@ export default function CalendarPopup({
                 Select your stay
               </p>
               <p className="text-[11px] text-slate-400">
-                Choose check-in and check-out dates.
+                Choose check-in date first.
               </p>
             </>
           )}

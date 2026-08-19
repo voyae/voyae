@@ -17,6 +17,7 @@ const nextConfig: NextConfig = {
     // Build sırasında TypeScript tip denetim hatalarının kalmasını engeller
     ignoreBuildErrors: true,
   },
+  allowedDevOrigins: ["192.168.178.43"],
 };
 
 export default nextConfig;
