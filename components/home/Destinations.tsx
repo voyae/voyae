@@ -34,7 +34,7 @@ export default function Destinations() {
   return (
     <section
       id="destinations"
-      className="bg-[#f8f6f2] pt-80 pb-32"
+      className="bg-[#070D1F] pt-32 pb-32" // Arka plan koyu lacivert
     >
       <div className="mx-auto w-[92%] max-w-[1550px]">
 
@@ -46,15 +46,15 @@ export default function Destinations() {
           viewport={{ once: true }}
           className="max-w-3xl"
         >
-          <p className="text-sm font-medium uppercase tracking-[0.35em] text-emerald-700">
+          <p className="text-sm font-medium uppercase tracking-[0.35em] text-amber-500">
             Featured Destinations
           </p>
 
-          <h2 className="mt-5 font-display text-6xl leading-tight text-gray-900">
+          <h2 className="mt-5 font-display text-6xl leading-tight text-white">
             Handpicked Escapes.
           </h2>
 
-          <p className="mt-6 text-xl leading-9 text-gray-600">
+          <p className="mt-6 text-xl leading-9 text-slate-400">
             Explore some of the world's most exclusive destinations curated
             for unforgettable journeys.
           </p>
@@ -73,7 +73,7 @@ export default function Destinations() {
                 delay: index * .15,
               }}
               viewport={{ once: true }}
-              className="group relative h-[500px] overflow-hidden rounded-[34px] shadow-[0_30px_80px_rgba(0,0,0,0.18)]"
+              className="group relative h-[500px] overflow-hidden rounded-[34px] shadow-[0_30px_80px_rgba(0,0,0,0.4)] border border-white/5"
             >
 
               {/* Image */}
@@ -84,16 +84,16 @@ export default function Destinations() {
                 }}
               />
 
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/25 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#070D1F]/90 via-[#070D1F]/20 to-transparent" />
 
               {/* Top */}
               <div className="absolute left-7 right-7 top-7 flex items-center justify-between">
 
-                <span className="rounded-full border border-white/20 bg-white/10 px-5 py-2 text-sm text-white backdrop-blur-xl">
+                <span className="rounded-full border border-white/10 bg-black/30 px-5 py-2 text-sm text-white backdrop-blur-xl">
                   {item.location}
                 </span>
 
-                <button className="rounded-full border border-white/20 bg-white/10 p-3 backdrop-blur-xl transition hover:bg-white/20">
+                <button className="rounded-full border border-white/10 bg-black/30 p-3 backdrop-blur-xl transition hover:bg-amber-500/20">
                   <Heart size={18} className="text-white" />
                 </button>
 
@@ -106,12 +106,12 @@ export default function Destinations() {
                   {item.title}
                 </h3>
 
-                <div className="mt-4 flex items-center gap-6 text-white/80">
+                <div className="mt-4 flex items-center gap-6 text-slate-300">
 
                   <span className="flex items-center gap-2">
                     <Star
                       size={16}
-                      className="fill-yellow-400 text-yellow-400"
+                      className="fill-amber-400 text-amber-400"
                     />
                     {item.rating}
                   </span>
@@ -127,17 +127,17 @@ export default function Destinations() {
 
                   <div>
 
-                    <p className="text-xs uppercase tracking-[0.3em] text-white/60">
+                    <p className="text-xs uppercase tracking-[0.3em] text-slate-400">
                       From
                     </p>
 
-                    <h4 className="mt-2 text-[34px] font-bold">
+                    <h4 className="mt-2 text-[34px] font-bold text-amber-400">
                       {item.price}
                     </h4>
 
                   </div>
 
-                  <button className="flex items-center gap-2 rounded-full bg-white px-6 py-3 font-semibold text-black transition hover:scale-105">
+                  <button className="flex items-center gap-2 rounded-full bg-amber-500 px-6 py-3 font-semibold text-slate-950 transition hover:bg-amber-400 hover:scale-105">
                     Explore
                     <ArrowRight size={18} />
                   </button>

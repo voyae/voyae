@@ -34,7 +34,7 @@ export default function Testimonials() {
   return (
     <section
       id="testimonials"
-      className="bg-[#f8f6f2] py-32"
+      className="bg-[#070D1F] py-32"
     >
       <div className="mx-auto w-[92%] max-w-[1550px]">
 
@@ -46,15 +46,15 @@ export default function Testimonials() {
           transition={{ duration: 0.7 }}
           className="mx-auto mb-20 max-w-3xl text-center"
         >
-          <p className="text-sm font-medium uppercase tracking-[0.35em] text-emerald-700">
+          <p className="text-sm font-medium uppercase tracking-[0.35em] text-amber-400">
             Testimonials
           </p>
 
-          <h2 className="mt-5 font-display text-6xl leading-tight text-gray-900">
+          <h2 className="mt-5 font-display text-6xl leading-tight text-white">
             Loved by travelers.
           </h2>
 
-          <p className="mt-6 text-xl leading-9 text-gray-600">
+          <p className="mt-6 text-xl leading-9 text-slate-400">
             Discover why luxury travelers trust Voyae to create unforgettable
             journeys around the world.
           </p>
@@ -74,12 +74,12 @@ export default function Testimonials() {
                 delay: index * 0.15,
               }}
               whileHover={{ y: -10 }}
-              className="rounded-[34px] border border-gray-200 bg-white p-10 shadow-[0_30px_80px_rgba(0,0,0,0.08)] transition duration-300"
+              className="rounded-[34px] border border-white/10 bg-[#101935] p-10 shadow-[0_30px_80px_rgba(0,0,0,0.4)] transition duration-300 hover:border-amber-500/30"
             >
 
               <Quote
                 size={44}
-                className="mb-8 text-emerald-700/70"
+                className="mb-8 text-amber-400/80"
               />
 
               <div className="mb-6 flex gap-1">
@@ -87,12 +87,12 @@ export default function Testimonials() {
                   <Star
                     key={i}
                     size={18}
-                    className="fill-yellow-400 text-yellow-400"
+                    className="fill-amber-400 text-amber-400"
                   />
                 ))}
               </div>
 
-              <p className="text-lg leading-9 text-gray-600">
+              <p className="text-lg leading-9 text-slate-300">
                 "{item.review}"
               </p>
 
@@ -101,16 +101,16 @@ export default function Testimonials() {
                 <img
                   src={item.image}
                   alt={item.name}
-                  className="h-16 w-16 rounded-full object-cover"
+                  className="h-16 w-16 rounded-full object-cover border border-white/10"
                 />
 
                 <div>
 
-                  <h4 className="text-lg font-semibold text-gray-900">
+                  <h4 className="text-lg font-semibold text-white">
                     {item.name}
                   </h4>
 
-                  <p className="mt-1 text-sm text-gray-500">
+                  <p className="mt-1 text-sm text-slate-400">
                     {item.country}
                   </p>
 

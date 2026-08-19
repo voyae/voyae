@@ -460,7 +460,9 @@ async function HotelDetailsContent({ params, searchParams }: HotelPageProps) {
                   <span className="text-[10px] text-slate-400 block">Konaklama Tarihi ({totalNights} Gece)</span>
                   <div className="font-semibold text-white flex items-center gap-2">
                     <Calendar size={13} className="text-amber-400 shrink-0" />
-                    <span>{checkIn || "Seçilmedi"} → {checkOut || "Seçilmedi"}</span>
+                    <span>
+  {checkIn ? new Date(checkIn).toLocaleDateString("tr-TR") : "Seçilmedi"} → {checkOut ? new Date(checkOut).toLocaleDateString("tr-TR") : "Seçilmedi"}
+</span>
                   </div>
                 </div>
 

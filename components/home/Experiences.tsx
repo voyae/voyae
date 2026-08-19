@@ -37,7 +37,7 @@ export default function Experiences() {
   return (
     <section
       id="experiences"
-      className="bg-[#f8f6f2] py-32"
+      className="bg-[#070D1F] py-32"
     >
       <div className="mx-auto w-[92%] max-w-[1550px]">
 
@@ -50,21 +50,21 @@ export default function Experiences() {
           className="mb-20 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between"
         >
           <div className="max-w-3xl">
-            <p className="text-sm font-medium uppercase tracking-[0.35em] text-emerald-700">
+            <p className="text-sm font-medium uppercase tracking-[0.35em] text-amber-500">
               Luxury Experiences
             </p>
 
-            <h2 className="mt-5 font-display text-6xl leading-tight text-gray-900">
+            <h2 className="mt-5 font-display text-6xl leading-tight text-white">
               Beyond destinations.
             </h2>
 
-            <p className="mt-6 text-xl leading-9 text-gray-600">
+            <p className="mt-6 text-xl leading-9 text-slate-400">
               Extraordinary experiences designed for travelers seeking elegance,
               adventure and unforgettable memories.
             </p>
           </div>
 
-          <button className="flex items-center gap-2 rounded-full border border-black/10 bg-white px-7 py-4 font-medium shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+          <button className="flex items-center gap-2 rounded-full border border-white/10 bg-[#101935] px-7 py-4 font-medium text-white shadow-lg transition duration-300 hover:-translate-y-1 hover:bg-amber-500 hover:text-slate-950">
             View All
             <ArrowRight size={18} />
           </button>
@@ -83,7 +83,7 @@ export default function Experiences() {
                 duration: 0.7,
                 delay: index * 0.15,
               }}
-              className="group overflow-hidden rounded-[34px] bg-white shadow-[0_30px_80px_rgba(0,0,0,0.10)] transition duration-500 hover:-translate-y-3 hover:shadow-[0_35px_90px_rgba(0,0,0,0.18)]"
+              className="group overflow-hidden rounded-[34px] bg-[#101935] border border-white/5 shadow-[0_30px_80px_rgba(0,0,0,0.4)] transition duration-500 hover:-translate-y-3 hover:shadow-[0_35px_90px_rgba(0,0,0,0.6)]"
             >
               {/* Image */}
               <div className="relative overflow-hidden">
@@ -94,13 +94,13 @@ export default function Experiences() {
                   className="h-[390px] w-full object-cover transition duration-700 group-hover:scale-110"
                 />
 
-                <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#101935] via-transparent to-transparent" />
 
-                <div className="absolute left-6 top-6 rounded-full bg-white/15 px-4 py-2 text-sm text-white backdrop-blur-xl">
+                <div className="absolute left-6 top-6 rounded-full border border-white/10 bg-black/30 px-4 py-2 text-sm text-white backdrop-blur-xl">
                   Premium
                 </div>
 
-                <div className="absolute right-6 top-6 rounded-full bg-white/15 px-4 py-2 text-sm text-white backdrop-blur-xl">
+                <div className="absolute right-6 top-6 rounded-full border border-white/10 bg-black/30 px-4 py-2 text-sm text-white backdrop-blur-xl">
                   {item.duration}
                 </div>
 
@@ -109,29 +109,29 @@ export default function Experiences() {
               {/* Content */}
               <div className="p-8">
 
-                <div className="mb-5 flex items-center gap-6 text-sm text-gray-500">
+                <div className="mb-5 flex items-center gap-6 text-sm text-slate-400">
 
                   <span className="flex items-center gap-2">
-                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                    <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
                     {item.rating}
                   </span>
 
                   <span className="flex items-center gap-2">
-                    <Clock3 className="h-4 w-4" />
+                    <Clock3 className="h-4 w-4 text-amber-400" />
                     {item.duration}
                   </span>
 
                 </div>
 
-                <h3 className="font-display text-[38px] leading-tight text-gray-900">
+                <h3 className="font-display text-[38px] leading-tight text-white">
                   {item.title}
                 </h3>
 
-                <p className="mt-5 text-lg leading-8 text-gray-600">
+                <p className="mt-5 text-lg leading-8 text-slate-400">
                   {item.description}
                 </p>
 
-                <button className="mt-8 flex items-center gap-2 rounded-full bg-emerald-700 px-7 py-4 font-medium text-white transition duration-300 hover:scale-105">
+                <button className="mt-8 flex items-center gap-2 rounded-full bg-amber-500 px-7 py-4 font-semibold text-slate-950 transition duration-300 hover:bg-amber-400 hover:scale-105">
                   Discover
                   <ArrowRight size={18} />
                 </button>

@@ -62,12 +62,12 @@ export default function AIConcierge() {
 
       setPlan(data);
 
-setTimeout(() => {
-  planRef.current?.scrollIntoView({
-    behavior: "smooth",
-    block: "start",
-  });
-}, 300);
+      setTimeout(() => {
+        planRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 300);
 
     } catch (err: any) {
 
@@ -91,85 +91,6 @@ setTimeout(() => {
   }
 
   function copyPlan() {
-    function exportPDF() {
-      if (!plan) return;
-    
-      const doc = new jsPDF();
-    
-      let y = 20;
-    
-      doc.setFontSize(22);
-      doc.text("Voyae AI Travel Plan", 15, y);
-    
-      y += 15;
-    
-      doc.setFontSize(12);
-    
-      doc.text(`Destination: ${plan.destination}`, 15, y);
-      y += 8;
-    
-      doc.text(`Duration: ${plan.duration}`, 15, y);
-      y += 8;
-    
-      doc.text(`Budget: ${plan.budget}`, 15, y);
-    
-      y += 15;
-    
-      doc.setFontSize(16);
-      doc.text("Overview", 15, y);
-    
-      y += 8;
-    
-      doc.setFontSize(11);
-    
-      const overview = doc.splitTextToSize(
-        plan.overview,
-        180
-      );
-    
-      doc.text(overview, 15, y);
-    
-      y += overview.length * 6 + 10;
-    
-      autoTable(doc, {
-        startY: y,
-        head: [["Hotels", "Price"]],
-    
-        body: plan.hotels.map((hotel) => [
-          hotel.name,
-          hotel.price,
-        ]),
-      });
-    
-      y = (doc as any).lastAutoTable.finalY + 10;
-    
-      autoTable(doc, {
-        startY: y,
-        head: [["Restaurants", "Cuisine"]],
-    
-        body: plan.restaurants.map((r) => [
-          r.name,
-          r.cuisine,
-        ]),
-      });
-    
-      y = (doc as any).lastAutoTable.finalY + 10;
-    
-      autoTable(doc, {
-        startY: y,
-        head: [["Activities", "Duration", "Price"]],
-    
-        body: plan.activities.map((a) => [
-          a.title,
-          a.duration,
-          a.price,
-        ]),
-      });
-    
-      doc.save(
-        `${plan.destination.replace(/\s/g, "-")}-Voyae.pdf`
-      );
-    }
     if (!plan) return;
 
     navigator.clipboard.writeText(`
@@ -191,10 +112,90 @@ ${plan.tips.map((t) => `• ${t}`).join("\n")}
 `);
   }
 
+  function exportPDF() {
+    if (!plan) return;
+  
+    const doc = new jsPDF();
+  
+    let y = 20;
+  
+    doc.setFontSize(22);
+    doc.text("Voyae AI Travel Plan", 15, y);
+  
+    y += 15;
+  
+    doc.setFontSize(12);
+  
+    doc.text(`Destination: ${plan.destination}`, 15, y);
+    y += 8;
+  
+    doc.text(`Duration: ${plan.duration}`, 15, y);
+    y += 8;
+  
+    doc.text(`Budget: ${plan.budget}`, 15, y);
+  
+    y += 15;
+  
+    doc.setFontSize(16);
+    doc.text("Overview", 15, y);
+  
+    y += 8;
+  
+    doc.setFontSize(11);
+  
+    const overview = doc.splitTextToSize(
+      plan.overview,
+      180
+    );
+  
+    doc.text(overview, 15, y);
+  
+    y += overview.length * 6 + 10;
+  
+    autoTable(doc, {
+      startY: y,
+      head: [["Hotels", "Price"]],
+  
+      body: plan.hotels.map((hotel) => [
+        hotel.name,
+        hotel.price,
+      ]),
+    });
+  
+    y = (doc as any).lastAutoTable.finalY + 10;
+  
+    autoTable(doc, {
+      startY: y,
+      head: [["Restaurants", "Cuisine"]],
+  
+      body: plan.restaurants.map((r) => [
+        r.name,
+        r.cuisine,
+      ]),
+    });
+  
+    y = (doc as any).lastAutoTable.finalY + 10;
+  
+    autoTable(doc, {
+      startY: y,
+      head: [["Activities", "Duration", "Price"]],
+  
+      body: plan.activities.map((a) => [
+        a.title,
+        a.duration,
+        a.price,
+      ]),
+    });
+  
+    doc.save(
+      `${plan.destination.replace(/\s/g, "-")}-Voyae.pdf`
+    );
+  }
+
   return (
     <section
       id="ai"
-      className="bg-white py-32"
+      className="bg-[#070D1F] py-32"
     >
       <div className="mx-auto w-[92%] max-w-[1280px]">
 
@@ -213,26 +214,26 @@ ${plan.tips.map((t) => `• ${t}`).join("\n")}
           transition={{
             duration: 0.6,
           }}
-          className="rounded-[42px] border border-neutral-200 bg-neutral-50 p-10 shadow-xl"
+          className="rounded-[42px] border border-white/10 bg-[#101935] p-10 shadow-[0_20px_50px_rgba(0,0,0,0.4)]"
         >
 
           <div className="mb-10 flex items-center gap-5">
 
-            <div className="rounded-3xl bg-[var(--primary)] p-4 text-white">
+            <div className="rounded-3xl bg-amber-500 p-4 text-slate-950 shadow-lg shadow-amber-500/20">
               <Sparkles size={28} />
             </div>
 
             <div>
 
-              <p className="text-sm uppercase tracking-[0.35em] text-[var(--primary)]">
+              <p className="text-sm uppercase tracking-[0.35em] text-amber-400">
                 AI Concierge
               </p>
 
-              <h2 className="mt-2 font-display text-5xl">
+              <h2 className="mt-2 font-display text-5xl text-white">
                 Plan your perfect journey.
               </h2>
 
-              <p className="mt-4 max-w-2xl leading-8 text-neutral-500">
+              <p className="mt-4 max-w-2xl leading-8 text-slate-400">
                 Tell Voyae where you'd like to go,
                 your budget, travel style and
                 preferences. Our AI will create
@@ -253,7 +254,7 @@ ${plan.tips.map((t) => `• ${t}`).join("\n")}
     <button
       key={item}
       onClick={() => setPrompt(item)}
-      className="rounded-full border border-neutral-300 bg-white px-4 py-2 text-sm transition hover:border-[var(--primary)] hover:bg-emerald-50"
+      className="rounded-full border border-white/10 bg-black/30 px-4 py-2 text-sm text-slate-300 transition hover:border-amber-400/50 hover:bg-amber-500/10 hover:text-white"
     >
       {item}
     </button>
@@ -282,7 +283,7 @@ ${plan.tips.map((t) => `• ${t}`).join("\n")}
 • Michelin restaurants
 • Private airport transfer`}
   rows={8}
-  className="w-full resize-none rounded-3xl border border-neutral-200 bg-white p-7 text-lg leading-8 outline-none transition-all focus:border-[var(--primary)] focus:ring-4 focus:ring-emerald-100"
+  className="w-full resize-none rounded-3xl border border-white/10 bg-[#070D1F] p-7 text-lg leading-8 text-white outline-none transition-all focus:border-amber-400 focus:ring-4 focus:ring-amber-400/20 placeholder:text-slate-600"
 />
 
 {/* BUTTONS */}
@@ -299,20 +300,21 @@ ${plan.tips.map((t) => `• ${t}`).join("\n")}
     justify-center
     gap-3
     rounded-full
-    bg-emerald-700
+    bg-amber-500
     px-8
     py-5
     text-lg
     font-semibold
-    text-white
+    text-slate-950
     shadow-lg
+    shadow-amber-500/20
     transition-all
     duration-300
-    hover:bg-emerald-800
+    hover:bg-amber-400
     hover:shadow-xl
     hover:scale-[1.02]
     disabled:cursor-not-allowed
-    disabled:bg-emerald-600
+    disabled:bg-amber-600
     disabled:opacity-80
   "
 >
@@ -320,7 +322,7 @@ ${plan.tips.map((t) => `• ${t}`).join("\n")}
     <>
       <Loader2
         size={22}
-        className="animate-spin"
+        className="animate-spin text-slate-950"
       />
       Creating Journey...
     </>
@@ -337,17 +339,17 @@ ${plan.tips.map((t) => `• ${t}`).join("\n")}
     <>
       <button
         onClick={regeneratePlan}
-        className="flex items-center gap-2 rounded-full border border-neutral-300 bg-white px-6 py-4 font-medium transition hover:bg-neutral-100"
+        className="flex items-center gap-2 rounded-full border border-white/10 bg-black/30 px-6 py-4 font-medium text-white transition hover:bg-white/10"
       >
-        <RefreshCw size={18} />
+        <RefreshCw size={18} className="text-amber-400" />
         Regenerate
       </button>
 
       <button
         onClick={copyPlan}
-        className="flex items-center gap-2 rounded-full border border-neutral-300 bg-white px-6 py-4 font-medium transition hover:bg-neutral-100"
+        className="flex items-center gap-2 rounded-full border border-white/10 bg-black/30 px-6 py-4 font-medium text-white transition hover:bg-white/10"
       >
-        <Copy size={18} />
+        <Copy size={18} className="text-amber-400" />
         Copy
       </button>
     </>
@@ -360,18 +362,18 @@ ${plan.tips.map((t) => `• ${t}`).join("\n")}
 
 {loading && (
 
-  <div className="rounded-3xl border border-emerald-100 bg-emerald-50 p-10">
+  <div className="rounded-3xl border border-amber-500/20 bg-amber-500/5 p-10">
 
     <Loader2
-      className="mx-auto mb-6 animate-spin text-[var(--primary)]"
+      className="mx-auto mb-6 animate-spin text-amber-400"
       size={44}
     />
 
-    <h3 className="text-center text-2xl font-semibold">
+    <h3 className="text-center text-2xl font-semibold text-white">
       Creating your luxury itinerary...
     </h3>
 
-    <ul className="mx-auto mt-8 max-w-md space-y-3 text-neutral-600">
+    <ul className="mx-auto mt-8 max-w-md space-y-3 text-slate-400">
 
       <li>✓ Finding luxury hotels...</li>
 
@@ -393,7 +395,7 @@ ${plan.tips.map((t) => `• ${t}`).join("\n")}
 
 {error && (
 
-  <div className="rounded-3xl border border-red-200 bg-red-50 p-6 text-red-600">
+  <div className="rounded-3xl border border-red-500/30 bg-red-500/10 p-6 text-red-400">
     {error}
   </div>
 

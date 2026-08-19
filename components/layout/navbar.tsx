@@ -16,6 +16,7 @@ const links = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -43,7 +44,7 @@ export default function Navbar() {
               : "w-[92vw] max-w-[1550px] px-8 py-4"
           }`}
         >
-          {/* LOGO: Aşağı inince sadece "V" olur, üstteyken "Voyae" */}
+          {/* LOGO */}
           <Link
             href="/"
             style={{ color: "#FFFFFF" }}
@@ -52,15 +53,19 @@ export default function Navbar() {
             {scrolled ? "V" : "Voyae"}
           </Link>
 
-          {/* NORMAL LİNKLER (Sadece sayfa üstündeyken görünür) */}
+          {/* NORMAL LİNKLER */}
           {!scrolled && (
             <div className="hidden items-center gap-10 lg:flex">
-              {links.map((item) => (
+              {links.map((item, index) => (
                 <Link
                   key={item.name}
                   href={item.href}
-                  style={{ color: "#FBBF24" }}
-                  className="text-base font-bold transition-opacity hover:opacity-80 cursor-pointer"
+                  onMouseEnter={() => setHoveredIndex(index)}
+                  onMouseLeave={() => setHoveredIndex(null)}
+                  style={{
+                    color: hoveredIndex === index ? "#FBBF24" : "#E2E8F0",
+                  }}
+                  className="text-base font-semibold transition-colors duration-300 cursor-pointer"
                 >
                   {item.name}
                 </Link>
@@ -68,7 +73,7 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* SAĞ TARAF: Üstteyken Sign In, Aşağı inince Menü Butonu */}
+          {/* SAĞ TARAF */}
           <div className="flex items-center gap-3">
             {!scrolled ? (
               <div className="hidden lg:block">
@@ -84,8 +89,10 @@ export default function Navbar() {
                 <div className="h-4 w-[1px] bg-slate-700" />
                 <button
                   onClick={() => setMobileOpen(!mobileOpen)}
-                  style={{ color: "#FBBF24" }}
-                  className="flex items-center gap-2 cursor-pointer p-1 font-bold text-sm"
+                  onMouseEnter={(e) => (e.currentTarget.style.color = "#FBBF24")}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = "#E2E8F0")}
+                  style={{ color: "#E2E8F0" }}
+                  className="flex items-center gap-2 cursor-pointer p-1 font-bold text-sm transition-colors duration-300"
                 >
                   {mobileOpen ? <X size={20} /> : <Menu size={20} />}
                   <span className="text-xs tracking-wider uppercase">Menu</span>
@@ -93,12 +100,14 @@ export default function Navbar() {
               </div>
             )}
 
-            {/* Mobil Menü Butonu (Sayfa üstündeyken küçük ekranda görünür) */}
+            {/* Mobil Menü Butonu */}
             {!scrolled && (
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
-                style={{ color: "#FBBF24" }}
-                className="lg:hidden cursor-pointer p-1"
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#FBBF24")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "#E2E8F0")}
+                style={{ color: "#E2E8F0" }}
+                className="lg:hidden cursor-pointer p-1 transition-colors duration-300"
               >
                 {mobileOpen ? <X size={26} /> : <Menu size={26} />}
               </button>
@@ -119,13 +128,15 @@ export default function Navbar() {
             className={`fixed ${scrolled ? "right-6 md:right-12" : "left-4 right-4 mx-auto max-w-md"} top-24 z-[1000] rounded-3xl border border-slate-700 p-6 shadow-2xl`}
           >
             <div className="flex flex-col gap-4 text-center">
-              {links.map((item) => (
+              {links.map((item, index) => (
                 <Link
                   key={item.name}
                   href={item.href}
                   onClick={() => setMobileOpen(false)}
-                  style={{ color: "#FBBF24" }}
-                  className="text-lg font-bold transition-opacity hover:opacity-80 cursor-pointer py-1"
+                  onMouseEnter={(e) => (e.currentTarget.style.color = "#FBBF24")}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = "#E2E8F0")}
+                  style={{ color: "#E2E8F0" }}
+                  className="text-lg font-semibold transition-colors duration-300 cursor-pointer py-1"
                 >
                   {item.name}
                 </Link>
