@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useRef, useState } from "react";
 
 export interface SearchFiltersState {
   minPrice: number;
@@ -17,10 +18,13 @@ export interface SearchFiltersState {
 interface Props {
   filters?: SearchFiltersState;
   onChange?: (filters: SearchFiltersState) => void;
+  onClose?: () => void;
 }
 
-export default function SearchFilters({ filters, onChange }: Props) {
-  const safeFilters: SearchFiltersState = {
+export default function SearchFilters({ filters, onChange, onClose }: Props) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const [localFilters, setLocalFilters] = useState<SearchFiltersState>({
     minPrice: filters?.minPrice ?? 0,
     maxPrice: filters?.maxPrice ?? 10000,
     stars: filters?.stars ?? [],
@@ -32,16 +36,49 @@ export default function SearchFilters({ filters, onChange }: Props) {
     freeCancellation: filters?.freeCancellation ?? false,
     wifi: filters?.wifi ?? false,
     petFriendly: filters?.petFriendly ?? false,
-  };
+  });
 
-  const triggerChange = (newFilters: SearchFiltersState) => {
+  useEffect(() => {
+    if (filters) {
+      setLocalFilters({
+        minPrice: filters.minPrice ?? 0,
+        maxPrice: filters.maxPrice ?? 10000,
+        stars: filters.stars ?? [],
+        propertyTypes: filters.propertyTypes ?? [],
+        minReviewScore: filters.minReviewScore ?? 0,
+        meals: filters.meals ?? [],
+        facilities: filters.facilities ?? [],
+        distanceToCenter: filters.distanceToCenter ?? "all",
+        freeCancellation: filters.freeCancellation ?? false,
+        wifi: filters.wifi ?? false,
+        petFriendly: filters.petFriendly ?? false,
+      });
+    }
+  }, [filters]);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent | TouchEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        onClose?.();
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [onClose]);
+
+  const updateFilters = (newFilters: SearchFiltersState) => {
+    setLocalFilters(newFilters);
     if (typeof onChange === "function") {
       onChange(newFilters);
     }
   };
 
   const resetFilters = () => {
-    triggerChange({
+    const defaultFilters: SearchFiltersState = {
       minPrice: 0,
       maxPrice: 10000,
       stars: [],
@@ -53,96 +90,100 @@ export default function SearchFilters({ filters, onChange }: Props) {
       freeCancellation: false,
       wifi: false,
       petFriendly: false,
-    });
+    };
+    updateFilters(defaultFilters);
   };
 
   function toggleStar(star: number) {
-    const exists = safeFilters.stars.includes(star);
-    triggerChange({
-      ...safeFilters,
+    const exists = localFilters.stars.includes(star);
+    updateFilters({
+      ...localFilters,
       stars: exists
-        ? safeFilters.stars.filter((s) => s !== star)
-        : [...safeFilters.stars, star],
+        ? localFilters.stars.filter((s) => s !== star)
+        : [...localFilters.stars, star],
     });
   }
 
   function togglePropertyType(type: string) {
-    const exists = safeFilters.propertyTypes.includes(type);
-    triggerChange({
-      ...safeFilters,
+    const exists = localFilters.propertyTypes.includes(type);
+    updateFilters({
+      ...localFilters,
       propertyTypes: exists
-        ? safeFilters.propertyTypes.filter((t) => t !== type)
-        : [...safeFilters.propertyTypes, type],
+        ? localFilters.propertyTypes.filter((t) => t !== type)
+        : [...localFilters.propertyTypes, type],
     });
   }
 
   function toggleMeal(meal: string) {
-    const exists = safeFilters.meals.includes(meal);
-    triggerChange({
-      ...safeFilters,
+    const exists = localFilters.meals.includes(meal);
+    updateFilters({
+      ...localFilters,
       meals: exists
-        ? safeFilters.meals.filter((m) => m !== meal)
-        : [...safeFilters.meals, meal],
+        ? localFilters.meals.filter((m) => m !== meal)
+        : [...localFilters.meals, meal],
     });
   }
 
   function toggleFacility(facility: string) {
-    const exists = safeFilters.facilities.includes(facility);
-    triggerChange({
-      ...safeFilters,
+    const exists = localFilters.facilities.includes(facility);
+    updateFilters({
+      ...localFilters,
       facilities: exists
-        ? safeFilters.facilities.filter((f) => f !== facility)
-        : [...safeFilters.facilities, facility],
+        ? localFilters.facilities.filter((f) => f !== facility)
+        : [...localFilters.facilities, facility],
     });
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-neutral-200/80 shadow-xs p-5 space-y-6 text-sm w-full">
-      
+    <div
+      ref={containerRef}
+      className="bg-[#101C3E] rounded-2xl border border-slate-700/80 shadow-2xl p-5 space-y-6 text-sm w-full text-slate-100 transition-all duration-300 animate-in fade-in zoom-in-95"
+    >
       {/* Başlık ve Reset */}
-      <div className="flex items-center justify-between pb-4 border-b border-neutral-100">
-        <h2 className="font-extrabold text-neutral-900 text-xs uppercase tracking-wider">
+      <div className="flex items-center justify-between pb-4 border-b border-slate-700/60">
+        <h2 className="font-extrabold text-slate-100 text-xs uppercase tracking-wider">
           Filter by:
         </h2>
         <button
           onClick={resetFilters}
-          className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 transition-colors"
+          className="text-xs font-semibold text-amber-400 hover:text-amber-300 transition-colors"
         >
           Reset all
         </button>
       </div>
 
-      {/* 1. Şehir Merkezine Mesafe (Distance to Center) */}
-      <div className="pb-5 border-b border-neutral-100 space-y-3">
-        <h3 className="font-bold text-neutral-900 text-xs">
+      {/* 1. Şehir Merkezine Mesafe (Distance to Center) - Buton Yapısı */}
+      <div className="pb-5 border-b border-slate-700/60 space-y-3">
+        <h3 className="font-bold text-slate-100 text-xs">
           Distance to center
         </h3>
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           {[
             { id: "all", label: "Any distance" },
             { id: "1km", label: "Less than 1 km" },
             { id: "3km", label: "Less than 3 km" },
           ].map((item) => (
-            <label
+            <button
               key={item.id}
-              className="flex items-center gap-3 cursor-pointer text-xs text-neutral-700 hover:text-neutral-900 group"
+              onClick={() => updateFilters({ ...localFilters, distanceToCenter: item.id })}
+              className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition-all flex items-center justify-between border ${
+                localFilters.distanceToCenter === item.id
+                  ? "bg-amber-500/10 border-amber-500 text-amber-300"
+                  : "bg-slate-900/60 border-slate-700 text-slate-300 hover:bg-slate-900 hover:border-slate-600"
+              }`}
             >
-              <input
-                type="radio"
-                name="distance"
-                checked={safeFilters.distanceToCenter === item.id}
-                onChange={() => triggerChange({ ...safeFilters, distanceToCenter: item.id })}
-                className="h-4 w-4 border-neutral-300 text-emerald-600 focus:ring-emerald-500 accent-emerald-600 shrink-0 cursor-pointer"
-              />
-              <span className="font-medium group-hover:text-neutral-900">{item.label}</span>
-            </label>
+              <span>{item.label}</span>
+              {localFilters.distanceToCenter === item.id && (
+                <span className="text-amber-400 font-bold">✓</span>
+              )}
+            </button>
           ))}
         </div>
       </div>
 
       {/* 2. Tesis Tipi (Property Type) */}
-      <div className="pb-5 border-b border-neutral-100 space-y-3">
-        <h3 className="font-bold text-neutral-900 text-xs">
+      <div className="pb-5 border-b border-slate-700/60 space-y-3">
+        <h3 className="font-bold text-slate-100 text-xs">
           Property Type
         </h3>
         <div className="space-y-3">
@@ -154,54 +195,54 @@ export default function SearchFilters({ filters, onChange }: Props) {
           ].map((type) => (
             <label
               key={type.id}
-              className="flex items-center gap-3 cursor-pointer text-xs text-neutral-700 hover:text-neutral-900 group"
+              className="flex items-center gap-3 cursor-pointer text-xs text-slate-300 hover:text-amber-400 transition-colors group"
             >
               <input
                 type="checkbox"
-                checked={safeFilters.propertyTypes.includes(type.id)}
+                checked={localFilters.propertyTypes.includes(type.id)}
                 onChange={() => togglePropertyType(type.id)}
-                className="h-4 w-4 rounded border-neutral-300 text-emerald-600 focus:ring-emerald-500 accent-emerald-600 shrink-0 cursor-pointer"
+                className="h-4 w-4 appearance-none rounded border border-slate-600 bg-slate-900 checked:bg-amber-500 checked:border-amber-500 relative flex items-center justify-center shrink-0 cursor-pointer focus:outline-none checked:before:content-['✓'] checked:before:text-slate-950 checked:before:text-[10px] checked:before:font-extrabold"
               />
-              <span className="font-medium group-hover:text-neutral-900">{type.label}</span>
+              <span className="font-medium group-hover:text-amber-400">{type.label}</span>
             </label>
           ))}
         </div>
       </div>
 
       {/* 3. Bütçe Bölümü (Budget) */}
-      <div className="pb-5 border-b border-neutral-100 space-y-3">
-        <h3 className="font-bold text-neutral-900 text-xs">
+      <div className="pb-5 border-b border-slate-700/60 space-y-3">
+        <h3 className="font-bold text-slate-100 text-xs">
           Your budget (per night)
         </h3>
         <div className="space-y-2.5">
           <div>
-            <label className="block text-[11px] font-medium text-neutral-400 mb-1">Min (₺)</label>
+            <label className="block text-[11px] font-medium text-slate-400 mb-1">Min (₺)</label>
             <input
               type="number"
-              value={safeFilters.minPrice}
+              value={localFilters.minPrice}
               onChange={(e) =>
-                triggerChange({ ...safeFilters, minPrice: Number(e.target.value) })
+                updateFilters({ ...localFilters, minPrice: Number(e.target.value) })
               }
-              className="w-full rounded-xl bg-neutral-50/50 border border-neutral-200 px-3.5 py-2 text-xs font-medium text-neutral-800 focus:outline-none focus:border-emerald-600 focus:bg-white transition-all"
+              className="w-full rounded-xl bg-slate-900/60 border border-slate-700 px-3.5 py-2 text-xs font-medium text-slate-100 focus:outline-none focus:border-amber-500 focus:bg-slate-900 transition-all"
             />
           </div>
           <div>
-            <label className="block text-[11px] font-medium text-neutral-400 mb-1">Max (₺)</label>
+            <label className="block text-[11px] font-medium text-slate-400 mb-1">Max (₺)</label>
             <input
               type="number"
-              value={safeFilters.maxPrice}
+              value={localFilters.maxPrice}
               onChange={(e) =>
-                triggerChange({ ...safeFilters, maxPrice: Number(e.target.value) })
+                updateFilters({ ...localFilters, maxPrice: Number(e.target.value) })
               }
-              className="w-full rounded-xl bg-neutral-50/50 border border-neutral-200 px-3.5 py-2 text-xs font-medium text-neutral-800 focus:outline-none focus:border-emerald-600 focus:bg-white transition-all"
+              className="w-full rounded-xl bg-slate-900/60 border border-slate-700 px-3.5 py-2 text-xs font-medium text-slate-100 focus:outline-none focus:border-amber-500 focus:bg-slate-900 transition-all"
             />
           </div>
         </div>
       </div>
 
       {/* 4. Yemek Seçenekleri (Meals) */}
-      <div className="pb-5 border-b border-neutral-100 space-y-3">
-        <h3 className="font-bold text-neutral-900 text-xs">
+      <div className="pb-5 border-b border-slate-700/60 space-y-3">
+        <h3 className="font-bold text-slate-100 text-xs">
           Meals
         </h3>
         <div className="space-y-3">
@@ -212,23 +253,23 @@ export default function SearchFilters({ filters, onChange }: Props) {
           ].map((meal) => (
             <label
               key={meal.id}
-              className="flex items-center gap-3 cursor-pointer text-xs text-neutral-700 hover:text-neutral-900 group"
+              className="flex items-center gap-3 cursor-pointer text-xs text-slate-300 hover:text-amber-400 transition-colors group"
             >
               <input
                 type="checkbox"
-                checked={safeFilters.meals.includes(meal.id)}
+                checked={localFilters.meals.includes(meal.id)}
                 onChange={() => toggleMeal(meal.id)}
-                className="h-4 w-4 rounded border-neutral-300 text-emerald-600 focus:ring-emerald-500 accent-emerald-600 shrink-0 cursor-pointer"
+                className="h-4 w-4 appearance-none rounded border border-slate-600 bg-slate-900 checked:bg-amber-500 checked:border-amber-500 relative flex items-center justify-center shrink-0 cursor-pointer focus:outline-none checked:before:content-['✓'] checked:before:text-slate-950 checked:before:text-[10px] checked:before:font-extrabold"
               />
-              <span className="font-medium group-hover:text-neutral-900">{meal.label}</span>
+              <span className="font-medium group-hover:text-amber-400">{meal.label}</span>
             </label>
           ))}
         </div>
       </div>
 
       {/* 5. Tesis Olanakları (Facilities) */}
-      <div className="pb-5 border-b border-neutral-100 space-y-3">
-        <h3 className="font-bold text-neutral-900 text-xs">
+      <div className="pb-5 border-b border-slate-700/60 space-y-3">
+        <h3 className="font-bold text-slate-100 text-xs">
           Facilities
         </h3>
         <div className="space-y-3">
@@ -240,72 +281,72 @@ export default function SearchFilters({ filters, onChange }: Props) {
           ].map((facility) => (
             <label
               key={facility.id}
-              className="flex items-center gap-3 cursor-pointer text-xs text-neutral-700 hover:text-neutral-900 group"
+              className="flex items-center gap-3 cursor-pointer text-xs text-slate-300 hover:text-amber-400 transition-colors group"
             >
               <input
                 type="checkbox"
-                checked={safeFilters.facilities.includes(facility.id)}
+                checked={localFilters.facilities.includes(facility.id)}
                 onChange={() => toggleFacility(facility.id)}
-                className="h-4 w-4 rounded border-neutral-300 text-emerald-600 focus:ring-emerald-500 accent-emerald-600 shrink-0 cursor-pointer"
+                className="h-4 w-4 appearance-none rounded border border-slate-600 bg-slate-900 checked:bg-amber-500 checked:border-amber-500 relative flex items-center justify-center shrink-0 cursor-pointer focus:outline-none checked:before:content-['✓'] checked:before:text-slate-950 checked:before:text-[10px] checked:before:font-extrabold"
               />
-              <span className="font-medium group-hover:text-neutral-900">{facility.label}</span>
+              <span className="font-medium group-hover:text-amber-400">{facility.label}</span>
             </label>
           ))}
         </div>
       </div>
 
       {/* 6. Rezervasyon Koşulları (Reservation Policies) */}
-      <div className="pb-5 border-b border-neutral-100 space-y-3">
-        <h3 className="font-bold text-neutral-900 text-xs">
+      <div className="pb-5 border-b border-slate-700/60 space-y-3">
+        <h3 className="font-bold text-slate-100 text-xs">
           Reservation Policies
         </h3>
         <div className="space-y-3">
-          <label className="flex items-center gap-3 cursor-pointer text-xs text-neutral-700 hover:text-neutral-900 group">
+          <label className="flex items-center gap-3 cursor-pointer text-xs text-slate-300 hover:text-amber-400 transition-colors group">
             <input
               type="checkbox"
-              checked={safeFilters.freeCancellation}
+              checked={localFilters.freeCancellation}
               onChange={(e) =>
-                triggerChange({ ...safeFilters, freeCancellation: e.target.checked })
+                updateFilters({ ...localFilters, freeCancellation: e.target.checked })
               }
-              className="h-4 w-4 rounded border-neutral-300 text-emerald-600 focus:ring-emerald-500 accent-emerald-600 shrink-0 cursor-pointer"
+              className="h-4 w-4 appearance-none rounded border border-slate-600 bg-slate-900 checked:bg-amber-500 checked:border-amber-500 relative flex items-center justify-center shrink-0 cursor-pointer focus:outline-none checked:before:content-['✓'] checked:before:text-slate-950 checked:before:text-[10px] checked:before:font-extrabold"
             />
-            <span className="font-medium group-hover:text-neutral-900">Free Cancellation</span>
+            <span className="font-medium group-hover:text-amber-400">Free Cancellation</span>
           </label>
 
-          <label className="flex items-center gap-3 cursor-pointer text-xs text-neutral-700 hover:text-neutral-900 group">
+          <label className="flex items-center gap-3 cursor-pointer text-xs text-slate-300 hover:text-amber-400 transition-colors group">
             <input
               type="checkbox"
-              checked={safeFilters.petFriendly}
+              checked={localFilters.petFriendly}
               onChange={(e) =>
-                triggerChange({ ...safeFilters, petFriendly: e.target.checked })
+                updateFilters({ ...localFilters, petFriendly: e.target.checked })
               }
-              className="h-4 w-4 rounded border-neutral-300 text-emerald-600 focus:ring-emerald-500 accent-emerald-600 shrink-0 cursor-pointer"
+              className="h-4 w-4 appearance-none rounded border border-slate-600 bg-slate-900 checked:bg-amber-500 checked:border-amber-500 relative flex items-center justify-center shrink-0 cursor-pointer focus:outline-none checked:before:content-['✓'] checked:before:text-slate-950 checked:before:text-[10px] checked:before:font-extrabold"
             />
-            <span className="font-medium group-hover:text-neutral-900">Pets allowed</span>
+            <span className="font-medium group-hover:text-amber-400">Pets allowed</span>
           </label>
         </div>
       </div>
 
       {/* 7. Yıldız Puanı (Star Rating) */}
-      <div className="pb-5 border-b border-neutral-100 space-y-3">
-        <h3 className="font-bold text-neutral-900 text-xs">
+      <div className="pb-5 border-b border-slate-700/60 space-y-3">
+        <h3 className="font-bold text-slate-100 text-xs">
           Star Rating
         </h3>
         <div className="space-y-3">
           {[5, 4, 3, 2, 1].map((star) => (
             <label
               key={star}
-              className="flex items-center gap-3 cursor-pointer text-xs text-neutral-700 hover:text-neutral-900 group"
+              className="flex items-center gap-3 cursor-pointer text-xs text-slate-300 hover:text-amber-400 transition-colors group"
             >
               <input
                 type="checkbox"
-                checked={safeFilters.stars.includes(star)}
+                checked={localFilters.stars.includes(star)}
                 onChange={() => toggleStar(star)}
-                className="h-4 w-4 rounded border-neutral-300 text-emerald-600 focus:ring-emerald-500 accent-emerald-600 shrink-0 cursor-pointer"
+                className="h-4 w-4 appearance-none rounded border border-slate-600 bg-slate-900 checked:bg-amber-500 checked:border-amber-500 relative flex items-center justify-center shrink-0 cursor-pointer focus:outline-none checked:before:content-['✓'] checked:before:text-slate-950 checked:before:text-[10px] checked:before:font-extrabold"
               />
-              <span className="font-medium flex items-center gap-1.5 group-hover:text-neutral-900">
-                <span className="text-amber-500 tracking-tighter">{"★".repeat(star)}</span>
-                <span className="text-neutral-400 font-normal">({star})</span>
+              <span className="font-medium flex items-center gap-1.5 group-hover:text-amber-400">
+                <span className="text-amber-400 tracking-tighter">{"★".repeat(star)}</span>
+                <span className="text-slate-500 font-normal">({star})</span>
               </span>
             </label>
           ))}
@@ -314,7 +355,7 @@ export default function SearchFilters({ filters, onChange }: Props) {
 
       {/* 8. Yorum Puanı (Review Score) */}
       <div className="space-y-3">
-        <h3 className="font-bold text-neutral-900 text-xs">
+        <h3 className="font-bold text-slate-100 text-xs">
           Guest Review Score
         </h3>
         <div className="space-y-2.5">
@@ -326,26 +367,25 @@ export default function SearchFilters({ filters, onChange }: Props) {
             <button
               key={item.score}
               onClick={() =>
-                triggerChange({
-                  ...safeFilters,
-                  minReviewScore: safeFilters.minReviewScore === item.score ? 0 : item.score,
+                updateFilters({
+                  ...localFilters,
+                  minReviewScore: localFilters.minReviewScore === item.score ? 0 : item.score,
                 })
               }
               className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition-all flex items-center justify-between border ${
-                safeFilters.minReviewScore === item.score
-                  ? "bg-emerald-50 border-emerald-600 text-emerald-800"
-                  : "bg-neutral-50/50 border-neutral-200 text-neutral-700 hover:bg-neutral-100"
+                localFilters.minReviewScore === item.score
+                  ? "bg-amber-500/10 border-amber-500 text-amber-300"
+                  : "bg-slate-900/60 border-slate-700 text-slate-300 hover:bg-slate-900 hover:border-slate-600"
               }`}
             >
               <span>{item.label}</span>
-              {safeFilters.minReviewScore === item.score && (
-                <span className="text-emerald-600 font-bold">✓</span>
+              {localFilters.minReviewScore === item.score && (
+                <span className="text-amber-400 font-bold">✓</span>
               )}
             </button>
           ))}
         </div>
       </div>
-
     </div>
   );
 }

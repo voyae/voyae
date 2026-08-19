@@ -60,11 +60,12 @@ export default function DestinationDropdown({
 
       rounded-[28px]
       border
-      border-neutral-200
+      border-amber-500/30
 
-      bg-white
+      bg-[#101C3E]
 
-      shadow-[0_20px_60px_rgba(0,0,0,.12)]
+      shadow-[0_20px_60px_rgba(0,0,0,.35)]
+      backdrop-blur-xl
       "
     >
       <div className="max-h-[420px] overflow-y-auto">
@@ -87,7 +88,7 @@ export default function DestinationDropdown({
 
             transition
 
-            hover:bg-emerald-50
+            hover:bg-slate-800/80
             "
           >
             <div
@@ -102,9 +103,11 @@ export default function DestinationDropdown({
 
               rounded-xl
 
-              bg-emerald-50
+              bg-amber-500/10
+              border
+              border-amber-500/20
 
-              text-emerald-700
+              text-amber-400
               "
             >
               {getIcon(item.types)}
@@ -119,7 +122,7 @@ export default function DestinationDropdown({
                 text-[15px]
                 font-semibold
 
-                text-neutral-900
+                text-slate-100
                 "
               >
                 {item.title}
@@ -134,7 +137,7 @@ export default function DestinationDropdown({
 
                   text-sm
 
-                  text-neutral-500
+                  text-slate-400
                   "
                 >
                   {item.subtitle}

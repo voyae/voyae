@@ -79,17 +79,18 @@ export default function SearchButton({
           justify-center
           gap-2.5
           rounded-2xl
-          bg-emerald-600
+          bg-amber-500
           text-base
-          font-semibold
-          text-white
+          font-medium
+          text-black
           transition-all
           duration-300
           hover:scale-[1.02]
-          hover:bg-emerald-700
+          hover:bg-amber-400
           disabled:cursor-not-allowed
           disabled:opacity-70
-          shadow-md
+          shadow-lg
+          shadow-amber-500/20
         "
       >
         {loading ? (
@@ -100,13 +101,13 @@ export default function SearchButton({
               animate-spin
               rounded-full
               border-2
-              border-white/40
-              border-t-white
+              border-black/40
+              border-t-black
             "
           />
         ) : (
           <>
-            <Search size={20} />
+            <Search size={20} strokeWidth={2.5} color="#000000" />
             <span>Search</span>
           </>
         )}

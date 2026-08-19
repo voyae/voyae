@@ -54,19 +54,20 @@ export default function CalendarPopup({
       left-1/2
       top-full
       z-50
-      mt-4
+      mt-3
       -translate-x-1/2
 
-      w-[640px]
+      w-[610px]
 
-      rounded-[26px]
+      rounded-[24px]
       border
-      border-neutral-200
-      bg-white
+      border-amber-500/30
+      bg-[#101C3E]
 
       p-5
 
-      shadow-[0_25px_70px_rgba(0,0,0,.14)]
+      shadow-[0_20px_50px_rgba(0,0,0,.4)]
+      backdrop-blur-xl
       animate-in
       fade-in
       zoom-in-95
@@ -94,61 +95,63 @@ export default function CalendarPopup({
             }, 180);
           }
         }}
-        className="voyae-calendar"
+        className="voyae-calendar text-slate-100 relative"
         classNames={{
-          months: "flex gap-8",
-          month: "w-[250px]",
+          months: "flex justify-between gap-10",
+          month: "w-[260px]",
           caption:
-            "flex items-center justify-between mb-4 px-1",
+            "flex items-center justify-between mb-3 px-2 text-slate-100 relative",
           caption_label:
-            "text-lg font-semibold",
-          nav: "flex gap-2",
+            "text-base font-semibold text-slate-100 mx-auto",
+          nav: "flex items-center justify-between absolute inset-x-0 top-0 px-1 pointer-events-none z-10",
           button_previous:
-            "flex h-8 w-8 items-center justify-center rounded-full hover:bg-neutral-100",
+            "flex h-7 w-7 items-center justify-center rounded-full hover:bg-slate-800 text-slate-300 transition-colors pointer-events-auto",
           button_next:
-            "flex h-8 w-8 items-center justify-center rounded-full hover:bg-neutral-100",
+            "flex h-7 w-7 items-center justify-center rounded-full hover:bg-slate-800 text-slate-300 transition-colors pointer-events-auto",
           weekdays:
-            "grid grid-cols-7 mb-2",
+            "grid grid-cols-7 mb-1.5",
           weekday:
-            "text-center text-[11px] uppercase tracking-wide text-neutral-400 font-medium",
+            "text-center text-[10px] uppercase tracking-wider text-amber-400/80 font-medium",
           week: "grid grid-cols-7",
-          day: "h-9 w-9 rounded-full text-sm font-medium hover:bg-emerald-50",
+          day: "h-8 w-8 mx-auto rounded-full text-xs font-medium hover:bg-amber-500/20 text-slate-200 transition-colors flex items-center justify-center",
           selected:
-            "bg-emerald-600 text-white hover:bg-emerald-600",
+            "bg-amber-500 text-slate-950 font-semibold hover:bg-amber-500",
           range_start:
-            "bg-emerald-600 text-white",
+            "bg-amber-500 text-slate-950 font-semibold rounded-l-full rounded-r-none",
           range_end:
-            "bg-emerald-600 text-white",
+            "bg-amber-500 text-slate-950 font-semibold rounded-r-full rounded-l-none",
+          range_middle:
+            "bg-amber-500/20 text-amber-200 rounded-none",
           today:
-            "border border-emerald-500",
+            "border border-amber-400 text-amber-300",
         }}
         components={{
           Chevron: ({ orientation }) =>
             orientation === "left" ? (
-              <ChevronLeft size={18} />
+              <ChevronLeft size={16} />
             ) : (
-              <ChevronRight size={18} />
+              <ChevronRight size={16} />
             ),
         }}
       />
 
-      <div className="mt-5 flex items-center justify-between border-t pt-4">
+      <div className="mt-4 flex items-center justify-between border-t border-amber-500/20 pt-3 px-1">
         <div>
           {range?.from && range?.to ? (
             <>
-              <p className="text-sm font-semibold text-neutral-900">
+              <p className="text-xs font-semibold text-slate-100">
                 Dates selected
               </p>
-              <p className="text-xs text-neutral-500">
+              <p className="text-[11px] text-slate-400">
                 You can change your stay anytime.
               </p>
             </>
           ) : (
             <>
-              <p className="text-sm font-semibold text-neutral-900">
+              <p className="text-xs font-semibold text-slate-100">
                 Select your stay
               </p>
-              <p className="text-xs text-neutral-500">
+              <p className="text-[11px] text-slate-400">
                 Choose check-in and check-out dates.
               </p>
             </>
@@ -160,14 +163,15 @@ export default function CalendarPopup({
           onClick={onClose}
           className="
           rounded-full
-          bg-emerald-600
-          px-5
-          py-2.5
-          text-sm
+          bg-amber-500
+          px-4
+          py-2
+          text-xs
           font-semibold
-          text-white
+          text-slate-950
           transition
-          hover:bg-emerald-700
+          hover:bg-amber-400
+          shadow-md
           "
         >
           Done

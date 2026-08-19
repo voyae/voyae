@@ -122,10 +122,10 @@ export default function HotelCard({
       </div>
 
       {/* RIGHT SIDE (Rating, Pricing & CTA) */}
-      <div className="w-full md:w-56 flex flex-row md:flex-col justify-between md:items-end border-t md:border-t-0 md:border-l border-neutral-100 pt-4 md:pt-0 md:pl-5 shrink-0">
+      <div className="w-full md:w-56 flex flex-col justify-between md:items-end border-t md:border-t-0 md:border-l border-neutral-100 pt-4 md:pt-0 md:pl-5 shrink-0">
         
         {/* Puan ve Değerlendirme Sayısı */}
-        <div className="flex md:flex-row items-center gap-2">
+        <div className="flex flex-row md:flex-row items-center justify-between md:justify-end gap-2 w-full md:w-auto">
           <div className="text-left md:text-right">
             <div className="text-sm font-bold text-neutral-900">{ratingText}</div>
             <div className="text-xs text-neutral-500">{reviewsCount || 901} değerlendirme</div>
@@ -135,24 +135,29 @@ export default function HotelCard({
           </div>
         </div>
 
-        {/* Fiyatlandırma Detayları */}
-        <div className="text-left md:text-right mt-2">
-          <div className="text-xs text-neutral-500">1 gece, 2 yetişkin</div>
-          <div className="text-xs text-neutral-400 line-through">TL {oldPrice.toLocaleString('tr-TR')}</div>
-          <div className="text-2xl font-extrabold text-neutral-900">
-            TL {price.toLocaleString('tr-TR')}
+        {/* Mobilde yan yana (flex-row), masaüstünde alt alta (md:flex-col) duran esnek yapı */}
+        <div className="flex flex-row md:flex-col justify-between items-stretch md:items-end w-full gap-3 md:gap-0 mt-4 md:mt-2">
+          
+          {/* Fiyatlandırma Detayları */}
+          <div className="text-left md:text-right flex-1 md:flex-initial flex flex-col justify-center">
+            <div className="text-xs text-neutral-500">1 gece, 2 yetişkin</div>
+            <div className="text-xs text-neutral-400 line-through">TL {oldPrice.toLocaleString('tr-TR')}</div>
+            <div className="text-xl md:text-2xl font-extrabold text-neutral-900">
+              TL {price.toLocaleString('tr-TR')}
+            </div>
+            <div className="text-[11px] text-neutral-500 flex items-center gap-1 md:justify-end">
+              <span>Vergi ve ücretler dahil</span>
+              <Info className="w-3 h-3 text-neutral-400" />
+            </div>
           </div>
-          <div className="text-[11px] text-neutral-500 flex items-center gap-1 md:justify-end">
-            <span>Vergi ve ücretler dahil</span>
-            <Info className="w-3 h-3 text-neutral-400" />
-          </div>
-        </div>
 
-        {/* Rezervasyon / Durum Butonu */}
-        <button className="w-full mt-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm py-2.5 px-4 rounded-xl transition-colors flex items-center justify-center gap-1 shadow-sm">
-          <span>Yer durumuna bak</span>
-          <span>&gt;</span>
-        </button>
+          {/* Rezervasyon / Durum Butonu */}
+          <button className="flex-1 md:flex-initial w-full mt-0 md:mt-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs md:text-sm py-2 px-3 md:py-2.5 md:px-4 rounded-xl transition-colors flex items-center justify-center gap-1 shadow-sm">
+            <span>Yer durumuna bak</span>
+            <span>&gt;</span>
+          </button>
+
+        </div>
 
       </div>
 

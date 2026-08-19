@@ -66,7 +66,7 @@ export default function DateRangeField() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="
+        className={`
           flex
           h-[88px]
           w-full
@@ -75,36 +75,40 @@ export default function DateRangeField() {
           rounded-2xl
           px-6
           text-left
-          transition
-          hover:bg-neutral-50
-        "
+          transition-all
+          duration-300
+          bg-transparent
+          hover:bg-slate-800/80
+          border
+          ${open ? "border-amber-500/60 bg-slate-800/80 shadow-inner" : "border-transparent"}
+        `}
       >
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/10 border border-amber-500/20 shadow-sm">
           <Calendar
             size={22}
-            className="text-emerald-700"
+            className="text-amber-400"
           />
         </div>
 
         <div className="flex-1">
 
-          <p className="text-[11px] font-medium uppercase tracking-[0.3em] text-neutral-400">
+          <p className="text-[11px] font-medium uppercase tracking-[0.3em] text-amber-400/90">
             Stay
           </p>
 
           {!range.from && (
-            <p className="mt-1 text-lg font-semibold text-neutral-400">
+            <p className="mt-1 text-lg font-semibold text-slate-400">
               Check-in — Check-out
             </p>
           )}
 
           {range.from && !range.to && (
             <>
-              <p className="mt-1 text-lg font-semibold">
+              <p className="mt-1 text-lg font-semibold text-slate-100">
                 {format(range.from, "MMM d")}
               </p>
 
-              <p className="text-sm text-neutral-500">
+              <p className="text-sm text-amber-400/80 font-medium">
                 Select checkout
               </p>
             </>
@@ -112,12 +116,12 @@ export default function DateRangeField() {
 
           {range.from && range.to && (
             <>
-              <p className="mt-1 text-lg font-semibold">
+              <p className="mt-1 text-lg font-semibold text-slate-100">
                 {format(range.from, "MMM d")} —{" "}
                 {format(range.to, "MMM d")}
               </p>
 
-              <p className="text-sm text-neutral-500">
+              <p className="text-sm text-slate-400">
                 {nights}{" "}
                 {nights === 1
                   ? "night"

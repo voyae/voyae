@@ -44,7 +44,7 @@ export default function Hero() {
   return (
     <section
       id="discover"
-      className="relative overflow-x-hidden bg-[#0A1128]"
+      className="relative flex flex-col justify-center min-h-[90vh] bg-[#0A1128] py-12"
     >
       {/* Background - Lüks Sahil ve Tatil Manzarası */}
       <div
@@ -60,71 +60,71 @@ export default function Hero() {
       <div className="absolute inset-0 bg-gradient-to-b from-[#070D1F]/40 via-transparent to-[#0A1128]" />
 
       {/* Glow */}
-      <div className="absolute left-1/2 top-1/2 h-[400px] w-[400px] sm:h-[700px] sm:w-[700px] -translate-x-1/2 -translate-y-[15%] rounded-full bg-amber-500/15 blur-[120px] sm:blur-[180px] pointer-events-none" />
+      <div className="absolute left-1/2 top-1/2 h-[350px] w-[350px] sm:h-[600px] sm:w-[600px] -translate-x-1/2 -translate-y-[20%] rounded-full bg-amber-500/15 blur-[120px] sm:blur-[160px] pointer-events-none" />
 
       {/* CONTENT */}
-      <div className="relative z-20 mx-auto flex min-h-screen w-[92%] max-w-[1550px] flex-col xl:flex-row items-center justify-between pt-28 pb-48 xl:pt-36 xl:pb-72">
+      <div className="relative z-20 mx-auto flex w-[92%] max-w-[1550px] flex-col xl:flex-row items-center justify-between pt-16 pb-8">
 
         {/* LEFT */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="w-full max-w-[760px] text-center xl:text-left"
         >
-          <span className="inline-flex rounded-full border border-amber-500/30 bg-[#070D1F]/60 px-5 py-2.5 sm:px-6 sm:py-3 text-[11px] sm:text-[13px] tracking-[0.3em] sm:tracking-[0.35em] text-amber-400 backdrop-blur-xl shadow-md">
+          <span className="inline-flex rounded-full border border-amber-500/30 bg-[#070D1F]/60 px-5 py-2 sm:px-6 sm:py-2.5 text-[10px] sm:text-[12px] tracking-[0.3em] sm:tracking-[0.35em] text-amber-400 backdrop-blur-xl shadow-md">
             BESPOKE VOYAGES • AI-POWERED LUXURY
           </span>
 
-          <h1 className="mt-6 sm:mt-10 font-display text-5xl sm:text-[78px] font-medium leading-[1] sm:leading-[0.95] tracking-[-0.04em] text-white xl:text-[92px]">
+          <h1 className="mt-5 sm:mt-8 font-display text-4xl sm:text-[72px] font-medium leading-[1.05] sm:leading-[0.95] tracking-[-0.04em] text-white xl:text-[84px]">
             Stop searching,
             <br />
             start traveling.
           </h1>
 
-          <p className="mt-6 sm:mt-9 mx-auto xl:mx-0 max-w-[620px] text-base sm:text-[20px] leading-[1.8] sm:leading-[1.9] text-slate-200">
+          <p className="mt-4 sm:mt-7 mx-auto xl:mx-0 max-w-[620px] text-sm sm:text-[18px] leading-[1.7] sm:leading-[1.8] text-slate-200">
             Voyae plans the trip, you live the experience.
           </p>
 
-          <div className="mt-8 sm:mt-12 flex flex-wrap justify-center xl:justify-start gap-4 sm:gap-5">
-            <button className="w-full sm:w-auto rounded-full bg-amber-500 hover:bg-amber-400 px-8 py-3.5 sm:px-9 sm:py-4 text-base font-bold text-slate-950 transition-all hover:scale-105 shadow-lg shadow-amber-500/20 cursor-pointer">
+          <div className="mt-6 sm:mt-10 flex flex-wrap justify-center xl:justify-start gap-3.5 sm:gap-4">
+            <button className="w-full sm:w-auto rounded-full bg-amber-500 hover:bg-amber-400 px-7 py-3 sm:px-8 sm:py-3.5 text-sm sm:text-base font-bold text-slate-950 transition-all hover:scale-105 shadow-lg shadow-amber-500/20 cursor-pointer">
               Explore Destinations
             </button>
 
-            <button className="w-full sm:w-auto rounded-full border border-slate-700 bg-[#070D1F]/60 px-8 py-3.5 sm:px-9 sm:py-4 text-base text-white backdrop-blur-xl transition-all hover:bg-[#1E293B]/80 hover:border-amber-500/50 cursor-pointer shadow-md">
+            <button className="w-full sm:w-auto rounded-full border border-slate-700 bg-[#070D1F]/60 px-7 py-3 sm:px-8 sm:py-3.5 text-sm sm:text-base text-white backdrop-blur-xl transition-all hover:bg-[#1E293B]/80 hover:border-amber-500/50 cursor-pointer shadow-md">
               Watch Story
             </button>
           </div>
         </motion.div>
 
-        {/* RIGHT - CAM EFEKTLİ SLİDER KART (Mobilde ve Masaüstünde Pürüzsüz) */}
+        {/* RIGHT - CAM EFEKTLİ SLİDER KART */}
         <motion.div
-          initial={{ opacity: 0, y: 40, scale: 0.95 }}
+          initial={{ opacity: 0, y: 30, scale: 0.95 }}
           animate={{ 
             opacity: 1, 
             y: 0, 
             scale: 1 
           }}
-          transition={{ delay: 0.25, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-12 xl:mt-0 w-full sm:w-[380px] rounded-[34px] border border-amber-500/40 bg-[#070D1F]/40 p-7 sm:p-9 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.5)] relative overflow-hidden"
+          transition={{ delay: 0.2, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          className="mt-8 xl:mt-0 w-full sm:w-[380px] rounded-[30px] border border-amber-500/40 bg-[#070D1F]/40 p-6 sm:p-8 backdrop-blur-2xl shadow-[0_25px_50px_rgba(0,0,0,0.5)] relative overflow-hidden"
         >
           {/* Üst Kısım: Başlık ve Değiştirme Okları */}
           <div className="flex items-center justify-between">
-            <p className="text-[11px] sm:text-xs uppercase tracking-[0.3em] sm:tracking-[0.35em] text-amber-400 font-bold">
+            <p className="text-[10px] sm:text-xs uppercase tracking-[0.3em] sm:tracking-[0.35em] text-amber-400 font-bold">
               Featured Escape ({currentIndex + 1}/{featuredEscapes.length})
             </p>
             <div className="flex items-center gap-2">
               <button
                 onClick={handlePrev}
-                className="rounded-full border border-white/20 bg-[#070D1F]/60 p-2 text-slate-200 transition hover:bg-amber-500 hover:text-slate-950 hover:border-amber-500 cursor-pointer backdrop-blur-md active:scale-95"
+                className="rounded-full border border-white/20 bg-[#070D1F]/60 p-1.5 sm:p-2 text-slate-200 transition hover:bg-amber-500 hover:text-slate-950 hover:border-amber-500 cursor-pointer backdrop-blur-md active:scale-95"
               >
-                <ChevronLeft size={16} />
+                <ChevronLeft size={15} />
               </button>
               <button
                 onClick={handleNext}
-                className="rounded-full border border-white/20 bg-[#070D1F]/60 p-2 text-slate-200 transition hover:bg-amber-500 hover:text-slate-950 hover:border-amber-500 cursor-pointer backdrop-blur-md active:scale-95"
+                className="rounded-full border border-white/20 bg-[#070D1F]/60 p-1.5 sm:p-2 text-slate-200 transition hover:bg-amber-500 hover:text-slate-950 hover:border-amber-500 cursor-pointer backdrop-blur-md active:scale-95"
               >
-                <ChevronRight size={16} />
+                <ChevronRight size={15} />
               </button>
             </div>
           </div>
@@ -136,28 +136,28 @@ export default function Hero() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.25 }}
             >
-              <h3 className="mt-4 sm:mt-5 font-display text-[38px] sm:text-[46px] leading-none text-white drop-shadow-md">
+              <h3 className="mt-3 sm:mt-4 font-display text-[34px] sm:text-[42px] leading-none text-white drop-shadow-md">
                 {currentEscape.title}
               </h3>
 
-              <p className="mt-4 sm:mt-5 text-[15px] sm:text-[17px] leading-7 sm:leading-8 text-slate-200 min-h-[80px] sm:min-h-[96px] drop-shadow-sm">
+              <p className="mt-3 sm:mt-4 text-xs sm:text-[15px] leading-relaxed sm:leading-7 text-slate-200 min-h-[70px] sm:min-h-[85px] drop-shadow-sm">
                 {currentEscape.description}
               </p>
 
-              <div className="mt-8 sm:mt-10 flex items-end justify-between border-t border-white/15 pt-5 sm:pt-6">
+              <div className="mt-6 sm:mt-8 flex items-end justify-between border-t border-white/15 pt-4 sm:pt-5">
                 <div>
-                  <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.3em] sm:tracking-[0.35em] text-slate-300 font-medium">
+                  <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.3em] sm:tracking-[0.35em] text-slate-300 font-medium">
                     Starting From
                   </p>
 
-                  <h4 className="mt-1.5 sm:mt-2 text-[30px] sm:text-[36px] font-extrabold text-white drop-shadow-md">
+                  <h4 className="mt-1 text-[26px] sm:text-[32px] font-extrabold text-white drop-shadow-md">
                     {currentEscape.price}
                   </h4>
                 </div>
 
-                <button className="rounded-full bg-amber-500 hover:bg-amber-400 px-6 sm:px-7 py-2.5 sm:py-3 font-bold text-slate-950 transition-all hover:scale-105 shadow-lg shadow-amber-500/30 cursor-pointer text-sm sm:text-base">
+                <button className="rounded-full bg-amber-500 hover:bg-amber-400 px-5 sm:px-6 py-2 sm:py-2.5 font-bold text-slate-950 transition-all hover:scale-105 shadow-lg shadow-amber-500/30 cursor-pointer text-xs sm:text-sm">
                   View →
                 </button>
               </div>
@@ -166,8 +166,8 @@ export default function Hero() {
         </motion.div>
       </div>
 
-      {/* SEARCH BAR (Mobilde ve Masaüstünde Taşma Yapmayan Konumlandırma) */}
-      <div className="absolute left-1/2 bottom-0 z-40 w-[92%] max-w-[1550px] -translate-x-1/2 translate-y-1/2">
+      {/* SEARCH BAR (Sayfanın alt kısmına doğru indirildi) */}
+      <div className="relative z-40 mx-auto w-[92%] max-w-[1550px] mt-16 sm:mt-24 mb-8">
         <SearchBar />
       </div>
     </section>

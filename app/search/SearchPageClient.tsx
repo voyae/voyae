@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Heart, Map, X, Sparkles, Info, ArrowRight, LayoutList, LayoutGrid } from "lucide-react";
+import { Heart, Map, X, Sparkles, Info, ArrowRight, LayoutList, LayoutGrid, SlidersHorizontal } from "lucide-react";
 import SearchFilters from "@/components/search/SearchFilters";
 import SearchBar from "@/components/search/SearchBar";
 
@@ -17,6 +17,7 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
   const destination = searchParams.get("destination") || "Alanya";
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState<boolean>(false);
   
   const activeFilters = useMemo(() => {
     const hiddenKeys = [
@@ -79,6 +80,14 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
           </div>
 
           <div className="flex items-center gap-3 flex-wrap">
+            {/* Sadece mobilde görünen Filtrele Butonu */}
+            <button 
+              onClick={() => setIsMobileFilterOpen(true)}
+              className="lg:hidden flex items-center gap-2 px-4 py-2.5 bg-amber-500 text-slate-950 rounded-2xl text-xs font-bold shadow-sm transition-all cursor-pointer active:scale-95"
+            >
+              <SlidersHorizontal size={15} /> Filtreleri Göster
+            </button>
+
             <div className="flex items-center bg-[#101C3E] backdrop-blur-xl p-1.5 rounded-2xl border border-slate-800 shadow-xs">
               <button 
                 onClick={() => setViewMode("list")}
@@ -132,11 +141,44 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
         {/* Ana Grid Düzeni */}
         <div className="flex flex-col lg:flex-row gap-8 items-start">
           
-          <aside className="w-full lg:w-[320px] shrink-0 sticky top-32">
+          {/* Masaüstü Yan Filtre Alanı (Mobilde Gizli) */}
+          <aside className="hidden lg:block w-full lg:w-[320px] shrink-0 sticky top-32">
             <div className="bg-[#101C3E]/95 p-6 rounded-[32px] border border-slate-800 shadow-md backdrop-blur-2xl text-slate-200">
               <SearchFilters />
             </div>
           </aside>
+
+          {/* Mobil İçin Açılır Kapanır Filtre Çekmecesi (Drawer / Modal) */}
+          {isMobileFilterOpen && (
+            <div className="fixed inset-0 z-50 lg:hidden flex justify-end bg-slate-950/80 backdrop-blur-sm transition-all">
+              <div className="w-full max-w-sm bg-[#0A1128] h-full overflow-y-auto p-6 border-l border-slate-800 flex flex-col justify-between shadow-2xl">
+                <div>
+                  <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-800">
+                    <h3 className="font-extrabold text-white text-lg flex items-center gap-2">
+                      <SlidersHorizontal size={18} className="text-amber-400" /> Filtreler
+                    </h3>
+                    <button 
+                      onClick={() => setIsMobileFilterOpen(false)}
+                      className="p-2 rounded-xl bg-[#101C3E] text-slate-300 hover:text-white"
+                    >
+                      <X size={20} />
+                    </button>
+                  </div>
+                  <div className="text-slate-200">
+                    <SearchFilters />
+                  </div>
+                </div>
+                <div className="pt-6 mt-6 border-t border-slate-800">
+                  <button 
+                    onClick={() => setIsMobileFilterOpen(false)}
+                    className="w-full py-3.5 bg-amber-500 text-slate-950 font-bold rounded-2xl shadow-md text-sm"
+                  >
+                    Sonuçları Gör
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           <main className="flex-1 w-full min-w-0">
             {initialHotels.length === 0 ? (

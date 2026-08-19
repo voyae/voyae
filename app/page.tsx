@@ -22,19 +22,19 @@ export default function Home() {
   }, []);
 
   return (
-    <>
+    <main className="w-full overflow-x-hidden bg-[#0A1128]">
       <LoadingScreen loading={loading} />
 
       {!loading && (
-        <>
+        <div className="flex flex-col gap-12 sm:gap-16 md:gap-24 w-full">
           <Hero />
           <Destinations />
           <Experiences />
           <AIConcierge />
           <Testimonials />
           <Footer />
-        </>
+        </div>
       )}
-    </>
+    </main>
   );
 }

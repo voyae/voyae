@@ -18,7 +18,7 @@ export default function GuestsField() {
   const guestCount = adults + children;
 
   return (
-    <div className="relative border-l border-neutral-200">
+    <div className="relative">
 
       <button
         type="button"
@@ -33,24 +33,24 @@ export default function GuestsField() {
           px-6
           text-left
           transition
-          hover:bg-neutral-50
+          bg-transparent
+          hover:bg-slate-800/60
         "
       >
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/10 border border-amber-500/20">
           <Users
             size={22}
-            className="text-emerald-700"
+            className="text-amber-400"
           />
         </div>
 
         <div className="flex-1">
 
-          <p className="text-[11px] font-medium uppercase tracking-[0.3em] text-neutral-400">
+          <p className="text-[11px] font-medium uppercase tracking-[0.3em] text-amber-400/90">
             Guests
           </p>
 
-          {/* Kalın ve koyu görünüm giderilerek diğer alanlarla uyumlu zarif font dengesine kavuşturuldu */}
-          <p className="mt-0.5 text-sm font-medium text-neutral-700">
+          <p className="mt-0.5 text-sm font-medium text-slate-100">
             {guestCount} Guest{guestCount !== 1 ? "s" : ""} · {rooms} Room
             {rooms !== 1 ? "s" : ""}
           </p>

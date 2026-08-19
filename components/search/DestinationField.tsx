@@ -156,24 +156,24 @@ export default function DestinationField() {
   return (
     <div
       ref={wrapperRef}
-      className="relative flex h-[88px] items-center gap-4 rounded-2xl px-6 transition hover:bg-neutral-50"
+      className="relative flex h-[88px] items-center gap-4 rounded-2xl px-6 transition bg-transparent hover:bg-slate-800/60"
     >
-      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50">
+      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/10 border border-amber-500/20">
         <MapPin
           size={22}
-          className="text-emerald-700"
+          className="text-amber-400"
         />
       </div>
 
       <div className="flex-1">
-        <p className="text-[11px] font-medium uppercase tracking-[0.3em] text-neutral-400">
+        <p className="text-[11px] font-medium uppercase tracking-[0.3em] text-amber-400/90">
           Destination
         </p>
 
         <input
           value={query}
           placeholder="City, hotel or destination"
-          className="mt-1 w-full bg-transparent text-lg font-semibold outline-none placeholder:text-neutral-400"
+          className="mt-1 w-full bg-transparent text-lg font-semibold text-slate-100 outline-none placeholder:text-slate-400"
           onFocus={() => setOpen(true)}
           onChange={(e) => {
             setQuery(e.target.value);
@@ -182,14 +182,14 @@ export default function DestinationField() {
         />
 
         {selected && (
-          <p className="mt-1 truncate text-xs text-neutral-500">
+          <p className="mt-1 truncate text-xs text-slate-400">
             {selected.fullName}
           </p>
         )}
       </div>
 
       {loading && (
-        <div className="absolute right-6 h-5 w-5 animate-spin rounded-full border-2 border-neutral-300 border-t-emerald-600" />
+        <div className="absolute right-6 h-5 w-5 animate-spin rounded-full border-2 border-slate-600 border-t-amber-400" />
       )}
 
       {open && (
