@@ -30,7 +30,7 @@ export default function DestinationField() {
   /* ---------------- Click Outside ---------------- */
 
   useEffect(() => {
-    function handleClick(e: MouseEvent) {
+    function handleClick(e: MouseEvent | TouchEvent) {
       if (
         wrapperRef.current &&
         !wrapperRef.current.contains(e.target as Node)
@@ -40,12 +40,12 @@ export default function DestinationField() {
     }
 
     document.addEventListener("mousedown", handleClick);
+    document.addEventListener("touchstart", handleClick); // Mobilde dışarı dokunmayı algılar
 
-    return () =>
-      document.removeEventListener(
-        "mousedown",
-        handleClick
-      );
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("touchstart", handleClick);
+    };
   }, []);
 
   /* ---------------- Places Search ---------------- */
@@ -193,10 +193,12 @@ export default function DestinationField() {
       )}
 
       {open && (
-        <DestinationDropdown
-          results={results}
-          onSelect={handleSelect}
-        />
+        <div className="absolute left-0 right-0 top-full mt-2 z-50">
+          <DestinationDropdown
+            results={results}
+            onSelect={handleSelect}
+          />
+        </div>
       )}
     </div>
   );
