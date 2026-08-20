@@ -194,10 +194,12 @@ export default function DestinationField() {
       )}
 
       {open && (
-        <DestinationDropdown
-          results={results}
-          onSelect={handleSelect}
-        />
+        <div className="absolute left-0 right-0 top-full mt-2 z-50">
+          <DestinationDropdown
+            results={results}
+            onSelect={handleSelect}
+          />
+        </div>
       )}
     </div>
   );
