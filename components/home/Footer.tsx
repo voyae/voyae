@@ -148,7 +148,7 @@ export default function Footer() {
 
           <p>© 2026 Voyae. All rights reserved.</p>
 
-          <p>Designed with Next.js & Tailwind CSS</p>
+          <p>Designed by Roleda Media Agency</p>
 
         </div>
 

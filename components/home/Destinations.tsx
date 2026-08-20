@@ -1,40 +1,46 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Heart, Star, MapPin, ArrowRight } from "lucide-react";
-
-const destinations = [
-  {
-    title: "Maldives",
-    location: "Indian Ocean",
-    image:
-      "https://images.unsplash.com/photo-1573843981267-be1999ff37cd?auto=format&fit=crop&w=1200&q=80",
-    price: "$4,900",
-    rating: "4.9",
-  },
-  {
-    title: "Santorini",
-    location: "Greece",
-    image:
-      "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=1200&q=80",
-    price: "$3,600",
-    rating: "4.8",
-  },
-  {
-    title: "Kyoto",
-    location: "Japan",
-    image:
-      "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&q=80",
-    price: "$2,800",
-    rating: "4.9",
-  },
-];
+import AuthModal from "@/components/AuthModal";
+import { useLanguageCurrency } from "@/hooks/useLanguageCurrency";
 
 export default function Destinations() {
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const { t, formatPrice } = useLanguageCurrency();
+
+  const destinations = [
+    {
+      title: t("maldivesCardTitle"),
+      location: t("indianOcean"),
+      image:
+        "https://images.unsplash.com/photo-1573843981267-be1999ff37cd?auto=format&fit=crop&w=1200&q=80",
+      priceNum: 4900,
+      rating: "4.9",
+    },
+    {
+      title: t("santoriniCardTitle"),
+      location: t("greece"),
+      image:
+        "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=1200&q=80",
+      priceNum: 3600,
+      rating: "4.8",
+    },
+    {
+      title: t("kyotoCardTitle"),
+      location: t("japan"),
+      image:
+        "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&q=80",
+      priceNum: 2800,
+      rating: "4.9",
+    },
+  ];
+
   return (
     <section
       id="destinations"
-      className="bg-[#070D1F] pt-32 pb-32" // Arka plan koyu lacivert
+      className="bg-[#070D1F] pt-32 pb-32 relative"
     >
       <div className="mx-auto w-[92%] max-w-[1550px]">
 
@@ -47,16 +53,15 @@ export default function Destinations() {
           className="max-w-3xl"
         >
           <p className="text-sm font-medium uppercase tracking-[0.35em] text-amber-500">
-            Featured Destinations
+            {t("featuredDestinationsBadge")}
           </p>
 
           <h2 className="mt-5 font-display text-6xl leading-tight text-white">
-            Handpicked Escapes.
+            {t("handpickedEscapesTitle")}
           </h2>
 
           <p className="mt-6 text-xl leading-9 text-slate-400">
-            Explore some of the world's most exclusive destinations curated
-            for unforgettable journeys.
+            {t("handpickedEscapesSub")}
           </p>
         </motion.div>
 
@@ -93,8 +98,13 @@ export default function Destinations() {
                   {item.location}
                 </span>
 
-                <button className="rounded-full border border-white/10 bg-black/30 p-3 backdrop-blur-xl transition hover:bg-amber-500/20">
-                  <Heart size={18} className="text-white" />
+                {/* Kalp İkonu - Tıklandığında Modal Açılır */}
+                <button 
+                  onClick={() => setIsAuthOpen(true)}
+                  className="rounded-full border border-white/10 bg-black/30 p-3 backdrop-blur-xl transition hover:bg-amber-500/20 hover:scale-110 active:scale-95"
+                  aria-label="Favorilere ekle"
+                >
+                  <Heart size={18} className="text-white transition group-hover/btn:text-amber-400" />
                 </button>
 
               </div>
@@ -128,19 +138,19 @@ export default function Destinations() {
                   <div>
 
                     <p className="text-xs uppercase tracking-[0.3em] text-slate-400">
-                      From
+                      {t("startingFrom")}
                     </p>
 
                     <h4 className="mt-2 text-[34px] font-bold text-amber-400">
-                      {item.price}
+                      {formatPrice(item.priceNum)}
                     </h4>
 
                   </div>
 
                   <button className="flex items-center gap-2 rounded-full bg-amber-500 px-6 py-3 font-semibold text-slate-950 transition hover:bg-amber-400 hover:scale-105">
-                    Explore
-                    <ArrowRight size={18} />
-                  </button>
+  {t("explore")}
+  <ArrowRight size={18} />
+</button>
 
                 </div>
 
@@ -152,6 +162,9 @@ export default function Destinations() {
         </div>
 
       </div>
+
+      {/* Auth Modalı */}
+      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
     </section>
   );
 }
