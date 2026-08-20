@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { Heart, Map, X, Sparkles, Info, ArrowRight, LayoutList, LayoutGrid, SlidersHorizontal } from "lucide-react";
 import SearchFilters from "@/components/search/SearchFilters";
 import SearchBar from "@/components/search/SearchBar";
+import { useLanguageCurrency } from "@/hooks/useLanguageCurrency";
 
 interface SearchPageClientProps {
   initialHotels?: any[];
@@ -13,6 +14,9 @@ interface SearchPageClientProps {
 export default function SearchPageClient({ initialHotels = [] }: SearchPageClientProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
+  
+  // Kendi context'imizden t ve formatPrice fonksiyonlarını alıyoruz
+  const { t, formatPrice } = useLanguageCurrency();
   
   const destination = searchParams.get("destination") || "Alanya";
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
@@ -62,7 +66,7 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-10 pb-8 border-b border-slate-800">
           <div className="space-y-3">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#101C3E] border border-amber-500/30 text-amber-400 text-xs font-bold tracking-wide shadow-xs backdrop-blur-xl">
-              <Sparkles size={14} className="text-amber-400 animate-pulse" /> Curated Stays Collection
+              <Sparkles size={14} className="text-amber-400 animate-pulse" /> {t("curatedStays")}
             </div>
             
             <div className="flex items-baseline gap-3">
@@ -75,7 +79,7 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
             </div>
 
             <p className="text-sm sm:text-base text-slate-300 font-medium max-w-xl">
-              Handpicked exceptional properties matching your refined taste, schedule, and lifestyle.
+              {t("handpickedSubtitle")}
             </p>
           </div>
 
@@ -85,7 +89,7 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
               onClick={() => setIsMobileFilterOpen(true)}
               className="lg:hidden flex items-center gap-2 px-4 py-2.5 bg-amber-500 text-slate-950 rounded-2xl text-xs font-bold shadow-sm transition-all cursor-pointer active:scale-95"
             >
-              <SlidersHorizontal size={15} /> Filtreleri Göster
+              <SlidersHorizontal size={15} /> {t("filterBy")}
             </button>
 
             <div className="flex items-center bg-[#101C3E] backdrop-blur-xl p-1.5 rounded-2xl border border-slate-800 shadow-xs">
@@ -97,7 +101,7 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
                     : "text-slate-300 hover:bg-[#1E293B] hover:text-white"
                 }`}
               >
-                <LayoutList size={15} /> Liste
+                <LayoutList size={15} /> {t("list")}
               </button>
               <button 
                 onClick={() => setViewMode("grid")}
@@ -107,7 +111,7 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
                     : "text-slate-300 hover:bg-[#1E293B] hover:text-white"
                 }`}
               >
-                <LayoutGrid size={15} /> Tablo
+                <LayoutGrid size={15} /> {t("table")}
               </button>
             </div>
 
@@ -115,7 +119,7 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
               <span className="p-1.5 rounded-xl bg-[#1E293B] text-amber-400 group-hover:bg-slate-950 group-hover:text-amber-400 transition-colors duration-500">
                 <Map size={18} />
               </span>
-              <span>Show on interactive map</span>
+              <span>{t("map")}</span>
             </button>
           </div>
         </div>
@@ -123,7 +127,7 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
         {/* Aktif Filtre Rozetleri */}
         {activeFilters.length > 0 && (
           <div className="flex items-center gap-2 mb-8 flex-wrap bg-[#101C3E]/80 backdrop-blur-xl p-4 rounded-2xl border border-slate-800 shadow-xs">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mr-1">Active Filters:</span>
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mr-1">{t("filterBy")}</span>
             {activeFilters.map(([key, value]) => (
               <button 
                 key={key} 
@@ -141,21 +145,21 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
         {/* Ana Grid Düzeni */}
         <div className="flex flex-col lg:flex-row gap-8 items-start">
           
-          {/* Masaüstü Yan Filtre Alanı (Mobilde Gizli) */}
+          {/* Masaüstü Yan Filtre Alanı */}
           <aside className="hidden lg:block w-full lg:w-[320px] shrink-0 sticky top-32">
             <div className="bg-[#101C3E]/95 p-6 rounded-[32px] border border-slate-800 shadow-md backdrop-blur-2xl text-slate-200">
               <SearchFilters />
             </div>
           </aside>
 
-          {/* Mobil İçin Açılır Kapanır Filtre Çekmecesi (Drawer / Modal) */}
+          {/* Mobil İçin Açılır Kapanır Filtre Çekmecesi */}
           {isMobileFilterOpen && (
             <div className="fixed inset-0 z-50 lg:hidden flex justify-end bg-slate-950/80 backdrop-blur-sm transition-all">
               <div className="w-full max-w-sm bg-[#0A1128] h-full overflow-y-auto p-6 border-l border-slate-800 flex flex-col justify-between shadow-2xl">
                 <div>
                   <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-800">
                     <h3 className="font-extrabold text-white text-lg flex items-center gap-2">
-                      <SlidersHorizontal size={18} className="text-amber-400" /> Filtreler
+                      <SlidersHorizontal size={18} className="text-amber-400" /> {t("filterBy")}
                     </h3>
                     <button 
                       onClick={() => setIsMobileFilterOpen(false)}
@@ -173,7 +177,7 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
                     onClick={() => setIsMobileFilterOpen(false)}
                     className="w-full py-3.5 bg-amber-500 text-slate-950 font-bold rounded-2xl shadow-md text-sm"
                   >
-                    Sonuçları Gör
+                    {t("search")}
                   </button>
                 </div>
               </div>
@@ -183,15 +187,14 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
           <main className="flex-1 w-full min-w-0">
             {initialHotels.length === 0 ? (
               <div className="bg-[#101C3E]/90 backdrop-blur-xl p-12 rounded-[32px] text-center border border-slate-800 shadow-sm">
-                <h3 className="text-lg font-bold text-white">Otel Bulunamadı</h3>
-                <p className="text-sm text-slate-300 mt-1">Seçtiğiniz kriterlere uygun otel bulunamadı veya LiteAPI'den veri alınamadı.</p>
+                <h3 className="text-lg font-bold text-white">{t("search")}</h3>
+                <p className="text-sm text-slate-300 mt-1">Otel bulunamadı.</p>
               </div>
             ) : viewMode === "grid" ? (
               // --- TABLO (GRID) GÖRÜNÜMÜ ---
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {initialHotels.map((hotel, index) => {
                   const isFav = favorites.includes(hotel.id);
-                  
                   const rawImages = hotel.hotelImages || hotel.images || hotel.pictures || hotel.photos || [];
                   let hotelImage = "";
                   if (Array.isArray(rawImages) && rawImages.length > 0) {
@@ -212,7 +215,6 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
                       className="group bg-[#101C3E]/95 backdrop-blur-xl rounded-[32px] p-5 border border-slate-800 shadow-sm hover:shadow-2xl hover:border-amber-500/50 transition-all duration-500 flex flex-col justify-between relative overflow-hidden"
                     >
                       <div>
-                        {/* Görsel Alanı */}
                         <div className="relative h-48 bg-[#1E293B] rounded-2xl overflow-hidden cursor-pointer" onClick={() => handleViewHotel(hotel.id)}>
                           {hotelImage ? (
                             <img src={hotelImage} alt={hotel.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
@@ -220,7 +222,6 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
                             <div className="flex h-full items-center justify-center text-xs text-slate-400">Görsel Yok</div>
                           )}
                           
-                          {/* Favori Butonu */}
                           <button 
                             onClick={(e) => { e.stopPropagation(); toggleFavorite(hotel.id); }}
                             className="absolute top-3 right-3 p-2.5 bg-[#101C3E]/85 hover:bg-[#101C3E] backdrop-blur-md rounded-full text-slate-200 hover:text-red-400 transition-all shadow-sm cursor-pointer z-10"
@@ -228,38 +229,33 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
                             <Heart size={16} fill={isFav ? "#ef4444" : "none"} className={isFav ? "text-red-500" : ""} />
                           </button>
 
-                          {/* Puan Rozeti */}
                           <div className="absolute bottom-3 right-3 flex items-center gap-1 bg-amber-500 text-slate-950 px-2.5 py-1 rounded-xl text-xs font-black shadow-md backdrop-blur-md">
                             <span>{numRating.toFixed(1)}</span>
                           </div>
                         </div>
 
-                        {/* İçerik */}
                         <div className="p-2 space-y-1.5 mt-2">
                           <span className="text-[11px] font-bold text-amber-400 block line-clamp-1">{displayAddress}</span>
-
                           <h3 
                             onClick={() => handleViewHotel(hotel.id)}
                             className="font-extrabold text-white hover:text-amber-400 cursor-pointer text-base line-clamp-1"
                           >
                             {hotel.name} <span className="text-amber-400 text-xs">★★★★</span>
                           </h3>
-
                           <p className="text-xs text-slate-300 line-clamp-1">{displayRoomType}</p>
                         </div>
                       </div>
 
-                      {/* Alt Fiyat ve Buton */}
                       <div className="p-2 pt-3 border-t border-slate-800 mt-2 flex items-center justify-between">
                         <div>
-                          <span className="text-[10px] text-slate-400 block font-medium">1 gece, 2 yetişkin</span>
-                          <span className="text-lg font-black text-white">₺ {currentPrice.toLocaleString('tr-TR')}</span>
+                          <span className="text-[10px] text-slate-400 block font-medium">1 {t("night")} / 2 {t("adult")}</span>
+                          <span className="text-lg font-black text-white">{formatPrice(currentPrice)}</span>
                         </div>
                         <button 
                           onClick={() => handleViewHotel(hotel.id)}
                           className="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold px-4 py-2.5 rounded-xl transition-all shadow-sm cursor-pointer"
                         >
-                          İncele
+                          {t("search")}
                         </button>
                       </div>
                     </div>
@@ -271,7 +267,6 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
               <div className="space-y-6">
                 {initialHotels.map((hotel, index) => {
                   const isFav = favorites.includes(hotel.id);
-                  
                   const rawImages = hotel.hotelImages || hotel.images || hotel.pictures || hotel.photos || [];
                   let hotelImage = "";
                   if (Array.isArray(rawImages) && rawImages.length > 0) {
@@ -282,7 +277,7 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
                   if (!hotelImage) hotelImage = hotel.image || hotel.thumbnail || hotel.photo || "";
 
                   const numRating = Number(hotel.rating || hotel.score || hotel.reviewScore) || Number((8.2 + (index % 7) * 0.2).toFixed(1));
-                  const ratingText = numRating >= 9.0 ? "Müthiş" : numRating >= 8.0 ? "Çok İyi" : "İyi";
+                  const ratingText = numRating >= 9.0 ? "Superb" : numRating >= 8.0 ? "Very Good" : "Good";
                   const currentPrice = Number(hotel.price || hotel.minPrice || hotel.rate) || (3200 + (index * 450));
                   const oldPrice = hotel.oldPrice ? Number(hotel.oldPrice) : Math.round(currentPrice * 1.18);
                   const displayRoomType = hotel.roomType || hotel.roomName || "Deluxe Double Room • 1 Queen Bed";
@@ -295,12 +290,11 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
                       key={hotel.id || index} 
                       className="group bg-[#101C3E]/95 backdrop-blur-xl rounded-[32px] p-5 sm:p-6 border border-slate-800 shadow-sm hover:shadow-2xl hover:border-amber-500/50 transition-all duration-500 flex flex-col md:flex-row gap-6 items-stretch relative overflow-hidden"
                     >
-                      {/* Görsel Alanı */}
                       <div className="w-full md:w-72 h-56 md:h-auto bg-[#1E293B] rounded-2xl relative overflow-hidden shrink-0 cursor-pointer" onClick={() => handleViewHotel(hotel.id)}>
                         {hotelImage ? (
                           <img src={hotelImage} alt={hotel.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                         ) : (
-                          <div className="flex h-full items-center justify-center text-xs text-slate-400 p-4 text-center">Görsel Bulunamadı</div>
+                          <div className="flex h-full items-center justify-center text-xs text-slate-400 p-4 text-center">Görsel Yok</div>
                         )}
                         <button 
                           onClick={(e) => { e.stopPropagation(); toggleFavorite(hotel.id); }}
@@ -310,7 +304,6 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
                         </button>
                       </div>
                       
-                      {/* Detay Alanı */}
                       <div className="flex-1 flex flex-col justify-between py-1">
                         <div className="space-y-2">
                           <h3 
@@ -324,9 +317,9 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
                             <Map size={13} className="shrink-0" />
                             <span className="hover:underline cursor-pointer">{displayAddress}</span>
                             <span className="text-slate-600">•</span>
-                            <span className="text-amber-300 hover:underline cursor-pointer font-normal">Haritada göster</span>
+                            <span className="text-amber-300 hover:underline cursor-pointer font-normal">{t("map")}</span>
                             <span className="text-slate-600">•</span>
-                            <span className="text-slate-300 font-normal">Merkez: {centerDistance}</span>
+                            <span className="text-slate-300 font-normal">{t("distanceToCenter")}: {centerDistance}</span>
                           </div>
 
                           <div className="pt-1">
@@ -337,7 +330,7 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
                           <div className="pt-1 text-xs space-y-1">
                             {hotel.freeCancellation !== false && (
                               <div className="flex items-center gap-1.5 text-amber-400 font-bold">
-                                <span>✓</span> Ücretsiz iptal
+                                <span>✓</span> {t("freeCancellation")}
                               </div>
                             )}
                             <p className="text-slate-400 text-[11px]">İstediğin zaman iptal edebilirsin, bugüne özel bu harika fiyatı kaçırma.</p>
@@ -345,12 +338,11 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
                         </div>
                       </div>
 
-                      {/* Sağ Taraf: Değerlendirme + Fiyat + Buton */}
                       <div className="flex md:flex-col justify-between md:justify-between items-end border-t md:border-t-0 md:border-l border-slate-800 pt-4 md:pt-0 md:pl-6 shrink-0 min-w-[220px]">
                         <div className="hidden md:flex items-center gap-3 bg-[#1E293B] px-3.5 py-2 rounded-2xl border border-slate-800 shadow-2xs">
                           <div className="text-right">
                             <span className="block text-xs font-extrabold text-white">{ratingText}</span>
-                            <span className="block text-[10px] text-slate-400 font-medium">{reviewsCount} gerçek değerlendirme</span>
+                            <span className="block text-[10px] text-slate-400 font-medium">{reviewsCount} {t("realReviews")}</span>
                           </div>
                           <div className="w-9 h-9 rounded-xl bg-amber-500 text-slate-950 font-black text-xs flex items-center justify-center shadow-sm shrink-0">
                             {numRating.toFixed(1)}
@@ -358,15 +350,15 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
                         </div>
 
                         <div className="text-left md:text-right space-y-1 bg-amber-500/10 p-4 rounded-2xl border border-amber-500/20 my-2 md:my-0 w-full md:w-auto shadow-xs">
-                          <span className="block text-[11px] text-amber-400 font-bold tracking-wide">1 gece, 2 yetişkin</span>
+                          <span className="block text-[11px] text-amber-400 font-bold tracking-wide">1 {t("night")} / 2 {t("adult")}</span>
                           <div className="flex md:justify-end items-baseline gap-2">
-                            <span className="text-xs text-slate-500 line-through">₺ {oldPrice.toLocaleString('tr-TR')}</span>
+                            <span className="text-xs text-slate-500 line-through">{formatPrice(oldPrice)}</span>
                           </div>
                           <div className="text-2xl font-black text-white tracking-tight">
-                            ₺ {currentPrice.toLocaleString('tr-TR')}
+                            {formatPrice(currentPrice)}
                           </div>
                           <div className="pt-0.5 text-[10px] text-slate-400 font-medium flex items-center gap-1 md:justify-end">
-                            Vergi ve ücretler dahil <Info className="w-3 h-3 text-slate-500" />
+                            {t("taxes")} <Info className="w-3 h-3 text-slate-500" />
                           </div>
                         </div>
 
@@ -390,9 +382,7 @@ export default function SearchPageClient({ initialHotels = [] }: SearchPageClien
               </div>
             )}
           </main>
-
         </div>
-
       </div>
     </div>
   );

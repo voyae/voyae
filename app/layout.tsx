@@ -5,9 +5,10 @@ import "./globals.css";
 
 import Navbar from "@/components/layout/navbar";
 import MobileFooterBar from "@/components/layout/MobileFooterBar";
-import PageTransition from "@/components/layout/PageTransition"; // Animasyon için ayrı bileşen
+import PageTransition from "@/components/layout/PageTransition";
 
 import { SearchProvider } from "@/hooks/useSearch";
+import { LanguageCurrencyProvider } from "@/hooks/useLanguageCurrency"; // Yeni eklenen global sağlayıcı
 
 const fontSans = Inter({
   subsets: ["latin"],
@@ -21,8 +22,7 @@ const fontDisplay = Playfair_Display({
 
 export const metadata: Metadata = {
   title: "Voyae",
-  description:
-    "Luxury travel experiences crafted for modern explorers.",
+  description: "Luxury travel experiences crafted for modern explorers.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -50,16 +50,18 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icon.png" />
       </head>
       <body className="font-sans antialiased pb-20 sm:pb-0">
-        <SearchProvider>
-          <Navbar />
+        {/* Dil ve Para Birimi Sağlayıcısı sisteme entegre edildi */}
+        <LanguageCurrencyProvider>
+          <SearchProvider>
+            <Navbar />
 
-          {/* Sayfalar arası geçiş animasyonunu uygulayan sarmalayıcı */}
-          <PageTransition>
-            <main>{children}</main>
-          </PageTransition>
+            <PageTransition>
+              <main>{children}</main>
+            </PageTransition>
 
-          <MobileFooterBar />
-        </SearchProvider>
+            <MobileFooterBar />
+          </SearchProvider>
+        </LanguageCurrencyProvider>
       </body>
     </html>
   );

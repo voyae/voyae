@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-
 import { prebookHotel } from "@/lib/liteapi";
 
 export async function POST(req: NextRequest) {
@@ -22,6 +21,7 @@ export async function POST(req: NextRequest) {
 
     const result = await prebookHotel({
       offerId,
+      usePaymentSdk: false,
     });
 
     return NextResponse.json({

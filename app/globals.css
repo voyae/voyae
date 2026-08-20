@@ -244,6 +244,7 @@ input, button, a, select, textarea {
     margin: 0 auto;
   }
 }
+
 /* TÜM BUTONLAR VE TIKLANABİLİR ALANLAR İÇİN MOBİL GERİ BİLDİRİM */
 button, 
 [role="button"], 
@@ -256,5 +257,5 @@ button:active,
 [role="button"]:active, 
 a:active {
   transform: scale(0.97); /* Tıklanma anında %3 küçülür */
-  opacity: 0.85;          /* Hafif şeffaflaşır */
+  opacity: 0.85;           /* Hafif şeffaflaşır */
 }

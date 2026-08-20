@@ -35,12 +35,14 @@ export async function fetchFromLiteAPI(endpoint: string, options: RequestInit = 
       throw new Error('Çok fazla istek atıldı, lütfen biraz bekleyin.');
     }
 
+    const text = await response.text();
+    const data = text ? JSON.parse(text) : {};
+
     if (!response.ok) {
-      const errorBody = await response.text();
-      throw new Error(`LiteAPI Hatası (${response.status}): ${errorBody}`);
+      throw new Error(`LiteAPI Hatası (${response.status}): ${typeof data === 'string' ? data : JSON.stringify(data)}`);
     }
 
-    return await response.json();
+    return data;
   } catch (error) {
     console.error(`LiteAPI İsteği Başarısız (${endpoint}):`, error);
     throw error;
@@ -64,7 +66,7 @@ export async function getHotelDetails(hotelId: string) {
 }
 
 /**
- * Otel fiyat ve müsaitlik bilgilerini getiren fonksiyon (EKLENEN KISIM)
+ * Otel fiyat ve müsaitlik bilgilerini getiren fonksiyon
  */
 export async function getHotelRates(payload: {
   hotelIds: string[];
@@ -112,4 +114,37 @@ export async function fetchInChunks<T, R>(
   }
 
   return results;
+}
+
+/**
+ * Otel ön rezervasyon/müsaitlik doğrulama fonksiyonu
+ */
+export async function prebookHotel(payload: { offerId: string }) {
+  return await fetchFromLiteAPI('/hotels/prebook', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+/**
+ * Otel rezervasyonunu kesinleştiren fonksiyon
+ */
+export async function bookHotel(payload: {
+  prebookId: string;
+  holder: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+  };
+  guests: Array<{
+    firstName: string;
+    lastName: string;
+    type?: string;
+  }>;
+  payment?: any;
+}) {
+  return await fetchFromLiteAPI('/hotels/book', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
 }

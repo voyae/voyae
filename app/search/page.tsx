@@ -168,15 +168,15 @@ export default function SearchPage({ searchParams }: SearchPageProps) {
     <div className="min-h-screen bg-[#0A1128] text-slate-100 selection:bg-amber-500 selection:text-slate-950 overflow-x-hidden w-full">
       <Suspense
         fallback={
-          <main className="mx-auto max-w-7xl px-4 sm:px-8 pt-24 sm:pt-32">
-            <div className="animate-pulse space-y-4">
-              <div className="h-8 bg-slate-800 rounded-xl w-1/4"></div>
-              <div className="h-64 bg-[#101C3E] border border-amber-500/10 rounded-3xl"></div>
+          <main className="mx-auto max-w-7xl px-4 sm:px-8 pt-28 sm:pt-36 pb-16">
+            <div className="animate-pulse space-y-6">
+              <div className="h-8 bg-slate-800/80 rounded-xl w-1/3 sm:w-1/4"></div>
+              <div className="h-64 sm:h-80 bg-[#101C3E]/60 border border-amber-500/10 rounded-3xl"></div>
             </div>
           </main>
         }
       >
-        <div className="w-full">
+        <div className="w-full pt-4 sm:pt-6">
           <SearchContent searchParams={searchParams} />
         </div>
       </Suspense>
